@@ -3,12 +3,93 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Biblionario</title>
-<meta http-equiv="refresh" content="0; url=./reto/">
-<style>body{background:#160b31;color:#f3ead2;font-family:Georgia,serif;text-align:center;padding:40px 16px}a{color:#ffd94d}</style>
+<title>Duelo Bíblico en Vivo — Biblionario</title>
+<meta name="description" content="Te retaron a un Duelo Bíblico en Vivo en Biblionario. Entra con este enlace o usa tu código en la app.">
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100dvh; display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(120% 90% at 50% 0%, #3b2364 0%, #1d1038 55%, #120826 100%);
+    color: #f3ead2; font-family: Georgia, "Times New Roman", serif; padding: 24px 16px;
+  }
+  .tarjeta {
+    width: 100%; max-width: 430px; text-align: center;
+    background: rgba(24, 12, 52, .88); border: 1px solid rgba(212, 175, 55, .45);
+    border-radius: 18px; padding: 28px 22px 24px;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, .5);
+  }
+  .espadas { font-size: 2rem; }
+  h1 { font-size: 1.55rem; margin: .35em 0 .2em; color: #e9c860; line-height: 1.2; }
+  .sub { margin: 0 0 6px; font-size: 1.02rem; color: #d9cdf5; }
+  .etiqueta { margin: 20px 0 4px; font-size: .82rem; letter-spacing: .14em; text-transform: uppercase; color: #b7a6e8; }
+  .codigo {
+    font-size: 3.4rem; font-weight: bold; letter-spacing: .35em; text-indent: .35em;
+    color: #ffd94d; margin: 2px 0 10px; font-family: "Courier New", monospace;
+  }
+  .btn {
+    display: block; width: 100%; margin: 10px 0; padding: 14px 16px; border-radius: 12px;
+    font-size: 1.05rem; font-weight: bold; text-decoration: none; cursor: pointer;
+    border: 1px solid rgba(212, 175, 55, .6); background: #2c1a56; color: #f3ead2;
+    font-family: inherit;
+  }
+  .btn.oro { background: linear-gradient(180deg, #f0cd55, #c39a26); color: #241203; border: none; }
+  .btn:active { transform: scale(.99); }
+  .nota { font-size: .92rem; color: #cbbff0; line-height: 1.5; margin: 16px 0 4px; }
+  .pie { font-size: .8rem; color: #8f81c4; margin-top: 18px; }
+  [hidden] { display: none !important; }
+</style>
 </head>
 <body>
-  <p>📖 <b>Biblionario</b> — ¿Quién quiere ser Biblionario?</p>
-  <p><a href="./reto/">Ir a la página de retos</a></p>
+  <main class="tarjeta">
+    <div class="espadas">⚔️📖</div>
+    <h1>¡Te retaron a un Duelo Bíblico en Vivo!</h1>
+    <p class="sub">Alguien quiere jugar contigo en <b>Biblionario</b>.</p>
+
+    <div id="con-codigo" hidden>
+      <p class="etiqueta">Tu código de duelo</p>
+      <div class="codigo" id="codigo">····</div>
+      <a class="btn oro" id="btn-abrir" href="#">Abrir en la app y entrar al duelo</a>
+      <button class="btn" id="btn-copiar" type="button">Copiar código</button>
+      <p class="nota">Si ya tienes la app instalada, el botón de arriba te lleva directo al duelo. Si la app te pide el código, escríbelo al tocar «Duelo Bíblico en Vivo».</p>
+    </div>
+
+    <div id="sin-codigo" hidden>
+      <p class="nota">Este enlace venía sin código. Pide a quien te retó que te comparta de nuevo el enlace del reto, o abre la app y escribe su código en «Duelo Bíblico en Vivo».</p>
+    </div>
+
+    <a class="btn" href="https://play.google.com/store/apps/details?id=com.biblionario.app">Descargar en Google Play</a>
+    <a class="btn" href="https://apps.apple.com/app/id6823809379">Descargar en App Store</a>
+    <p class="pie">Biblionario · ¿Quién quiere ser Biblionario?</p>
+  </main>
+<script>
+  (function () {
+    var c = null;
+    try { c = new URLSearchParams(window.location.search).get("c"); } catch (e) {}
+    var valido = c && /^\d{4}$/.test(c);
+    if (valido) {
+      document.getElementById("codigo").textContent = c;
+      document.getElementById("con-codigo").hidden = false;
+      var abrir = document.getElementById("btn-abrir");
+      var httpsUrl = "https://biblionario.github.io/reto/?c=" + c;
+      if (/Android/i.test(navigator.userAgent)) {
+        abrir.href = "intent://biblionario.github.io/reto/?c=" + c +
+          "#Intent;scheme=https;package=com.biblionario.app;S.browser_fallback_url=" +
+          encodeURIComponent("https://play.google.com/store/apps/details?id=com.biblionario.app") + ";end";
+      } else {
+        abrir.href = httpsUrl;
+      }
+      var btnCopiar = document.getElementById("btn-copiar");
+      btnCopiar.addEventListener("click", function () {
+        function hecho() { btnCopiar.textContent = "¡Código copiado! ✔"; }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(c).then(hecho, function () { btnCopiar.textContent = "Tu código es el " + c; });
+        } else { hecho(); }
+      });
+    } else {
+      document.getElementById("sin-codigo").hidden = false;
+    }
+  })();
+</script>
 </body>
 </html>
