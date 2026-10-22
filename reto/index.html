@@ -59,7 +59,7 @@
       <div class="codigo" id="codigo">····</div>
       <a class="btn oro" id="btn-abrir" href="#">Abrir en la app y entrar al duelo</a>
       <button class="btn" id="btn-copiar" type="button">Copiar código</button>
-      <p class="nota">El botón de arriba abre la app cuando este enlace se abre en Safari o Chrome. Si lo abriste dentro de otra app (Telegram, Instagram, Facebook…) y el botón no responde, copia el código y entra desde la app en «Duelo Bíblico en Vivo».</p>
+      <p class="nota">El botón de arriba abre la app y te mete directo al duelo. Si no responde (por ejemplo, si tu app aún no está actualizada a la última versión), copia el código y entra desde la app en «Duelo Bíblico en Vivo».</p>
     </div>
 
     <div id="sin-codigo" hidden>
@@ -85,7 +85,7 @@
           "#Intent;scheme=https;package=com.biblionario.app;S.browser_fallback_url=" +
           encodeURIComponent("https://play.google.com/store/apps/details?id=com.biblionario.app") + ";end";
       } else {
-        abrir.href = httpsUrl;
+        abrir.href = "biblionario://reto?c=" + c;
       }
       var btnCopiar = document.getElementById("btn-copiar");
       btnCopiar.addEventListener("click", function () {
