@@ -36,6 +36,12 @@
   .btn.oro { background: linear-gradient(180deg, #f0cd55, #c39a26); color: #241203; border: none; }
   .btn:active { transform: scale(.99); }
   .nota { font-size: .92rem; color: #cbbff0; line-height: 1.5; margin: 16px 0 4px; }
+  .aviso {
+    text-align: left; font-size: .95rem; line-height: 1.5; margin: 14px 0 4px;
+    background: rgba(240, 205, 85, .12); border: 1px solid rgba(240, 205, 85, .55);
+    border-radius: 12px; padding: 12px 14px; color: #f6e7bd;
+  }
+  .aviso b { color: #ffd94d; }
   .pie { font-size: .8rem; color: #8f81c4; margin-top: 18px; }
   [hidden] { display: none !important; }
 </style>
@@ -46,12 +52,14 @@
     <h1>¡Te retaron a un Duelo Bíblico en Vivo!</h1>
     <p class="sub">Alguien quiere jugar contigo en <b>Biblionario</b>.</p>
 
+    <div class="aviso" id="aviso-inapp" hidden></div>
+
     <div id="con-codigo" hidden>
       <p class="etiqueta">Tu código de duelo</p>
       <div class="codigo" id="codigo">····</div>
       <a class="btn oro" id="btn-abrir" href="#">Abrir en la app y entrar al duelo</a>
       <button class="btn" id="btn-copiar" type="button">Copiar código</button>
-      <p class="nota">Si ya tienes la app instalada, el botón de arriba te lleva directo al duelo. Si la app te pide el código, escríbelo al tocar «Duelo Bíblico en Vivo».</p>
+      <p class="nota">El botón de arriba abre la app cuando este enlace se abre en Safari o Chrome. Si lo abriste dentro de otra app (Telegram, Instagram, Facebook…) y el botón no responde, copia el código y entra desde la app en «Duelo Bíblico en Vivo».</p>
     </div>
 
     <div id="sin-codigo" hidden>
@@ -89,6 +97,28 @@
     } else {
       document.getElementById("sin-codigo").hidden = false;
     }
+
+    /* Aviso de navegador interno: cuando el enlace se abre dentro de
+       Telegram/Instagram/Facebook/etc., el sistema no entrega el
+       enlace a la app y el botón dorado no puede saltar. Se avisa y se
+       da la salida (abrir en el navegador real o usar el código). */
+    (function () {
+      if (!valido) return;
+      var ua = navigator.userAgent || "";
+      var app = null;
+      if (/Telegram/i.test(ua)) app = "Telegram";
+      else if (/Instagram/i.test(ua)) app = "Instagram";
+      else if (/FBAN|FBAV|FB_IAB|FBIOS/i.test(ua)) app = "Facebook";
+      else if (/TikTok|musical_ly|Bytedance/i.test(ua)) app = "TikTok";
+      else if (/Snapchat/i.test(ua)) app = "Snapchat";
+      else if (/Twitter/i.test(ua)) app = "X (Twitter)";
+      if (!app) return;
+      var esIOS = /iPhone|iPad|iPod/i.test(ua);
+      var destino = esIOS ? "«Abrir en Safari»" : "«Abrir en el navegador» o «Abrir en Chrome»";
+      var aviso = document.getElementById("aviso-inapp");
+      aviso.innerHTML = "⚠️ Abriste este enlace dentro de <b>" + app + "</b>, y desde ahí el salto automático a la app no funciona. Toca el menú <b>(⋯)</b> y elige <b>" + destino + "</b>: ahí el botón dorado sí te lleva directo al duelo. O copia el código de abajo y entra desde la app.";
+      aviso.hidden = false;
+    })();
   })();
 </script>
 </body>
