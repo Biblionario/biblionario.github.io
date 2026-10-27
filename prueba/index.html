@@ -5743,98 +5743,212 @@
       function tramosCompletados() {
         return Math.floor(Math.min(caminoEstado.sellados.length, 66) / 11);
       }
-      /* La corona en SVG (Ronda 8, punto 51: fuera el aspecto de
-         juguete/cartoon): diadema de realeza antigua en oro
-         trabajado — siete rayos-hoja sobrios sobre el aro, banda
-         ancha con surcos y filigrana incisa, y los 6 engastes de
-         la frente: la gema ganada va facetada en su engaste de
-         oro; la que falta es un hueco oscuro elegante con sus
-         garras. Gradientes metálicos en la familia del dorado de
-         la opción 8. `destacar` anima la gema nueva; `forzar`
-         fija cuántas gemas se encienden (la corona-meta del
-         Camino lleva las 6). Cada instancia usa ids propios: la
-         misma corona vive en varias pantallas a la vez. */
+      /* ================================================================
+         RONDA 9 (punto 52) — la corona de un rey del antiguo Cercano
+         Oriente: diadema ALTA de oro macizo trabajado. Palmetas y
+         puntas lanceoladas alternadas con volumen modelado (gradiente
+         cilíndrico por pétalo, pétalo interior inciso y vena), banda
+         ancha con cordón trenzado arriba, rosetas grabadas entre los
+         engastes, granulación (fila de cuentas en los bordes y
+         milgrain en los biseles) y una franja baja de cabujones de
+         época (lapislázuli, turquesa, granate). Los 6 engastes de
+         nivel funcionan EXACTO igual: gema facetada con su color o
+         hueco oscuro con garras. Mismo lienzo 220×92 de siempre.
+         `destacar` anima la gema nueva; `forzar` fija cuántas gemas
+         se encienden (la corona-meta del Camino lleva las 6). Cada
+         instancia usa ids propios: la misma corona vive en varias
+         pantallas a la vez.
+         ================================================================ */
       var coronaUID = 0;
-      var CORONA_RAYOS = [
-        { x: 26, base: 53.5, punta: 32, ancho: 3.3 },
-        { x: 56, base: 50.5, punta: 23, ancho: 3.6 },
-        { x: 82, base: 48.5, punta: 14, ancho: 4.0 },
-        { x: 110, base: 48, punta: 6, ancho: 4.6 },
-        { x: 138, base: 48.5, punta: 14, ancho: 4.0 },
-        { x: 164, base: 50.5, punta: 23, ancho: 3.6 },
-        { x: 194, base: 53.5, punta: 32, ancho: 3.3 }
-      ];
-      function coronaHoja(r) {
-        return "M" + r.x + " " + r.punta +
-          " C" + (r.x + r.ancho + 1.2) + " " + (r.punta + (r.base - r.punta) * 0.38) + ", " + (r.x + r.ancho) + " " + (r.base - 7) + ", " + (r.x + r.ancho - 0.5) + " " + r.base +
-          " L" + (r.x - r.ancho + 0.5) + " " + r.base +
-          " C" + (r.x - r.ancho) + " " + (r.base - 7) + ", " + (r.x - r.ancho - 1.2) + " " + (r.punta + (r.base - r.punta) * 0.38) + ", " + r.x + " " + r.punta + " Z";
+      var coronaHechasActual = 0;
+
+      function coronaN(n) { return Math.round(n * 10) / 10; }
+      /* Un pétalo/hoja desde su base (bx,by), inclinado `ang` grados
+         desde la vertical, de largo L y semiancho W: devuelve el
+         camino de su silueta, el de su pétalo interior inciso (el
+         relieve), su vena central y el eje para el gradiente
+         cilíndrico que le da volumen de metal. */
+      function coronaPetalo(bx, by, ang, L, W) {
+        var a = ang * Math.PI / 180;
+        var dx = Math.sin(a), dy = -Math.cos(a);
+        var px = Math.cos(a), py = Math.sin(a);
+        function pt(t, s) { return [bx + dx * L * t + px * W * s, by + dy * L * t + py * W * s]; }
+        function f(p) { return coronaN(p[0]) + " " + coronaN(p[1]); }
+        function camino(lf, wf) {
+          function q(t, s) { return [bx + dx * L * lf * t + px * W * wf * s, by + dy * L * lf * t + py * W * wf * s]; }
+          return "M" + f(q(0, 0)) + " C" + f(q(0.30, -0.95)) + " " + f(q(0.72, -0.80)) + " " + f(q(1, 0)) +
+            " C" + f(q(0.72, 0.80)) + " " + f(q(0.30, 0.95)) + " " + f(q(0, 0)) + " Z";
+        }
+        var v1 = pt(0.16, 0), v2 = pt(0.84, 0);
+        return {
+          d: camino(1, 1), din: camino(0.62, 0.5),
+          vena: [v1, v2],
+          gx1: bx - px * W, gy1: by - py * W, gx2: bx + px * W, gy2: by + py * W
+        };
       }
+      /* Las 7 puntas de la diadema, de izquierda a derecha:
+         lanceolada · palmeta · lanceolada · PALMETA MAYOR ·
+         lanceolada · palmeta · lanceolada, como en el arte
+         asirio/persa/fenicio de la época. */
+      function coronaPicos() {
+        function lanceolada(x, L, W) { return { petalos: [coronaPetalo(x, 52, 0, L, W)], volutas: [] }; }
+        function palmeta(x, L, W) {
+          var angs = [-36, -18, 0, 18, 36], fac = [0.74, 0.91, 1, 0.91, 0.74], ps = [];
+          for (var k = 0; k < 5; k++) ps.push(coronaPetalo(x, 52, angs[k], L * fac[k], W));
+          return { petalos: ps, volutas: [] };
+        }
+        return [
+          lanceolada(22, 29, 5.4),
+          palmeta(53, 36, 6.6),
+          lanceolada(83, 41, 6.2),
+          palmeta(110, 47, 7.4),
+          lanceolada(137, 41, 6.2),
+          palmeta(167, 36, 6.6),
+          lanceolada(198, 29, 5.4)
+        ];
+      }
+      /* Roseta grabada de 8 pétalos (motivo vegetal de la época). */
+      function coronaRoseta(cx, cy, r) {
+        function f(n) { return coronaN(n); }
+        var d = "";
+        for (var k = 0; k < 8; k++) {
+          var a = k * Math.PI / 4;
+          var tx = cx + Math.cos(a) * r, ty = cy + Math.sin(a) * r;
+          var a1 = a - 0.34, a2 = a + 0.34;
+          d += "M" + f(cx) + " " + f(cy) +
+            " Q" + f(cx + Math.cos(a1) * r * 0.74) + " " + f(cy + Math.sin(a1) * r * 0.74) + " " + f(tx) + " " + f(ty) +
+            " Q" + f(cx + Math.cos(a2) * r * 0.74) + " " + f(cy + Math.sin(a2) * r * 0.74) + " " + f(cx) + " " + f(cy) + " ";
+        }
+        return d;
+      }
+      /* La fila de gemas sigue el arco de la banda (el centro va más
+         alto que los extremos, como en una diadema real curvada). */
+      function coronaGemaCX(i) { return 44 + i * 30.4; }
+      function coronaGemaCY(x) { return 64 + 4.4 * Math.pow((x - 110) / 100, 2); }
+      function coronaDivY(x) { var s = Math.min(1, Math.max(0, (x - 16) / 188)); return 76 + 18 * s * (1 - s); }
+      function coronaBordeInfY(x) { var s = Math.min(1, Math.max(0, (x - 17) / 186)); return 87 + 16 * s * (1 - s); }
+      function coronaBordeSupY(x) { var s = Math.min(1, Math.max(0, (x - 12.5) / 195)); return 49 - 22 * s * (1 - s); }
+      /* Cabujones pequeños de la franja baja: lapislázuli, turquesa
+         y granate, los tonos profundos de la joyería antigua. */
+      var CORONA_CABUJONES = [
+        { c0: "#5b7cc0", c1: "#274b8f", c2: "#14294e" },
+        { c0: "#63c2b4", c1: "#2e8f86", c2: "#12453e" },
+        { c0: "#c0505f", c1: "#8e2432", c2: "#450f18" }
+      ];
+      var CORONA_CUERPO = "M13 50 Q110 39 207 50 L203 87 Q110 95 17 87 Z";
+      var CORONA_CUERDA = "M12.5 49 Q110 38 207.5 49 L207 55 Q110 44 13 55 Z";
+
       function coronaEngasteSVG(uid, i, destacar) {
-        var cx = 44 + i * 30.4, cy = 69;
-        var s = '<circle cx="' + cx + '" cy="' + cy + '" r="10.6" fill="url(#coronaEng' + uid + ')" stroke="#7c5a10" stroke-width="1.1"/>' +
-          '<circle cx="' + cx + '" cy="' + cy + '" r="9.3" fill="none" stroke="rgba(80,52,4,0.6)" stroke-width="0.7"/>';
+        var cx = coronaGemaCX(i), cy = coronaGemaCY(cx);
+        var s = '<circle cx="' + coronaN(cx) + '" cy="' + coronaN(cy) + '" r="9.9" fill="url(#coronaEng' + uid + ')" stroke="#6e4c0d" stroke-width="1.1"/>';
+        for (var b = 0; b < 12; b++) {
+          var ab = b * Math.PI / 6;
+          s += '<circle cx="' + coronaN(cx + Math.cos(ab) * 8.9) + '" cy="' + coronaN(cy + Math.sin(ab) * 8.9) + '" r="0.55" fill="rgba(101,66,8,0.65)"/>';
+        }
+        s += '<circle cx="' + coronaN(cx) + '" cy="' + coronaN(cy) + '" r="8.3" fill="none" stroke="rgba(80,52,4,0.55)" stroke-width="0.7"/>';
         if (i < coronaHechasActual) {
           s += '<g' + (destacar === i ? ' class="gema-nueva"' : "") + ">" +
-            '<circle cx="' + cx + '" cy="' + cy + '" r="7.7" fill="' + GEMAS_NIVEL[i].color + '" stroke="rgba(58,34,0,0.5)" stroke-width="0.8"/>' +
-            '<polygon points="' + (cx - 3.4) + "," + (cy - 3.4) + " " + (cx + 3.4) + "," + (cy - 3.4) + " " + (cx + 5.8) + "," + (cy + 1) + " " + cx + "," + (cy + 6.4) + " " + (cx - 5.8) + "," + (cy + 1) + '" fill="rgba(255,255,255,0.20)"/>' +
-            '<path d="M' + (cx - 5.8) + " " + (cy + 1) + " H" + (cx + 5.8) + '" stroke="rgba(255,255,255,0.38)" stroke-width="0.7"/>' +
-            '<path d="M' + (cx - 3.4) + " " + (cy - 3.4) + " L" + cx + " " + (cy + 6.4) + " M" + (cx + 3.4) + " " + (cy - 3.4) + " L" + cx + " " + (cy + 6.4) + '" stroke="rgba(0,0,0,0.20)" stroke-width="0.6" fill="none"/>' +
-            '<ellipse cx="' + (cx - 2.7) + '" cy="' + (cy - 3.6) + '" rx="2.3" ry="1.25" transform="rotate(-24 ' + (cx - 2.7) + " " + (cy - 3.6) + ')" fill="rgba(255,255,255,0.65)"/>' +
+            '<circle cx="' + coronaN(cx) + '" cy="' + coronaN(cy) + '" r="7.3" fill="' + GEMAS_NIVEL[i].color + '" stroke="rgba(58,34,0,0.5)" stroke-width="0.8"/>' +
+            '<polygon points="' + coronaN(cx - 3.1) + "," + coronaN(cy - 3.1) + " " + coronaN(cx + 3.1) + "," + coronaN(cy - 3.1) + " " + coronaN(cx + 5.3) + "," + coronaN(cy + 0.9) + " " + coronaN(cx) + "," + coronaN(cy + 5.9) + " " + coronaN(cx - 5.3) + "," + coronaN(cy + 0.9) + '" fill="rgba(255,255,255,0.20)"/>' +
+            '<path d="M' + coronaN(cx - 5.3) + " " + coronaN(cy + 0.9) + " H" + coronaN(cx + 5.3) + '" stroke="rgba(255,255,255,0.38)" stroke-width="0.7"/>' +
+            '<path d="M' + coronaN(cx - 3.1) + " " + coronaN(cy - 3.1) + " L" + coronaN(cx) + " " + coronaN(cy + 5.9) + " M" + coronaN(cx + 3.1) + " " + coronaN(cy - 3.1) + " L" + coronaN(cx) + " " + coronaN(cy + 5.9) + '" stroke="rgba(0,0,0,0.20)" stroke-width="0.6" fill="none"/>' +
+            '<ellipse cx="' + coronaN(cx - 2.4) + '" cy="' + coronaN(cy - 3.3) + '" rx="2.1" ry="1.15" transform="rotate(-24 ' + coronaN(cx - 2.4) + " " + coronaN(cy - 3.3) + ')" fill="rgba(255,255,255,0.65)"/>' +
             "</g>";
         } else {
           var gar = "";
           for (var k = 0; k < 4; k++) {
             var ang = (45 + k * 90) * Math.PI / 180;
-            gar += "M" + (cx + Math.cos(ang) * 8.6).toFixed(1) + " " + (cy + Math.sin(ang) * 8.6).toFixed(1) +
-              " L" + (cx + Math.cos(ang) * 6.4).toFixed(1) + " " + (cy + Math.sin(ang) * 6.4).toFixed(1) + " ";
+            gar += "M" + coronaN(cx + Math.cos(ang) * 8.2) + " " + coronaN(cy + Math.sin(ang) * 8.2) +
+              " L" + coronaN(cx + Math.cos(ang) * 6.1) + " " + coronaN(cy + Math.sin(ang) * 6.1) + " ";
           }
-          s += '<circle cx="' + cx + '" cy="' + cy + '" r="7.7" fill="url(#coronaHue' + uid + ')" stroke="rgba(0,0,0,0.6)" stroke-width="0.8"/>' +
+          s += '<circle cx="' + coronaN(cx) + '" cy="' + coronaN(cy) + '" r="7.3" fill="url(#coronaHue' + uid + ')" stroke="rgba(0,0,0,0.6)" stroke-width="0.8"/>' +
             '<path d="' + gar + '" stroke="rgba(232,182,76,0.55)" stroke-width="1.1"/>' +
-            '<circle cx="' + cx + '" cy="' + cy + '" r="1" fill="rgba(232,182,76,0.30)"/>';
+            '<circle cx="' + coronaN(cx) + '" cy="' + coronaN(cy) + '" r="1" fill="rgba(232,182,76,0.30)"/>';
         }
         return s;
       }
-      var coronaHechasActual = 0;
+
       function coronaSVG(destacar, forzar) {
         var hechas = (typeof forzar === "number") ? forzar : tramosCompletados();
         coronaHechasActual = hechas;
         var uid = ++coronaUID;
         var s = '<svg viewBox="0 0 220 92" fill="none" aria-hidden="true"><defs>' +
+          '<linearGradient id="coronaOroR' + uid + '" x1="0" y1="0" x2="1" y2="0">' +
+          '<stop offset="0" stop-color="#6e4c0d"/><stop offset="0.2" stop-color="#c99b34"/><stop offset="0.42" stop-color="#f6d67c"/><stop offset="0.6" stop-color="#dfa93f"/><stop offset="0.8" stop-color="#a8741c"/><stop offset="1" stop-color="#6e4c0d"/></linearGradient>' +
           '<linearGradient id="coronaOroB' + uid + '" x1="0" y1="0" x2="0" y2="1">' +
-          '<stop offset="0" stop-color="#f7dc8d"/><stop offset="0.38" stop-color="#f2cd77"/><stop offset="0.68" stop-color="#e8b64c"/><stop offset="1" stop-color="#c08f2e"/></linearGradient>' +
-          '<linearGradient id="coronaOroR' + uid + '" x1="0" y1="0" x2="0" y2="1">' +
-          '<stop offset="0" stop-color="#f9e29c"/><stop offset="0.55" stop-color="#eec25e"/><stop offset="1" stop-color="#d29a33"/></linearGradient>' +
+          '<stop offset="0" stop-color="#f2cd77"/><stop offset="0.12" stop-color="#e8b64c"/><stop offset="0.34" stop-color="#d9a83e"/><stop offset="0.58" stop-color="#bd8626"/><stop offset="0.82" stop-color="#96660f"/><stop offset="1" stop-color="#6e4c0d"/></linearGradient>' +
+          '<linearGradient id="coronaOroC' + uid + '" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0" stop-color="#eec25e"/><stop offset="0.5" stop-color="#c99b34"/><stop offset="1" stop-color="#8a5f14"/></linearGradient>' +
+          '<linearGradient id="coronaBrillo' + uid + '" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0" stop-color="rgba(255,250,220,0.14)"/><stop offset="0.45" stop-color="rgba(255,250,220,0)"/><stop offset="0.8" stop-color="rgba(40,24,0,0)"/><stop offset="1" stop-color="rgba(40,24,0,0.22)"/></linearGradient>' +
+          '<linearGradient id="coronaSombra' + uid + '" x1="0" y1="0" x2="1" y2="0">' +
+          '<stop offset="0" stop-color="rgba(40,24,0,0.30)"/><stop offset="0.16" stop-color="rgba(40,24,0,0)"/><stop offset="0.84" stop-color="rgba(40,24,0,0)"/><stop offset="1" stop-color="rgba(40,24,0,0.30)"/></linearGradient>' +
+          '<pattern id="coronaCuerdaP' + uid + '" width="4.4" height="4.4" patternUnits="userSpaceOnUse" patternTransform="rotate(28)">' +
+          '<rect width="4.4" height="4.4" fill="#c99b34"/><rect width="1.7" height="4.4" fill="rgba(90,58,6,0.38)"/><rect x="1.7" width="0.7" height="4.4" fill="rgba(255,240,190,0.35)"/></pattern>' +
           '<radialGradient id="coronaEng' + uid + '" cx="0.38" cy="0.32" r="0.95">' +
           '<stop offset="0" stop-color="#f6d67c"/><stop offset="0.72" stop-color="#c99b34"/><stop offset="1" stop-color="#9c7418"/></radialGradient>' +
           '<radialGradient id="coronaHue' + uid + '" cx="0.5" cy="0.42" r="0.75">' +
-          '<stop offset="0" stop-color="#3a2c17"/><stop offset="0.7" stop-color="#231809"/><stop offset="1" stop-color="#140d04"/></radialGradient>' +
-          "</defs>";
-        for (var j = 0; j < CORONA_RAYOS.length; j++) {
-          var r = CORONA_RAYOS[j];
-          s += '<path d="' + coronaHoja(r) + '" fill="url(#coronaOroR' + uid + ')" stroke="#8a6414" stroke-width="1.05" stroke-linejoin="round"/>' +
-            '<path d="M' + r.x + " " + (r.punta + 5) + " L" + r.x + " " + (r.base - 4) + '" stroke="rgba(122,84,10,0.45)" stroke-width="0.8"/>';
+          '<stop offset="0" stop-color="#3a2c17"/><stop offset="0.7" stop-color="#231809"/><stop offset="1" stop-color="#140d04"/></radialGradient>';
+        for (var cix = 0; cix < 3; cix++) {
+          var cab = CORONA_CABUJONES[cix];
+          s += '<radialGradient id="coronaCab' + cix + "_" + uid + '" cx="0.38" cy="0.3" r="0.95">' +
+            '<stop offset="0" stop-color="' + cab.c0 + '"/><stop offset="0.55" stop-color="' + cab.c1 + '"/><stop offset="1" stop-color="' + cab.c2 + '"/></radialGradient>';
         }
-        s += '<path d="M13 55 Q110 43 207 55 L206 59.5 Q110 47.5 14 59.5 Z" fill="url(#coronaOroB' + uid + ')" stroke="#8a6414" stroke-width="0.9" stroke-linejoin="round"/>';
-        s += '<path d="M14 58 Q110 46.5 206 58 L201.5 80 Q110 90.5 18.5 80 Z" fill="url(#coronaOroB' + uid + ')" stroke="#8a6414" stroke-width="1.35" stroke-linejoin="round"/>';
-        s += '<path d="M20.5 61.5 Q110 50.5 199.5 61.5" stroke="rgba(255,244,205,0.5)" stroke-width="0.9" fill="none"/>';
-        s += '<path d="M21 63.5 Q110 52.5 199 63.5" stroke="rgba(122,84,10,0.5)" stroke-width="0.85" fill="none"/>';
-        s += '<path d="M21 77.5 Q110 87 199 77.5" stroke="rgba(122,84,10,0.5)" stroke-width="0.85" fill="none"/>';
-        var puntos = [59.2, 89.6, 120, 150.4, 180.8];
-        for (var q = 0; q < puntos.length; q++) {
-          s += '<circle cx="' + puntos[q] + '" cy="70.5" r="1.15" fill="rgba(122,84,10,0.6)"/>';
+        s += "</defs>";
+        /* 1) Las puntas: silueta, pétalo interior inciso y vena. */
+        var picos = coronaPicos(), j, p, k2;
+        for (j = 0; j < picos.length; j++) {
+          for (k2 = 0; k2 < picos[j].petalos.length; k2++) {
+            p = picos[j].petalos[k2];
+            s += '<path d="' + p.d + '" fill="url(#coronaOroR' + uid + ')" stroke="#6e4c0d" stroke-width="1.1" stroke-linejoin="round"/>' +
+              '<path d="' + p.din + '" fill="rgba(146,102,20,0.27)"/>' +
+              '<path d="M' + coronaN(p.vena[0][0]) + " " + coronaN(p.vena[0][1]) + " L" + coronaN(p.vena[1][0]) + " " + coronaN(p.vena[1][1]) + '" stroke="rgba(101,66,8,0.38)" stroke-width="0.75"/>';
+          }
         }
+        /* 2) El cuerpo de la banda, con su luz cenital y su sombra
+              de borde (la diadema se curva y se aleja en los lados). */
+        s += '<path d="' + CORONA_CUERPO + '" fill="url(#coronaOroB' + uid + ')" stroke="#6e4c0d" stroke-width="1.3" stroke-linejoin="round"/>' +
+          '<path d="' + CORONA_CUERPO + '" fill="url(#coronaBrillo' + uid + ')"/>' +
+          '<path d="' + CORONA_CUERPO + '" fill="url(#coronaSombra' + uid + ')"/>';
+        /* 3) El cordón trenzado de la moldura superior. */
+        s += '<path d="' + CORONA_CUERDA + '" fill="url(#coronaCuerdaP' + uid + ')" stroke="#6e4c0d" stroke-width="1" stroke-linejoin="round"/>';
+        /* 4) Filetes grabados del registro principal y la franja. */
+        s += '<path d="M19 57.5 Q110 47 201 57.5" stroke="rgba(255,244,205,0.45)" stroke-width="0.9" fill="none"/>' +
+          '<path d="M19 59.3 Q110 48.8 201 59.3" stroke="rgba(90,58,6,0.5)" stroke-width="0.85" fill="none"/>' +
+          '<path d="M16.5 76 Q110 85 203.5 76" stroke="rgba(90,58,6,0.6)" stroke-width="1" fill="none"/>' +
+          '<path d="M16.5 78.4 Q110 87.4 203.5 78.4" stroke="rgba(255,244,205,0.35)" stroke-width="0.8" fill="none"/>' +
+          '<path d="M20 84.5 Q110 92.5 200 84.5" stroke="rgba(90,58,6,0.5)" stroke-width="0.85" fill="none"/>';
+        /* 5) Rosetas grabadas entre los engastes. */
+        for (var ri = 0; ri < 5; ri++) {
+          var rx = 44 + (ri + 0.5) * 30.4, ry = coronaGemaCY(rx);
+          s += '<path d="' + coronaRoseta(rx, ry, 4.6) + '" fill="rgba(122,84,10,0.16)" stroke="rgba(101,66,8,0.75)" stroke-width="0.85"/>' +
+            '<circle cx="' + coronaN(rx) + '" cy="' + coronaN(ry) + '" r="1" fill="#8a5f14"/>';
+        }
+        /* 6) La franja baja de cabujones y la granulación del borde
+              inferior (la fila de cuentas de la orfebrería antigua). */
+        for (var ci = 0; ci < 6; ci++) {
+          var bx = coronaGemaCX(ci), by = coronaDivY(bx) + 5.4, cc = ci % 3;
+          s += '<circle cx="' + coronaN(bx) + '" cy="' + coronaN(by) + '" r="3.35" fill="#9c7418" stroke="#6e4c0d" stroke-width="0.6"/>' +
+            '<circle cx="' + coronaN(bx) + '" cy="' + coronaN(by) + '" r="2.9" fill="url(#coronaCab' + cc + "_" + uid + ')"/>' +
+            '<ellipse cx="' + coronaN(bx - 0.9) + '" cy="' + coronaN(by - 1.1) + '" rx="0.85" ry="0.6" fill="rgba(255,255,255,0.55)"/>';
+        }
+        for (var gb = 22; gb <= 198; gb += 6.5) {
+          s += '<circle cx="' + coronaN(gb) + '" cy="' + coronaN(coronaBordeInfY(gb) - 0.7) + '" r="1.15" fill="#e3b34e" stroke="rgba(101,66,8,0.7)" stroke-width="0.45"/>';
+        }
+        /* 7) Los 6 engastes de nivel, como siempre. */
         for (var i = 0; i < 6; i++) s += coronaEngasteSVG(uid, i, destacar);
         return s + "</svg>";
       }
-      /* La silueta de la misma corona para el punto final del
-         sendero del inicio (sustituye al emoji 👑): a ese tamaño
-         basta el perfil en oro oscuro sobre el halo. */
+
+      /* La silueta de la misma diadema para el punto final del
+         sendero del inicio: palmeta mayor al centro y puntas
+         lanceoladas, en oro oscuro sobre el halo. */
       function coronaPuntoSVG() {
         return '<svg viewBox="0 0 24 24" style="width:64%;height:auto;display:block" aria-hidden="true">' +
-          '<path d="M3.4 17.6 L4.9 8.2 L8.9 12.3 L12 5.2 L15.1 12.3 L19.1 8.2 L20.6 17.6 Z" fill="#8a6414"/>' +
-          '<path d="M3.6 20.2 H20.4" stroke="#8a6414" stroke-width="1.7" stroke-linecap="round"/></svg>';
+          '<path d="M2.8 18.6 L4 10.6 L6.8 13.9 L8.6 7.4 L12 4 L15.4 7.4 L17.2 13.9 L20 10.6 L21.2 18.6 Z" fill="#8a6414"/>' +
+          '<path d="M3.4 20.4 H20.6" stroke="#8a6414" stroke-width="1.7" stroke-linecap="round"/></svg>';
       }
+
 
       function celebracionAbierta() {
         return !$("velo-libro-sellado").hidden || !$("velo-nivel").hidden ||
@@ -5998,83 +6112,136 @@
          borde dorado, Cinzel) pero SIN código QR: la verificación
          pública es exclusiva del Título final. Lleva la corona
          con las gemas ganadas hasta ese nivel. */
-      /* La misma corona de la Ronda 8 en canvas (mini-diploma y
-         diploma del Título): diadema antigua en oro trabajado,
-         con sus engastes facetados o su hueco oscuro con garras.
-         Mismas coordenadas locales 220×92 que la versión SVG. */
+      /* La misma corona en canvas (mini-diploma y diploma del
+         Título): mismos caminos 220×92 que la versión SVG. */
       function dibujarCoronaCanvas(ctx, cx, cy, ancho, encendidas) {
         var k = ancho / 220;
         ctx.save();
         ctx.translate(cx - 110 * k, cy - 46 * k);
         ctx.scale(k, k);
         ctx.lineJoin = "round";
-        var oroB = ctx.createLinearGradient(0, 42, 0, 92);
-        oroB.addColorStop(0, "#f7dc8d"); oroB.addColorStop(0.38, "#f2cd77");
-        oroB.addColorStop(0.68, "#e8b64c"); oroB.addColorStop(1, "#c08f2e");
-        var oroR = ctx.createLinearGradient(0, 0, 0, 58);
-        oroR.addColorStop(0, "#f9e29c"); oroR.addColorStop(0.55, "#eec25e"); oroR.addColorStop(1, "#d29a33");
-        var j, r;
-        for (j = 0; j < CORONA_RAYOS.length; j++) {
-          r = CORONA_RAYOS[j];
-          var hoja = new Path2D(coronaHoja(r));
-          ctx.fillStyle = oroR; ctx.fill(hoja);
-          ctx.strokeStyle = "#8a6414"; ctx.lineWidth = 1.3; ctx.stroke(hoja);
-          ctx.beginPath(); ctx.moveTo(r.x, r.punta + 5); ctx.lineTo(r.x, r.base - 4);
-          ctx.strokeStyle = "rgba(122,84,10,0.45)"; ctx.lineWidth = 1; ctx.stroke();
+        function gradPetal(p) {
+          var g = ctx.createLinearGradient(p.gx1, p.gy1, p.gx2, p.gy2);
+          g.addColorStop(0, "#6e4c0d"); g.addColorStop(0.2, "#c99b34"); g.addColorStop(0.42, "#f6d67c");
+          g.addColorStop(0.6, "#dfa93f"); g.addColorStop(0.8, "#a8741c"); g.addColorStop(1, "#6e4c0d");
+          return g;
         }
-        ctx.fillStyle = oroB;
-        ctx.strokeStyle = "#8a6414"; ctx.lineWidth = 1.2;
-        var aro = new Path2D("M13 55 Q110 43 207 55 L206 59.5 Q110 47.5 14 59.5 Z");
-        ctx.fill(aro); ctx.stroke(aro);
-        ctx.lineWidth = 1.8;
-        var banda = new Path2D("M14 58 Q110 46.5 206 58 L201.5 80 Q110 90.5 18.5 80 Z");
-        ctx.fill(banda); ctx.stroke(banda);
-        ctx.lineWidth = 1.1; ctx.strokeStyle = "rgba(255,244,205,0.5)";
-        ctx.stroke(new Path2D("M20.5 61.5 Q110 50.5 199.5 61.5"));
-        ctx.strokeStyle = "rgba(122,84,10,0.5)";
-        ctx.stroke(new Path2D("M21 63.5 Q110 52.5 199 63.5"));
-        ctx.stroke(new Path2D("M21 77.5 Q110 87 199 77.5"));
-        ctx.fillStyle = "rgba(122,84,10,0.6)";
-        [59.2, 89.6, 120, 150.4, 180.8].forEach(function (px) {
-          ctx.beginPath(); ctx.arc(px, 70.5, 1.15, 0, Math.PI * 2); ctx.fill();
-        });
+        var picos = coronaPicos(), j, p, k2;
+        for (j = 0; j < picos.length; j++) {
+          for (k2 = 0; k2 < picos[j].petalos.length; k2++) {
+            p = picos[j].petalos[k2];
+            var hoja = new Path2D(p.d);
+            ctx.fillStyle = gradPetal(p); ctx.fill(hoja);
+            ctx.strokeStyle = "#6e4c0d"; ctx.lineWidth = 1.35; ctx.stroke(hoja);
+            ctx.fillStyle = "rgba(146,102,20,0.27)"; ctx.fill(new Path2D(p.din));
+            ctx.beginPath(); ctx.moveTo(p.vena[0][0], p.vena[0][1]); ctx.lineTo(p.vena[1][0], p.vena[1][1]);
+            ctx.strokeStyle = "rgba(101,66,8,0.38)"; ctx.lineWidth = 0.95; ctx.stroke();
+          }
+        }
+        var oroB = ctx.createLinearGradient(0, 39, 0, 92);
+        oroB.addColorStop(0, "#f2cd77"); oroB.addColorStop(0.12, "#e8b64c"); oroB.addColorStop(0.34, "#d9a83e");
+        oroB.addColorStop(0.58, "#bd8626"); oroB.addColorStop(0.82, "#96660f"); oroB.addColorStop(1, "#6e4c0d");
+        var cuerpo = new Path2D(CORONA_CUERPO);
+        ctx.fillStyle = oroB; ctx.fill(cuerpo);
+        ctx.strokeStyle = "#6e4c0d"; ctx.lineWidth = 1.6; ctx.stroke(cuerpo);
+        var brillo = ctx.createLinearGradient(0, 39, 0, 92);
+        brillo.addColorStop(0, "rgba(255,250,220,0.14)"); brillo.addColorStop(0.45, "rgba(255,250,220,0)");
+        brillo.addColorStop(0.8, "rgba(40,24,0,0)"); brillo.addColorStop(1, "rgba(40,24,0,0.22)");
+        ctx.fillStyle = brillo; ctx.fill(cuerpo);
+        var sombra = ctx.createLinearGradient(0, 0, 220, 0);
+        sombra.addColorStop(0, "rgba(40,24,0,0.30)"); sombra.addColorStop(0.16, "rgba(40,24,0,0)");
+        sombra.addColorStop(0.84, "rgba(40,24,0,0)"); sombra.addColorStop(1, "rgba(40,24,0,0.30)");
+        ctx.fillStyle = sombra; ctx.fill(cuerpo);
+        /* El cordón trenzado: base de oro y hebras diagonales. */
+        var cuerda = new Path2D(CORONA_CUERDA);
+        var oroC = ctx.createLinearGradient(0, 38, 0, 55);
+        oroC.addColorStop(0, "#eec25e"); oroC.addColorStop(0.5, "#c99b34"); oroC.addColorStop(1, "#8a5f14");
+        ctx.fillStyle = oroC; ctx.fill(cuerda);
+        ctx.save(); ctx.clip(cuerda);
+        for (var sx = -20; sx < 245; sx += 4.4) {
+          ctx.beginPath(); ctx.moveTo(sx, 35); ctx.lineTo(sx + 11, 58);
+          ctx.strokeStyle = "rgba(90,58,6,0.38)"; ctx.lineWidth = 1.8; ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(sx + 1.7, 35); ctx.lineTo(sx + 12.7, 58);
+          ctx.strokeStyle = "rgba(255,240,190,0.35)"; ctx.lineWidth = 0.7; ctx.stroke();
+        }
+        ctx.restore();
+        ctx.strokeStyle = "#6e4c0d"; ctx.lineWidth = 1.2; ctx.stroke(cuerda);
+        ctx.lineWidth = 1.1; ctx.strokeStyle = "rgba(255,244,205,0.45)";
+        ctx.stroke(new Path2D("M19 57.5 Q110 47 201 57.5"));
+        ctx.strokeStyle = "rgba(90,58,6,0.5)";
+        ctx.stroke(new Path2D("M19 59.3 Q110 48.8 201 59.3"));
+        ctx.strokeStyle = "rgba(90,58,6,0.6)";
+        ctx.stroke(new Path2D("M16.5 76 Q110 85 203.5 76"));
+        ctx.strokeStyle = "rgba(255,244,205,0.35)";
+        ctx.stroke(new Path2D("M16.5 78.4 Q110 87.4 203.5 78.4"));
+        ctx.strokeStyle = "rgba(90,58,6,0.5)";
+        ctx.stroke(new Path2D("M20 84.5 Q110 92.5 200 84.5"));
+        for (var ri = 0; ri < 5; ri++) {
+          var rx = 44 + (ri + 0.5) * 30.4, ry = coronaGemaCY(rx);
+          var ros = new Path2D(coronaRoseta(rx, ry, 4.6));
+          ctx.fillStyle = "rgba(122,84,10,0.16)"; ctx.fill(ros);
+          ctx.strokeStyle = "rgba(101,66,8,0.75)"; ctx.lineWidth = 1.05; ctx.stroke(ros);
+          ctx.beginPath(); ctx.arc(rx, ry, 1, 0, Math.PI * 2); ctx.fillStyle = "#8a5f14"; ctx.fill();
+        }
+        for (var ci = 0; ci < 6; ci++) {
+          var bx = coronaGemaCX(ci), by = coronaDivY(bx) + 5.4, cc = CORONA_CABUJONES[ci % 3];
+          ctx.beginPath(); ctx.arc(bx, by, 3.35, 0, Math.PI * 2);
+          ctx.fillStyle = "#9c7418"; ctx.fill();
+          ctx.strokeStyle = "#6e4c0d"; ctx.lineWidth = 0.75; ctx.stroke();
+          var gc = ctx.createRadialGradient(bx - 1.1, by - 1.2, 0.4, bx, by, 3.1);
+          gc.addColorStop(0, cc.c0); gc.addColorStop(0.55, cc.c1); gc.addColorStop(1, cc.c2);
+          ctx.beginPath(); ctx.arc(bx, by, 2.9, 0, Math.PI * 2); ctx.fillStyle = gc; ctx.fill();
+          ctx.save(); ctx.translate(bx - 0.9, by - 1.1);
+          ctx.beginPath(); ctx.ellipse(0, 0, 0.85, 0.6, 0, 0, Math.PI * 2);
+          ctx.fillStyle = "rgba(255,255,255,0.55)"; ctx.fill(); ctx.restore();
+        }
+        var gb;
+        ctx.fillStyle = "#e3b34e"; ctx.strokeStyle = "rgba(101,66,8,0.7)"; ctx.lineWidth = 0.55;
+        for (gb = 22; gb <= 198; gb += 6.5) {
+          ctx.beginPath(); ctx.arc(gb, coronaBordeInfY(gb) - 0.7, 1.15, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        }
         for (var i = 0; i < 6; i++) {
-          var gx = 44 + i * 30.4, gy = 69;
-          var eng = ctx.createRadialGradient(gx - 3.5, gy - 3.5, 1, gx, gy, 11);
+          var gx = coronaGemaCX(i), gy = coronaGemaCY(gx);
+          var eng = ctx.createRadialGradient(gx - 3.2, gy - 3.2, 1, gx, gy, 10.4);
           eng.addColorStop(0, "#f6d67c"); eng.addColorStop(0.72, "#c99b34"); eng.addColorStop(1, "#9c7418");
-          ctx.beginPath(); ctx.arc(gx, gy, 10.6, 0, Math.PI * 2);
+          ctx.beginPath(); ctx.arc(gx, gy, 9.9, 0, Math.PI * 2);
           ctx.fillStyle = eng; ctx.fill();
-          ctx.strokeStyle = "#7c5a10"; ctx.lineWidth = 1.4; ctx.stroke();
-          ctx.beginPath(); ctx.arc(gx, gy, 9.3, 0, Math.PI * 2);
-          ctx.strokeStyle = "rgba(80,52,4,0.6)"; ctx.lineWidth = 0.9; ctx.stroke();
+          ctx.strokeStyle = "#6e4c0d"; ctx.lineWidth = 1.35; ctx.stroke();
+          ctx.fillStyle = "rgba(101,66,8,0.65)";
+          for (var b = 0; b < 12; b++) {
+            var ab = b * Math.PI / 6;
+            ctx.beginPath(); ctx.arc(gx + Math.cos(ab) * 8.9, gy + Math.sin(ab) * 8.9, 0.55, 0, Math.PI * 2); ctx.fill();
+          }
+          ctx.beginPath(); ctx.arc(gx, gy, 8.3, 0, Math.PI * 2);
+          ctx.strokeStyle = "rgba(80,52,4,0.55)"; ctx.lineWidth = 0.85; ctx.stroke();
           if (i < encendidas) {
-            ctx.beginPath(); ctx.arc(gx, gy, 7.7, 0, Math.PI * 2);
+            ctx.beginPath(); ctx.arc(gx, gy, 7.3, 0, Math.PI * 2);
             ctx.fillStyle = GEMAS_NIVEL[i].color; ctx.fill();
             ctx.strokeStyle = "rgba(58,34,0,0.5)"; ctx.lineWidth = 1; ctx.stroke();
-            var tabla = new Path2D("M" + (gx - 3.4) + " " + (gy - 3.4) + " L" + (gx + 3.4) + " " + (gy - 3.4) +
-              " L" + (gx + 5.8) + " " + (gy + 1) + " L" + gx + " " + (gy + 6.4) + " L" + (gx - 5.8) + " " + (gy + 1) + " Z");
+            var tabla = new Path2D("M" + (gx - 3.1) + " " + (gy - 3.1) + " L" + (gx + 3.1) + " " + (gy - 3.1) +
+              " L" + (gx + 5.3) + " " + (gy + 0.9) + " L" + gx + " " + (gy + 5.9) + " L" + (gx - 5.3) + " " + (gy + 0.9) + " Z");
             ctx.fillStyle = "rgba(255,255,255,0.20)"; ctx.fill(tabla);
-            ctx.beginPath(); ctx.moveTo(gx - 5.8, gy + 1); ctx.lineTo(gx + 5.8, gy + 1);
-            ctx.strokeStyle = "rgba(255,255,255,0.38)"; ctx.lineWidth = 0.9; ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(gx - 5.3, gy + 0.9); ctx.lineTo(gx + 5.3, gy + 0.9);
+            ctx.strokeStyle = "rgba(255,255,255,0.38)"; ctx.lineWidth = 0.85; ctx.stroke();
             ctx.beginPath();
-            ctx.moveTo(gx - 3.4, gy - 3.4); ctx.lineTo(gx, gy + 6.4);
-            ctx.moveTo(gx + 3.4, gy - 3.4); ctx.lineTo(gx, gy + 6.4);
-            ctx.strokeStyle = "rgba(0,0,0,0.20)"; ctx.lineWidth = 0.8; ctx.stroke();
-            ctx.save(); ctx.translate(gx - 2.7, gy - 3.6); ctx.rotate(-24 * Math.PI / 180);
-            ctx.beginPath(); ctx.ellipse(0, 0, 2.3, 1.25, 0, 0, Math.PI * 2);
+            ctx.moveTo(gx - 3.1, gy - 3.1); ctx.lineTo(gx, gy + 5.9);
+            ctx.moveTo(gx + 3.1, gy - 3.1); ctx.lineTo(gx, gy + 5.9);
+            ctx.strokeStyle = "rgba(0,0,0,0.20)"; ctx.lineWidth = 0.75; ctx.stroke();
+            ctx.save(); ctx.translate(gx - 2.4, gy - 3.3); ctx.rotate(-24 * Math.PI / 180);
+            ctx.beginPath(); ctx.ellipse(0, 0, 2.1, 1.15, 0, 0, Math.PI * 2);
             ctx.fillStyle = "rgba(255,255,255,0.65)"; ctx.fill(); ctx.restore();
           } else {
-            var hue = ctx.createRadialGradient(gx, gy - 1, 1, gx, gy, 8.5);
+            var hue = ctx.createRadialGradient(gx, gy - 1, 1, gx, gy, 8);
             hue.addColorStop(0, "#3a2c17"); hue.addColorStop(0.7, "#231809"); hue.addColorStop(1, "#140d04");
-            ctx.beginPath(); ctx.arc(gx, gy, 7.7, 0, Math.PI * 2);
+            ctx.beginPath(); ctx.arc(gx, gy, 7.3, 0, Math.PI * 2);
             ctx.fillStyle = hue; ctx.fill();
             ctx.strokeStyle = "rgba(0,0,0,0.6)"; ctx.lineWidth = 1; ctx.stroke();
             ctx.strokeStyle = "rgba(232,182,76,0.55)"; ctx.lineWidth = 1.3;
             for (var g2 = 0; g2 < 4; g2++) {
               var ang = (45 + g2 * 90) * Math.PI / 180;
               ctx.beginPath();
-              ctx.moveTo(gx + Math.cos(ang) * 8.6, gy + Math.sin(ang) * 8.6);
-              ctx.lineTo(gx + Math.cos(ang) * 6.4, gy + Math.sin(ang) * 6.4);
+              ctx.moveTo(gx + Math.cos(ang) * 8.2, gy + Math.sin(ang) * 8.2);
+              ctx.lineTo(gx + Math.cos(ang) * 6.1, gy + Math.sin(ang) * 6.1);
               ctx.stroke();
             }
             ctx.beginPath(); ctx.arc(gx, gy, 1, 0, Math.PI * 2);
@@ -6083,6 +6250,7 @@
         }
         ctx.restore();
       }
+
       function dibujarMiniDiploma(tramo) {
         return new Promise(function (resolve) {
           try {
