@@ -3499,6 +3499,11 @@
       /* Ronda 13 (punto 63): el Desafío del día puntúa FIJO —
          100 pts por acierto (máximo 600), sin la escalera vieja. */
       var PUNTOS_DIARIO = 100;
+      /* Ronda 14 (punto 66): la partida normal (¡A jugar!) también
+         puntúa FIJO — 100 pts por acierto (máximo 600 en sus 6
+         preguntas), sin la escalera vieja 100/200/300/500/800/1500
+         ligada a «niveles» por posición. */
+      var PUNTOS_PARTIDA = 100;
       var NOMBRES_NIVEL_SABIO = {
         es: ["Sabio I", "Sabio II", "Sabio III", "Sabio IV", "Sabio V", "Gran Sabio"],
         en: ["Sage I", "Sage II", "Sage III", "Sage IV", "Sage V", "Grand Sage"]
@@ -3930,16 +3935,16 @@
           celebracionTexto: "Superaste los 6 niveles y eres Biblionario. El Nivel Sabio ya está desbloqueado: profecía, cronología, cartas de Pablo y Apocalipsis, con la misma dinámica y comodines.",
           continuarSabio: "Continuar",
           verResultadoCeleb: "Ver mi resultado",
-          campeonTitulo: "¡Eres Biblionario!",
-          campeonResumen: "Seis de seis. Respondiste correctamente todo el concurso, del arca de Noé al primer mártir. El título es tuyo.",
+          campeonTitulo: "¡Partida perfecta!",
+          campeonResumen: "Seis de seis. Cada acierto sumó a tu libro en curso del Camino: sigue sellando libros hasta ganar el Título de Biblionario.",
           retiroTitulo: "Te retiraste a tiempo",
-          retiroResumen: function (pts, nivel) {
-            return "Saliste con " + pts + " puntos tras superar el nivel " + nivel + ". Juega otra vez cuando quieras ir por el título.";
+          retiroResumen: function (pts) {
+            return "Saliste con " + pts + " puntos. Cada acierto de esta partida ya cuenta para tu libro en curso en el Camino.";
           },
           derrotaTitulo0: "El concurso terminó pronto",
-          derrotaTituloN: function (nivel) { return "Llegaste hasta " + nivel; },
+          derrotaTituloN: "La partida terminó",
           derrotaResumen: function (a) {
-            return "Acertaste " + a + " de 6 preguntas. Cada partida trae preguntas distintas: inténtalo de nuevo y sube la escalera.";
+            return "Acertaste " + a + " de 6 preguntas. Cada partida trae preguntas distintas: inténtalo de nuevo — cada acierto suma para sellar tu libro en curso.";
           },
           dueloBtn: "⚔️ Duelo Bíblico en Vivo",
           dueloBarra: "⚔️ Duelo",
@@ -4324,16 +4329,16 @@
           celebracionTexto: "You cleared all 6 levels and you're a Biblionary. The Sage Level is now unlocked: prophecy, chronology, Paul's letters, and Revelation, with the same dynamics and lifelines.",
           continuarSabio: "Continue",
           verResultadoCeleb: "See my result",
-          campeonTitulo: "You're a Biblionary!",
-          campeonResumen: "Six for six. You answered the whole contest correctly, from Noah's ark to the first martyr. The title is yours.",
+          campeonTitulo: "A perfect game!",
+          campeonResumen: "Six for six. Every correct answer counted toward your current book on the Road: keep sealing books until you earn the Biblionary Title.",
           retiroTitulo: "You walked away in time",
-          retiroResumen: function (pts, nivel) {
-            return "You left with " + pts + " points after clearing the " + nivel + " level. Play again whenever you want to go for the title.";
+          retiroResumen: function (pts) {
+            return "You left with " + pts + " points. Every correct answer from this game already counts toward your current book on the Road.";
           },
           derrotaTitulo0: "The contest ended early",
-          derrotaTituloN: function (nivel) { return "You reached " + nivel; },
+          derrotaTituloN: "The game is over",
           derrotaResumen: function (a) {
-            return "You got " + a + " of 6 questions right. Every game brings different questions: try again and climb the ladder.";
+            return "You got " + a + " of 6 questions right. Every game brings different questions: try again — every correct answer counts toward sealing your current book.";
           },
           dueloBtn: "⚔️ Live Bible Duel",
           dueloBarra: "⚔️ Duel",
@@ -10370,28 +10375,16 @@
            tira de la escalera — es un rezago del modelo viejo:
            dentro del Desafío no se sube de nivel por pregunta (el
            nivel del Camino sube sellando 11 libros por tramo).
-           La tira se oculta solo en este modo y se restaura al
-           pintar cualquier otro. */
-        if (estado && estado.modo === "diario") { $("escalera").hidden = true; return; }
-        if (estado) $("escalera").hidden = false;
-        if (estado && estado.modo === "duelo") { dibujarPanelDuelo(); return; }
-        if (estado && estado.modo === "infinito") { dibujarPanelInfinito(); return; }
-        $("escalera-titulo").textContent = t("escaleraTitulo");
-        var ol = $("lista-escalera");
-        ol.innerHTML = "";
-        for (var i = 0; i < totalPreguntas(); i++) {
-          var li = document.createElement("li");
-          if (i < estado.indice) li.className = "superado";
-          if (i === estado.indice && !estado.termino) li.className = "actual";
-          var nombre = document.createElement("span");
-          nombre.textContent = (i + 1) + ". " + nivelNombre(i);
-          var pts = document.createElement("span");
-          pts.className = "pts";
-          pts.textContent = fmt(puntosDe(i)) + t("pts");
-          li.appendChild(nombre); li.appendChild(pts);
-          ol.appendChild(li);
-        }
-        ajustarLetraEscalera();
+           Ronda 14 (punto 66 + regla de barrido de Alexis): la
+           tira NO se pinta en NINGÚN modo del Camino — la partida
+           normal la seguía mostrando y Alexis la encontró jugando.
+           El panel lateral solo vive donde nunca fue escalera de
+           niveles: el Duelo (su carrera) y el Infinito (su marca).
+           El bucle que pintaba los 6 escalones con el nombre y los
+           puntos de cada posición queda retirado: nada lo resucita. */
+        if (estado && estado.modo === "duelo") { $("escalera").hidden = false; dibujarPanelDuelo(); return; }
+        if (estado && estado.modo === "infinito") { $("escalera").hidden = false; dibujarPanelInfinito(); return; }
+        $("escalera").hidden = true;
       }
 
       /* Panel lateral del Modo Infinito: sin escalera de niveles;
@@ -10421,11 +10414,16 @@
       }
 
       function actualizarBarra() {
+        /* Ronda 14 (punto 66 + barrido): el chip de nivel de la
+           barra muestra SIEMPRE el nivel real del Camino (por
+           libros sellados). Antes salía del número de pregunta
+           (nivelNombre(estado.indice)) — también en el Desafío,
+           que la ronda 13 no alcanzó a corregir aquí. */
         $("barra-nivel").textContent = estado.modo === "infinito"
           ? t("infinitoBarra")
           : estado.modo === "duelo"
             ? t("dueloBarra")
-            : nivelNombre(Math.min(estado.indice, 5));
+            : caminoProgreso().nivelNombre;
         $("barra-puntos").textContent = fmt(estado.puntos);
       }
 
@@ -10590,9 +10588,9 @@
 
       /* Puntos de la pregunta en pantalla: en el Modo Infinito cada
          pregunta vale lo que vale en su banco y nivel de origen;
-         en la partida vale por su posición en la cola, como valía
-         por su nivel; en el Desafío vale el fijo PUNTOS_DIARIO
-         (ronda 13, punto 63). */
+         en la partida vale el fijo PUNTOS_PARTIDA y en el Desafío
+         el fijo PUNTOS_DIARIO (rondas 13 y 14: fuera la escalera
+         de puntos por posición/nivel en los modos del Camino). */
       function puntosPreguntaActual() {
         if (estado.modo === "duelo") {
           var it = estado.pool[estado.pos];
@@ -10604,9 +10602,11 @@
         }
         /* Ronda 13 (punto 63): el Desafío ya no puntúa por la
            escalera vieja según la posición (100/200/300/500/800/
-           1500): cada acierto vale el fijo PUNTOS_DIARIO. */
+           1500): cada acierto vale el fijo PUNTOS_DIARIO.
+           Ronda 14 (punto 66): la partida normal tampoco — cada
+           acierto vale el fijo PUNTOS_PARTIDA. */
         if (estado.modo === "diario") return PUNTOS_DIARIO;
-        return puntosDe(estado.indice);
+        return PUNTOS_PARTIDA;
       }
 
       /* Avanza en el mazo sin repetir. Al agotarlo se reconstruye
@@ -10845,14 +10845,15 @@
            rotula la pregunta con un «Nivel» de la escalera vieja:
            dice la pregunta y el libro en curso del Camino. El
            nivel real del jugador es el de su tramo (chip del
-           inicio), no el de la posición en la cola. */
+           inicio), no el de la posición en la cola.
+           Ronda 14 (punto 66): la partida normal usa el MISMO
+           encabezado — tampoco rotula por posición: «Pregunta X
+           de 6 · <libro en curso>» en ambos modos del Camino. */
         $("pregunta-num").textContent = estado.modo === "infinito"
           ? t("preguntaInfinito")(estado.pos + 1)
           : estado.modo === "duelo"
             ? t("preguntaDuelo")(estado.pos + 1, estado.pool.length, estado.errores)
-            : estado.modo === "diario"
-              ? t("preguntaDesafio")(estado.indice + 1, totalPreguntas(), nombreLibroEnCurso())
-              : t("preguntaDe")(estado.indice + 1, nivelNombre(estado.indice), totalPreguntas());
+            : t("preguntaDesafio")(estado.indice + 1, totalPreguntas(), nombreLibroEnCurso());
         $("pregunta-texto").textContent = q.pregunta;
         var tarjetaPregunta = $("pregunta-texto").closest(".tarjeta-pregunta");
         tarjetaPregunta.classList.toggle("pregunta-larga", q.pregunta.length > 92);
@@ -11402,8 +11403,9 @@
           : nivelNombre(estado.aciertos - 1);
 
         if (estado.modo === "diario" && motivo === "campeon") {
-          /* Ronda 4 (obs. 24): titular propio del Desafío; el de la
-             escalera («Llegaste hasta…») es de la partida normal. */
+          /* Ronda 4 (obs. 24): titular propio del Desafío, distinto
+             del de la partida normal. (El viejo titular de la
+             escalera de la partida salió del todo en la ronda 14.) */
           $("final-titulo").textContent = t("desafioCompletadoTitulo")(totalPreguntas());
           $("final-resumen").textContent = t("desafioCompletadoResumen");
         } else if (estado.modo === "diario") {
@@ -11419,11 +11421,11 @@
           }
         } else if (motivo === "retiro") {
           $("final-titulo").textContent = t("retiroTitulo");
-          $("final-resumen").textContent = t("retiroResumen")(fmt(estado.puntos), nivelAlcanzado);
+          $("final-resumen").textContent = t("retiroResumen")(fmt(estado.puntos));
         } else {
           $("final-titulo").textContent = estado.aciertos === 0
             ? t("derrotaTitulo0")
-            : t("derrotaTituloN")(nivelAlcanzado);
+            : t("derrotaTituloN");
           $("final-resumen").textContent = t("derrotaResumen")(estado.aciertos);
         }
 
@@ -11472,6 +11474,14 @@
           $("btn-final-infinito").hidden = true;
           $("btn-final-menu").textContent = t("menuPrincipal");
           $("btn-final-menu").hidden = false;
+          /* Ronda 14 (punto 66 + barrido): la estadística «Nivel
+             alcanzado» de la partida normal era el mismo rezago
+             (un «nivel» derivado de los aciertos de la partida);
+             como en el Desafío desde la ronda 5, el dato que va
+             es el libro en curso del Camino. */
+          var libroCursoBase = caminoLibroActual();
+          $("final-nivel").textContent = libroCursoBase ? caminoNombreLibro(libroCursoBase) : "—";
+          $("rot-nivel").textContent = t("rotLibroCurso");
         }
         actualizarBotonProgreso();
       }
@@ -11580,9 +11590,7 @@
           ? t("preguntaInfinito")(estado.pos + 1)
           : estado.modo === "duelo"
             ? t("preguntaDuelo")(estado.pos + 1, estado.pool.length, estado.errores)
-            : estado.modo === "diario"
-              ? t("preguntaDesafio")(estado.indice + 1, totalPreguntas(), nombreLibroEnCurso())
-              : t("preguntaDe")(estado.indice + 1, nivelNombre(estado.indice), totalPreguntas());
+            : t("preguntaDesafio")(estado.indice + 1, totalPreguntas(), nombreLibroEnCurso());
         $("pregunta-texto").textContent = q.pregunta;
         ajustarLetraPregunta();
         botonesRespuesta().forEach(function (b) {
@@ -13106,7 +13114,10 @@
         } else if (esHitoRacha()) {
           compartirProgreso("racha", { n: rachaDiaria });
         } else if (estado.aciertos > 0) {
-          compartirProgreso("nivel", { nivel: nivelNombre(estado.aciertos - 1), puntos: estado.puntos });
+          /* Ronda 14 (punto 66 + barrido): el nivel que se
+             comparte es el REAL del Camino (por libros sellados),
+             no uno derivado de los aciertos de esta partida. */
+          compartirProgreso("nivel", { nivel: caminoProgreso().nivelNombre, puntos: estado.puntos });
         } else {
           compartirProgreso("racha", { n: rachaDiaria });
         }
