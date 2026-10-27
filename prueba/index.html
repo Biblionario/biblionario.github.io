@@ -4,6 +4,23 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
     <meta name="color-scheme" content="light dark" />
+    <script>
+      /* Ronda 10 (punto 53 de Alexis, 2026-10-27): la Voz nace
+         ENCENDIDA y la preferencia se guarda. Este guion mínimo
+         corre en el <head>, antes del primer pintado, solo para
+         dejar la marca data-voz en <html> leyendo la preferencia
+         guardada (biblionario_voz_on): el CSS pinta el botón Voz
+         ya con su estado real — encendido si no hay preferencia
+         (usuario nuevo) o si la guardada es encendida — y nunca se
+         ve el estado contrario ni un parpadeo. La lógica completa
+         vive en la sección «Voz narradora» del guion principal. */
+      try {
+        document.documentElement.setAttribute("data-voz",
+          localStorage.getItem("biblionario_voz_on") === "0" ? "off" : "on");
+      } catch (e) {
+        document.documentElement.setAttribute("data-voz", "on");
+      }
+    </script>
     <link rel="icon" href="data:," />
     <title>Biblionario</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -227,6 +244,21 @@
       }
       .btn-sonido svg { width: 17px; height: 17px; fill: var(--dorado); }
       .btn-sonido svg[hidden] { display: none; }
+      /* Ronda 10 (punto 53): el primer pintado del botón Voz sale
+         de la marca data-voz que el guion del <head> dejó en <html>
+         con la preferencia guardada: icono y fondo activo nacen ya
+         en su estado, sin parpadeo. Después el guion principal
+         mantiene la marca y los [hidden] en sincronía con el
+         estado real (pintarBotonVoz). */
+      html[data-voz="on"] #ico-voz-on { display: block; }
+      html[data-voz="on"] #ico-voz-off { display: none; }
+      html[data-voz="off"] #ico-voz-on { display: none; }
+      html[data-voz="off"] #ico-voz-off { display: block; }
+      html[data-voz="on"] #btn-voz {
+        background: linear-gradient(180deg, var(--dorado-suave), var(--dorado));
+        color: #2a1802; border-color: #8a6414;
+      }
+      html[data-voz="on"] #btn-voz svg { fill: #2a1802; }
       .btn-sonido[hidden] { display: none; }
       .btn-sonido.activo {
         background: linear-gradient(180deg, var(--dorado-suave), var(--dorado));
@@ -2874,7 +2906,7 @@
       <!-- ============ INICIO ============ -->
       <section id="pantalla-inicio" class="pantalla inicio">
         <h1 id="titulo-grande">BIBLIONARIO</h1>
-        <p class="lema" id="lema">¿Quién quiere ser Biblionario?</p>
+        <p class="lema" id="lema">¿Quieres ser Biblionario?</p>
 
         <div class="racha" id="racha" role="status">
           <span class="chip-inicio" id="chip-racha">
@@ -3568,9 +3600,14 @@
       var T = {
         es: {
           tituloDoc: "Biblionario",
-          sobretitulo: "¿Quién quiere ser",
+          /* Punto 54 de Alexis (2026-10-27): dentro de la app la
+             frase es la pregunta directa «¿Quieres ser
+             Biblionario?» (en inglés «Do you want to be a
+             Biblionario?»); la larga «¿Quién quiere ser…?» queda
+             solo fuera de la app (ficha de tienda y promo). */
+          sobretitulo: "¿Quieres ser",
           tituloGrande: "BIBLIONARIO",
-          lema: "¿Quién quiere ser Biblionario?",
+          lema: "¿Quieres ser Biblionario?",
           jugarSub: "Mientras más juegas, más rápido serás Biblionario",
           rotuloPalabra: "LA PALABRA DE HOY",
           palabraTitulo: "Dios te habla hoy",
@@ -3778,7 +3815,7 @@
           celebInfinitoTexto: "Llegaste a Gran Sabio y completaste todo el concurso. El Modo Infinito ya está abierto: preguntas de todo el banco sin repetir, cada vez más difíciles, hasta el tercer error. ¿Hasta dónde eres capaz de llegar?",
           continuarInfinito: "¡A jugar sin fin!",
           textoCompartirInfinito: function (pts, a, mejor) {
-            return "Jugué el Modo Infinito de «¿Quién quiere ser Biblionario?» y sumé " + pts + " puntos con " + a + " aciertos (mi mejor puntaje: " + mejor + "). ¿Te atreves a superarme? #Biblionario";
+            return "Jugué el Modo Infinito de «¿Quieres ser Biblionario?» y sumé " + pts + " puntos con " + a + " aciertos (mi mejor puntaje: " + mejor + "). ¿Te atreves a superarme? #Biblionario";
           },
           regla6: "♾️ <b>Modo Infinito:</b> preguntas de los 66 libros sin parar y sin repetir, con 20 segundos por pregunta. Si fallas o se te acaba el tiempo, ves la respuesta correcta y sigues; la dificultad sube sola. Sin comodines. Paras cuando quieras y queda tu marca.",
           rachaRotulo: "Racha:",
@@ -3789,7 +3826,11 @@
             return "¡Desafío de hoy completado! Racha de " + r + (r === 1 ? " día" : " días") + ". Las preguntas de mañana ya están sembradas: vuelve para mantenerla.";
           },
           desafioYaAviso: "Ya completaste el desafío de hoy. La racha vuelve a contar mañana con preguntas nuevas.",
-          desafioSinNuevas: "Hoy ya no quedan preguntas nuevas de tu libro en curso para el Desafío. Mañana habrá preguntas nuevas.",
+          /* Punto 57 de Alexis (2026-10-27): redacción honesta —
+             este aviso NO significa que ya jugó el Desafío hoy, y
+             el registro de vistas no se reinicia por día, así que
+             prometer «mañana habrá preguntas nuevas» era falso. */
+          desafioSinNuevas: "Ya viste todas las preguntas de tu libro en curso, así que el Desafío no tiene preguntas nuevas para ti en este libro. Cuando lo selles, el Desafío seguirá con el siguiente libro.",
           bancoAgotado: "Ya recorriste todo el banco de preguntas: no queda ninguna sin ver.",
           desafioCompletadoTitulo: function (n) { return "¡Desafío completado! " + n + " de " + n; },
           desafioCompletadoResumen: "Completaste el Desafío del día. Vuelve mañana por el siguiente.",
@@ -3828,7 +3869,7 @@
           otroVersiculo: "Otro versículo",
           volverBtn: "Volver",
           versiculoContador: function (a, b) { return "Versículo " + a + " de " + b; },
-          tarjetaPie: "¿Quién quiere ser Biblionario?",
+          tarjetaPie: "¿Quieres ser Biblionario?",
           compartirTextoVersiculo: function (texto, ref) { return "«" + texto + "» — " + ref + " · Mi versículo de hoy en Biblionario."; },
           notifTitulo: "Recibe el versículo cada día",
           notifTexto: "Si quieres, te avisamos a las 8:00 a. m. con el versículo del día y te recordamos tu racha en la noche. Puedes desactivarlo cuando quieras en los ajustes de tu teléfono.",
@@ -3861,7 +3902,7 @@
           descargaApp: "📲 Descarga Biblionario:\nAndroid: https://play.google.com/store/apps/details?id=com.biblionario.app\niPhone: https://apps.apple.com/app/id6823809379",
           rotRacha: "Racha diaria",
           textoCompartir: function (pts, nivel, aciertos, esDiario) {
-            var base = "Jugué «¿Quién quiere ser Biblionario?» y llegué a " + nivel + " con " + pts + " puntos (" + aciertos + "/6 correctas).";
+            var base = "Jugué «¿Quieres ser Biblionario?» y llegué a " + nivel + " con " + pts + " puntos (" + aciertos + "/6 correctas).";
             return esDiario
               ? base + " Completé el Desafío del día y mantuve mi racha. ¿Te atreves a superarme? #Biblionario"
               : base + " ¿Te atreves a superarme? #Biblionario";
@@ -3961,9 +4002,9 @@
         },
         en: {
           tituloDoc: "Biblionary",
-          sobretitulo: "Who wants to be",
+          sobretitulo: "Do you want to be",
           tituloGrande: "BIBLIONARIO",
-          lema: "Who wants to be a Biblionario?",
+          lema: "Do you want to be a Biblionario?",
           jugarSub: "The more you play, the faster you'll become a Biblionario",
           rotuloPalabra: "TODAY'S WORD",
           palabraTitulo: "God speaks to you today",
@@ -4171,7 +4212,7 @@
           celebInfinitoTexto: "You reached Grand Sage and completed the whole contest. Endless Mode is now open: questions from the whole bank without repeats, growing harder as you go, until your third mistake. How far can you go?",
           continuarInfinito: "Play endless!",
           textoCompartirInfinito: function (pts, a, mejor) {
-            return "I played Endless Mode in \"Who Wants to Be Biblionary?\" and scored " + pts + " points with " + a + " correct answers (my best score: " + mejor + "). Think you can beat me? #Biblionary";
+            return "I played Endless Mode in \"Do You Want to Be a Biblionario?\" and scored " + pts + " points with " + a + " correct answers (my best score: " + mejor + "). Think you can beat me? #Biblionary";
           },
           regla6: "♾️ <b>Endless Mode:</b> questions from all 66 books, nonstop and with no repeats, with 20 seconds per question. Miss one or run out of time and you see the right answer and keep going; the difficulty rises on its own. No lifelines. Stop whenever you want — your record stays.",
           rachaRotulo: "Streak:",
@@ -4182,7 +4223,7 @@
             return "Today's challenge is done! Streak at " + r + (r === 1 ? " day" : " days") + ". Tomorrow's questions are already seeded: come back to keep it alive.";
           },
           desafioYaAviso: "You already completed today's challenge. The streak counts again tomorrow with fresh questions.",
-          desafioSinNuevas: "There are no new questions left in your current book for today's Challenge. Tomorrow brings new questions.",
+          desafioSinNuevas: "You have already seen every question in your current book, so the Challenge has no new questions for you in this book. Once you seal it, the Challenge will move on to the next book.",
           bancoAgotado: "You have gone through the entire question bank: there are no unseen questions left.",
           desafioCompletadoTitulo: function (n) { return "Challenge complete! " + n + " out of " + n; },
           desafioCompletadoResumen: "You completed today's Challenge. Come back tomorrow for the next one.",
@@ -4221,7 +4262,7 @@
           otroVersiculo: "Another verse",
           volverBtn: "Back",
           versiculoContador: function (a, b) { return "Verse " + a + " of " + b; },
-          tarjetaPie: "Who wants to be Biblionary?",
+          tarjetaPie: "Do you want to be a Biblionario?",
           compartirTextoVersiculo: function (texto, ref) { return "\u201C" + texto + "\u201D — " + ref + " · My verse for today in Biblionary."; },
           notifTitulo: "Receive the verse every day",
           notifTexto: "If you'd like, we'll send you the verse of the day at 8:00 a.m. and remind you about your streak at night. You can turn it off anytime in your phone's settings.",
@@ -4254,7 +4295,7 @@
           descargaApp: "📲 Download Biblionario:\nAndroid: https://play.google.com/store/apps/details?id=com.biblionario.app\niPhone: https://apps.apple.com/app/id6823809379",
           rotRacha: "Daily streak",
           textoCompartir: function (pts, nivel, aciertos, esDiario) {
-            var base = "I played \"Who Wants to Be Biblionary?\" and reached " + nivel + " with " + pts + " points (" + aciertos + "/6 correct).";
+            var base = "I played \"Do You Want to Be a Biblionario?\" and reached " + nivel + " with " + pts + " points (" + aciertos + "/6 correct).";
             return esDiario
               ? base + " I finished the Daily Challenge and kept my streak alive. Think you can beat me? #Biblionary"
               : base + " Think you can beat me? #Biblionary";
@@ -6874,10 +6915,10 @@
         if (!musicaActiva && vozActiva) {
           vozActiva = false;
           detenerNarracion();
-          $("ico-voz-on").hidden = true;
-          $("ico-voz-off").hidden = false;
-          $("btn-voz").classList.remove("activo");
-          $("btn-voz").setAttribute("aria-pressed", "false");
+          /* El silencio apaga la voz SOLO en esta sesión: no
+             sobrescribe la preferencia guardada del botón Voz
+             (punto 53), que manda al volver a abrir la app. */
+          pintarBotonVoz();
         }
       });
 
@@ -6897,9 +6938,37 @@
          opciones en un orden fijo, ORDEN_VOZ guarda ese orden por
          pregunta y la pantalla lo sigue mientras la voz está
          activa, para que la letra escuchada sea la letra del botón.
-         Nada se guarda: la voz queda apagada cada vez que se abre
-         la página. */
-      var vozActiva = false;
+         Ronda 10 (punto 53 de Alexis, 2026-10-27): la voz NACE
+         ENCENDIDA y la preferencia se GUARDA — antes quedaba
+         apagada en cada apertura y había que encenderla a mano
+         dentro de la partida. La preferencia vive en localStorage
+         (biblionario_voz_on: "1" encendida, "0" apagada): sin
+         preferencia guardada (usuario nuevo) la voz arranca
+         encendida; con preferencia, se respeta tal cual. Tocar el
+         botón Voz la guarda al instante. El guion mínimo del
+         <head> lee la misma clave antes del primer pintado y deja
+         la marca data-voz en <html>, para que el botón nazca
+         pintado con su estado (ver el CSS de .btn-sonido). */
+      var CLAVE_VOZ = "biblionario_voz_on";
+      var vozActiva = (function () {
+        try { return localStorage.getItem(CLAVE_VOZ) !== "0"; }
+        catch (e) { return true; }
+      })();
+      function guardarPreferenciaVoz() {
+        try { localStorage.setItem(CLAVE_VOZ, vozActiva ? "1" : "0"); } catch (e) {}
+      }
+      /* Pinta el botón Voz según el estado real: el icono, el
+         fondo activo, el aria-pressed y la marca data-voz del
+         <html> (la del primer pintado) quedan siempre en
+         sincronía, en cualquier pantalla donde salga el control. */
+      function pintarBotonVoz() {
+        $("ico-voz-on").hidden = !vozActiva;
+        $("ico-voz-off").hidden = vozActiva;
+        $("btn-voz").classList.toggle("activo", vozActiva);
+        $("btn-voz").setAttribute("aria-pressed", vozActiva ? "true" : "false");
+        document.documentElement.setAttribute("data-voz", vozActiva ? "on" : "off");
+      }
+      pintarBotonVoz();
       /* Orden de las opciones dentro de cada clip de voz (índices de
          q.opciones en el orden en que se escuchan). Vale para los dos
          idiomas. El 2026-10-16 se regrabaron los 276 clips (ES y EN)
@@ -7099,6 +7168,11 @@
       function mostrarPistaVoz() {
         var btn = $("btn-voz");
         if (btn.hidden) return;
+        /* Ronda 10 (punto 53): si la voz ya está encendida — nace
+           encendida y la preferencia se guarda — la pista («Toca
+           Voz para escuchar…») no tiene nada que ofrecer y no
+           sale; solo aparece si la voz está apagada. */
+        if (vozActiva) return;
         /* Solo en el inicio: si el jugador ya entró a una
            partida, la pista no sale jamás sobre el juego. */
         if ($("pantalla-inicio").hidden) return;
@@ -7126,11 +7200,9 @@
         // responde igual en Safari aunque un clip no arranque, y
         // ningún fallo de audio deja el control atascado.
         vozActiva = !vozActiva;
-        $("ico-voz-on").hidden = !vozActiva;
-        $("ico-voz-off").hidden = vozActiva;
+        guardarPreferenciaVoz();
+        pintarBotonVoz();
         $("txt-voz").textContent = t("voz");
-        $("btn-voz").classList.toggle("activo", vozActiva);
-        $("btn-voz").setAttribute("aria-pressed", vozActiva ? "true" : "false");
         if (!estado || $("pantalla-juego").hidden) return;
         if (vozActiva) {
           if (!estado.respondiendo && !estado.termino) {
