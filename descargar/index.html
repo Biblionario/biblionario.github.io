@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <title>Biblionario — Descargar la app</title>
+    <meta name="description" content="Descarga Biblionario, el juego de preguntas de la Biblia: sella los 66 libros y alcanza el título. Gratis en App Store y Google Play." />
+    <script>
+      /* ============================================================
+         ENLACE INTELIGENTE DE DESCARGA (punto 55, 2026-10-27)
+         Una sola URL para compartir: biblionario.github.io/descargar
+         - iPhone / iPad / iPod  -> App Store
+         - Android               -> Google Play
+         - Cualquier otro caso   -> se queda en esta página, con
+                                    los dos botones y el QR.
+         Funciona también desde los navegadores internos de
+         WhatsApp/Instagram: su agente de usuario también trae
+         «iPhone» o «Android». El iPad que se reporta como
+         «Macintosh» se detecta por la pantalla táctil.
+
+         >>> LAS URLS DE TIENDA SE CORRIGEN AQUÍ, en un minuto,
+             si al publicar cambia algo: <<<
+         ============================================================ */
+      var URL_APP_STORE = "https://apps.apple.com/app/id6823809379";
+      var URL_GOOGLE_PLAY = "https://play.google.com/store/apps/details?id=com.biblionario.app";
+      var URL_ESTA_PAGINA = "https://biblionario.github.io/descargar/";
+
+      (function () {
+        try {
+          var ua = navigator.userAgent || "";
+          var esIOS = /iPhone|iPad|iPod/i.test(ua)
+            || (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1);
+          var esAndroid = /Android/i.test(ua);
+          if (esIOS) { location.replace(URL_APP_STORE); return; }
+          if (esAndroid) { location.replace(URL_GOOGLE_PLAY); return; }
+        } catch (e) { /* sin detección: se muestra la página */ }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --fondo: #150826;
+        --panel: rgba(26, 12, 48, 0.88);
+        --panel-borde: rgba(232, 182, 76, 0.45);
+        --dorado: #e8b64c;
+        --dorado-suave: #f5d78a;
+        --texto: #f7f1e3;
+        --texto-suave: #cfc3e6;
+        color-scheme: dark;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; min-height: 100dvh;
+        background: radial-gradient(120% 90% at 50% 0%, #2a1150 0%, var(--fondo) 55%) fixed, var(--fondo);
+        color: var(--texto);
+        font-family: "Manrope", system-ui, sans-serif;
+        display: flex; align-items: center; justify-content: center;
+        padding: 28px 18px 36px;
+      }
+      main { width: 100%; max-width: 420px; text-align: center; }
+      .icono {
+        width: 118px; height: 118px; border-radius: 26px;
+        border: 1px solid var(--panel-borde);
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+      }
+      h1 {
+        font-family: "Cinzel", serif; font-weight: 800;
+        font-size: 2.35rem; letter-spacing: 0.04em;
+        color: var(--dorado); margin: 18px 0 2px;
+      }
+      .lema { font-style: italic; color: var(--dorado-suave); font-size: 1.12rem; margin: 0 0 10px; }
+      .desc { color: var(--texto-suave); font-size: 1rem; line-height: 1.5; margin: 0 0 24px; }
+      .botones { display: grid; gap: 12px; margin-bottom: 30px; }
+      .btn-tienda {
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        min-height: 56px; padding: 12px 18px;
+        background: linear-gradient(180deg, var(--dorado-suave), var(--dorado));
+        color: #2a1802; border: 1px solid #8a6414; border-radius: 999px;
+        font-weight: 800; font-size: 1.05rem; text-decoration: none;
+      }
+      .btn-tienda svg { width: 22px; height: 22px; fill: #2a1802; flex: none; }
+      .qr-caja {
+        background: var(--panel); border: 1px solid var(--panel-borde);
+        border-radius: 18px; padding: 20px 18px 16px;
+      }
+      .qr-caja p { margin: 0 0 14px; color: var(--texto); font-weight: 600; line-height: 1.45; }
+      .qr-fondo { background: #ffffff; border-radius: 12px; padding: 12px; display: inline-block; line-height: 0; }
+      .qr-fondo img { width: 168px; height: 168px; }
+      .pie { margin-top: 22px; color: var(--texto-suave); font-size: 0.85rem; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <img class="icono" src="icono.png" alt="Icono de Biblionario" width="118" height="118" />
+      <h1>BIBLIONARIO</h1>
+      <p class="lema">¿Quieres ser Biblionario?</p>
+      <p class="desc">El juego de preguntas de la Biblia: responde, sella los 66 libros del Camino y alcanza el título de Biblionario. Descárgalo gratis:</p>
+
+      <div class="botones">
+        <a class="btn-tienda" id="btn-appstore" href="https://apps.apple.com/app/id6823809379">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.05 12.54c-.03-2.89 2.36-4.27 2.47-4.34-1.35-1.97-3.44-2.24-4.18-2.27-1.78-.18-3.47 1.05-4.37 1.05-.9 0-2.29-1.02-3.77-1-1.94.03-3.72 1.13-4.72 2.86-2.01 3.49-.51 8.66 1.45 11.5.96 1.39 2.1 2.94 3.6 2.88 1.45-.06 2-.93 3.74-.93s2.24.93 3.77.9c1.56-.02 2.55-1.41 3.5-2.8 1.1-1.61 1.56-3.17 1.58-3.25-.03-.02-3.04-1.17-3.07-4.6zM14.16 4.06c.8-.97 1.34-2.32 1.19-3.66-1.15.05-2.55.77-3.38 1.74-.74.86-1.39 2.23-1.22 3.55 1.29.1 2.6-.65 3.41-1.63z"/></svg>
+          Descargar en App Store
+        </a>
+        <a class="btn-tienda" id="btn-googleplay" href="https://play.google.com/store/apps/details?id=com.biblionario.app">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.9v16.2c0 .8.9 1.3 1.6.9l13-8.1c.6-.4.6-1.4 0-1.8l-13-8.1C5.9 2.6 5 3.1 5 3.9z"/></svg>
+          Descargar en Google Play
+        </a>
+      </div>
+
+      <div class="qr-caja">
+        <p>¿Estás en la computadora?<br />Escanea este código con tu teléfono y te lleva a tu tienda:</p>
+        <span class="qr-fondo"><img src="qr.svg" alt="Código QR para descargar Biblionario" width="168" height="168" /></span>
+      </div>
+
+      <p class="pie">biblionario.github.io/descargar</p>
+    </main>
+  </body>
+</html>
