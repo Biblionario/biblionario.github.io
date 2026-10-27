@@ -2,7 +2,7 @@
 <html lang="es">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" href="data:," />
     <title>Biblionario</title>
@@ -47,6 +47,15 @@
       }
       * { box-sizing: border-box; }
       html, body { min-height: 100%; }
+      /* Ronda 5 (punto 48 de Alexis): la app NO permite zoom en
+         NINGUNA pantalla. El meta viewport lo declara
+         (maximum-scale=1, user-scalable=no) y esto tapa el zoom
+         por doble toque en todos los elementos tocables; el
+         pellizco lo bloquea el JS (gesturestart / touchstart
+         múltiple). Ninguna pantalla depende del zoom para
+         leerse: el tamaño lo manda el diseño adaptable. */
+      html, body { touch-action: manipulation; }
+      button, a, input, select, textarea, [role="button"] { touch-action: manipulation; }
       body {
         margin: 0;
         font-family: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -157,7 +166,16 @@
         font-family: "Cinzel", serif; font-weight: 800;
         font-size: clamp(1.1rem, 4vw, 1.35rem); letter-spacing: 0.03em;
         color: #2a1802;
-        background: linear-gradient(180deg, var(--dorado-suave), var(--dorado) 55%, #c9902e);
+        /* Ronda 5 (punto 47 de Alexis, opción 8): el dorado de TODOS
+           los botones principales es el degradado centrado en
+           #e8b64c — el tono de las letras del Camino — en vez del
+           degradado amarillo chillón anterior. Esta misma línea se
+           repite en el resto de la familia dorada principal
+           (.btn-compartir-progreso, .btn-volver-pildora,
+           .btn-retirarse.en-infinito, .modal .btn-cerrar,
+           .btn-dia-compartir, .dato .btn-siguiente, .btn-diario,
+           .camino-palabra y los .btn-duelo del inicio). */
+        background: linear-gradient(160deg, #f2cd77, #e8b64c 52%, #dda63c);
         border: 1px solid #8a6414; border-radius: 10px;
         padding: 15px 42px; cursor: pointer;
         box-shadow: 0 10px 30px rgba(232, 182, 76, 0.35);
@@ -406,9 +424,23 @@
          manda su rojo protegido y en la partida normal se conserva
          el retirarse discreto de siempre. */
       .btn-retirarse.en-infinito {
-        background: linear-gradient(180deg, var(--dorado-suave), var(--dorado) 55%, #c9902e);
+        background: linear-gradient(160deg, #f2cd77, #e8b64c 52%, #dda63c);
         border: 1px solid #8a6414; color: #2a1802; font-weight: 800;
         box-shadow: 0 10px 30px rgba(232, 182, 76, 0.35);
+      }
+      /* Ronda 5 (auditoría de menús, propuesta 7): mientras el
+         panel tras responder (#dato) está abierto, los comodines
+         y el «Retirarme» se ocultan — la pregunta ya está cerrada
+         y el único botón vivo es «Continuar» / «Ver mi
+         resultado»; reaparecen solos con la siguiente pregunta,
+         cuando el panel se oculta. Excepción deliberada: en el
+         Infinito la salida («Salir y ver mi marca», .en-infinito)
+         NO se oculta, porque salir cuando quieras es la regla
+         del modo y ese botón NO está inerte con el panel abierto.
+         En el Duelo el panel nunca se abre: la regla no le toca. */
+      .escenario:has(#dato:not([hidden])) .comodines .comodin,
+      .escenario:has(#dato:not([hidden])) .comodines .btn-retirarse:not(.en-infinito) {
+        display: none;
       }
 
       /* ---------- Dato bíblico ---------- */
@@ -449,7 +481,7 @@
       .dato .cita { color: var(--dorado-suave); font-weight: 800; }
       .dato .btn-siguiente {
         margin-top: 12px; min-height: 48px;
-        background: linear-gradient(180deg, var(--dorado-suave), var(--dorado));
+        background: linear-gradient(160deg, #f2cd77, #e8b64c 52%, #dda63c);
         color: #2a1802; border: 1px solid #8a6414; border-radius: 8px;
         padding: 11px 22px; font: inherit; font-weight: 800; cursor: pointer;
       }
@@ -575,7 +607,7 @@
       .modal .sub { margin: 0 0 16px; color: var(--texto-suave); line-height: 1.5; }
       .modal .btn-cerrar {
         margin-top: 18px; width: 100%;
-        background: linear-gradient(180deg, var(--dorado-suave), var(--dorado));
+        background: linear-gradient(160deg, #f2cd77, #e8b64c 52%, #dda63c);
         color: #2a1802; border: 1px solid #8a6414; border-radius: 8px;
         padding: 12px; font: inherit; font-weight: 800; cursor: pointer;
       }
@@ -599,7 +631,7 @@
       .infinito-regla .sub b { color: #f5d78a; }
       #velo-infinito-info .btn-cerrar {
         margin-top: 22px; border-radius: 14px; padding: 14px; font-size: 1.12rem;
-        background: linear-gradient(160deg, #ffe066 0%, #f5c542 75%, #dfa91f 100%);
+        background: linear-gradient(160deg, #f2cd77, #e8b64c 52%, #dda63c);
         border-color: #ffedb0; box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
       }
       .infinito-info-nota {
@@ -727,7 +759,7 @@
         font-family: "Cinzel", serif; font-weight: 800; letter-spacing: 0.03em;
         font-size: clamp(1rem, 3.6vw, 1.15rem);
         color: #2a1802;
-        background: linear-gradient(180deg, #ffd97a, var(--dorado) 55%, #c9902e);
+        background: linear-gradient(160deg, #f2cd77, #e8b64c 52%, #dda63c);
         border: 1px solid #8a6414; border-radius: 10px;
         padding: 12px 34px; cursor: pointer;
         box-shadow: 0 8px 24px rgba(232, 182, 76, 0.3);
@@ -1245,7 +1277,7 @@
          rótulos del inicio. La frase del día ya no vive en el botón:
          se lee dentro de la ventana, que la muestra al abrir. */
       .camino-palabra {
-        background: linear-gradient(160deg, #f5d78a 0%, #e8b64c 70%, #c98f2a 100%);
+        background: linear-gradient(160deg, #f2cd77, #e8b64c 52%, #dda63c);
         border-color: #ffe9ad; border-radius: 14px;
         padding: 8px 16px; margin-top: 6px;
         font-family: "Cinzel", serif; font-weight: 800; font-size: 1.06rem;
@@ -1284,7 +1316,7 @@
       }
       .inicio .btn-diario .camino-btn-sub { color: #b7cfee; opacity: 1; }
       #pantalla-inicio .btn-duelo {
-        background: linear-gradient(160deg, #ffe066 0%, #f5c542 75%, #dfa91f 100%);
+        background: linear-gradient(160deg, #f2cd77, #e8b64c 52%, #dda63c);
         color: #241703; border-color: #ffedb0;
         text-align: left; padding: 8px 16px; font-size: 1.06rem; min-height: 0;
         border-radius: 14px; margin-top: 5px;
@@ -1507,7 +1539,7 @@
       .devocional-texto { margin-top: 12px; font-size: 1.05rem; }
       .btn-dia-compartir {
         margin-top: 10px; font: inherit; font-weight: 800; font-size: 0.9rem;
-        color: #2a1802; background: linear-gradient(180deg, var(--dorado-suave), var(--dorado));
+        color: #2a1802; background: linear-gradient(160deg, #f2cd77, #e8b64c 52%, #dda63c);
         border: 1px solid #8a6414; border-radius: 8px; padding: 8px 16px;
         min-height: 40px; cursor: pointer;
       }
@@ -1527,7 +1559,7 @@
       .btn-volver-pildora {
         flex: none; font: inherit; font-weight: 800; font-size: 0.92rem;
         color: #2a1802;
-        background: linear-gradient(180deg, var(--dorado-suave), var(--dorado) 55%, #c9902e);
+        background: linear-gradient(160deg, #f2cd77, #e8b64c 52%, #dda63c);
         border: 1px solid #8a6414; border-radius: 10px;
         padding: 7px 13px; min-height: 38px; cursor: pointer;
         box-shadow: 0 6px 18px rgba(232, 182, 76, 0.3);
@@ -1579,7 +1611,6 @@
       /* Vista DEVOCIONAL completo: solo su tarjeta, sin recortes */
       #pantalla-verso-dia.vista-devocional .tarjeta-dia,
       #pantalla-verso-dia.vista-devocional .tarjeta-corazon { display: none; }
-      #pantalla-verso-dia.vista-devocional #btn-devocional-leer { display: none; }
       .versiculos { text-align: center; max-width: 42rem; margin: 0 auto; padding-top: 2vh; }
       .vers-titulo {
         font-family: "Cinzel", serif; font-weight: 800; color: var(--dorado);
@@ -1704,7 +1735,7 @@
         display: block; margin: 10px auto 0;
         font-family: "Cinzel", serif; font-weight: 800; letter-spacing: 0.03em;
         font-size: clamp(1rem, 3.6vw, 1.15rem);
-        color: #2a1802; background: linear-gradient(180deg, var(--dorado-suave), var(--dorado) 55%, #c9902e);
+        color: #2a1802; background: linear-gradient(160deg, #f2cd77, #e8b64c 52%, #dda63c);
         border: 1px solid #8a6414; border-radius: 10px;
         padding: 12px 34px; cursor: pointer;
       }
@@ -2064,7 +2095,7 @@
       }
       .inicio .btn-duelo {
         color: #2a1802;
-        background: linear-gradient(180deg, #ffd97a, var(--dorado) 55%, #c9902e);
+        background: linear-gradient(160deg, #f2cd77, #e8b64c 52%, #dda63c);
         border: 2px solid #8a6414;
         box-shadow: 0 8px 24px rgba(232, 182, 76, 0.3);
       }
@@ -2249,7 +2280,7 @@
       .inicio .btn-duelo {
         position: relative;
         overflow: hidden;
-        background: linear-gradient(180deg, var(--dorado-suave), var(--dorado) 55%, #c9902e);
+        background: linear-gradient(160deg, #f2cd77, #e8b64c 52%, #dda63c);
         border: 2px solid #8a6414;
         color: #2a1802;
         animation: duelo-resplandor-v6 2s ease-in-out infinite;
@@ -2892,7 +2923,11 @@
           <p class="dia-rotulo" id="devocional-rotulo">Devocional de hoy</p>
           <p class="devocional-titulo" id="devocional-titulo"></p>
           <p class="devocional-reflexion" id="devocional-reflexion"></p>
-          <button class="enlace-dorado" id="btn-devocional-leer" type="button">Leer el devocional completo ›</button>
+          <!-- Ronda 5 (auditoría de menús, propuesta 5): fuera el
+               enlace «Leer el devocional completo ›» — la tarjeta
+               entera ya abre el devocional completo al tocarla y
+               eran dos controles con el mismo destino. La tarjeta
+               queda como único control. -->
           <p class="devocional-cierre" id="devocional-cierre"></p>
           <p class="dia-texto devocional-texto" id="devocional-texto"></p>
           <p class="dia-ref" id="devocional-ref"></p>
@@ -2910,7 +2945,10 @@
         <h2 class="vers-titulo" id="capitulo-titulo"></h2>
         <div class="cap-texto" id="capitulo-texto"></div>
         <button class="btn-principal" id="btn-capitulo-volver" type="button">Volver al versículo</button>
-        <button class="btn-principal" id="btn-capitulo-menu" type="button">Menú principal</button>
+        <!-- Ronda 5 (auditoría de menús, propuesta 4): el capítulo
+             tenía DOS botones dorados de salida seguidos. Queda
+             solo «Volver al versículo»: es la salida natural y el
+             «‹ Volver» de la ventana ya encadena al inicio. -->
       </section>
 
       <!-- ============ FINAL ============ -->
@@ -3055,27 +3093,12 @@
       </div>
     </div>
 
-    <!-- ============ MODAL CELEBRACIÓN NIVEL SABIO ============ -->
-    <div class="velo velo-celebracion" id="velo-celebracion-sabio" hidden>
-      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="celebracion-titulo">
-        <svg class="celeb-trofeo" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 5h-2V3H7v2H5a2 2 0 0 0-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7a2 2 0 0 0-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg>
-        <h3 id="celebracion-titulo">¡Felicitaciones, avanzaste al Nivel Sabio!</h3>
-        <p class="sub" id="celebracion-texto">Superaste los 6 niveles y eres Biblionario. El Nivel Sabio ya está desbloqueado: profecía, cronología, cartas de Pablo y Apocalipsis, con la misma dinámica y comodines.</p>
-        <button class="btn-cerrar" id="btn-continuar-sabio" type="button">Continuar</button>
-        <button class="btn-ver-resultado" id="btn-celebracion-resultado" type="button">Ver mi resultado</button>
-      </div>
-    </div>
-
-    <!-- ============ MODAL CELEBRACIÓN MODO INFINITO ============ -->
-    <div class="velo velo-celebracion" id="velo-celebracion-infinito" hidden>
-      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="celeb-infinito-titulo">
-        <svg class="celeb-trofeo" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 5h-2V3H7v2H5a2 2 0 0 0-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7a2 2 0 0 0-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg>
-        <h3 id="celeb-infinito-titulo">¡Felicitaciones, desbloqueaste el Modo Infinito!</h3>
-        <p class="sub" id="celeb-infinito-texto">Llegaste a Gran Sabio y completaste todo el concurso. El Modo Infinito ya está abierto: preguntas de todo el banco sin repetir, cada vez más difíciles, hasta el tercer error. ¿Hasta dónde eres capaz de llegar?</p>
-        <button class="btn-cerrar" id="btn-continuar-infinito" type="button">¡A jugar sin fin!</button>
-        <button class="btn-ver-resultado" id="btn-infinito-resultado" type="button">Ver mi resultado</button>
-      </div>
-    </div>
+    <!-- Ronda 5 (auditoría de menús, propuesta 7): retirados los
+         velos de celebración del modelo viejo — el del «Nivel
+         Sabio» (ya no es un modo: su dificultad se fundió en el
+         tramo final del Camino) y el del «desbloqueo del
+         Infinito» (hoy nace desbloqueado). Eran pantallas
+         inalcanzables: ni el HTML ni su código quedan. -->
 
     <!-- ============ MODAL LIBRO SELLADO (Camino) ============ -->
     <div class="velo velo-celebracion" id="velo-libro-sellado" hidden>
@@ -3447,6 +3470,7 @@
           rotPuntos: "Puntos",
           puntajeFinalRotulo: "Puntaje final",
           rotNivel: "Nivel alcanzado",
+          rotLibroCurso: "Libro en curso",
           rotAciertos: "Respuestas correctas",
           otraVez: "Jugar otra vez",
           pts: " pts",
@@ -3484,8 +3508,8 @@
           infRachaSesion: "Mejor racha de la sesión",
           infinitoSalir: "Salir y ver mi marca",
           infinitoMarcaTitulo: "Modo Infinito — tu marca",
-          infinitoResumenMarca: function (r, a, racha, record) {
-            return "Respondiste " + r + " preguntas, con " + a + " aciertos. Mejor racha de la sesión: " + racha + " · Mejor racha de siempre: " + record + ".";
+          infinitoResumenMarca: function (r, a) {
+            return "Respondiste " + r + " preguntas, con " + a + " aciertos.";
           },
           selloTitulo: function (libro) { return "¡Libro sellado: " + libro + "!"; },
           selloTexto: function (sellados, siguiente) {
@@ -3793,6 +3817,7 @@
           rotPuntos: "Points",
           puntajeFinalRotulo: "Final score",
           rotNivel: "Level reached",
+          rotLibroCurso: "Current book",
           rotAciertos: "Correct answers",
           otraVez: "Play again",
           pts: " pts",
@@ -3830,8 +3855,8 @@
           infRachaSesion: "Best streak this session",
           infinitoSalir: "Exit and see my mark",
           infinitoMarcaTitulo: "Endless Mode — your mark",
-          infinitoResumenMarca: function (r, a, racha, record) {
-            return "You answered " + r + " questions, with " + a + " correct. Best streak this session: " + racha + " · Best streak ever: " + record + ".";
+          infinitoResumenMarca: function (r, a) {
+            return "You answered " + r + " questions, with " + a + " correct.";
           },
           selloTitulo: function (libro) { return "Book sealed: " + libro + "!"; },
           selloTexto: function (sellados, siguiente) {
@@ -8075,7 +8100,11 @@
         if (!estado || !estado.caminoAntes) { caja.hidden = true; return; }
         var antes = estado.caminoAntes;
         var lineas = [];
-        lineas.push({ texto: t("avancePuntos")(fmt(estado.puntos)), sello: false });
+        /* Ronda 5 (auditoría de menús, propuesta 2): el bloque ya
+           NO abre con «Puntos de esta partida: N» — ese mismo
+           número es la estadística «Puntos» de la misma pantalla
+           final y salía dos veces. El bloque empieza directo en
+           los aciertos por libro, que es lo suyo. */
         Object.keys(caminoEstado.aciertos).forEach(function (libro) {
           var delta = (caminoEstado.aciertos[libro] || 0) - (antes.aciertos[libro] || 0);
           if (delta > 0) lineas.push({ texto: t("avanceLibro")(caminoNombreLibro(libro), delta), sello: false });
@@ -9232,8 +9261,11 @@
            sesión y mejor racha de siempre. */
         var respondidas = estado.aciertos + estado.errores;
         $("final-titulo").textContent = t("infinitoMarcaTitulo");
+        /* Ronda 5 (auditoría de menús, propuesta 3): la frase ya
+           NO repite las dos rachas — viven solo en las
+           estadísticas de esta misma pantalla. */
         $("final-resumen").textContent = t("infinitoResumenMarca")(
-          respondidas, estado.aciertos, estado.mejorRacha, mejorRachaInfinito
+          respondidas, estado.aciertos
         );
         $("final-puntos").textContent = fmt(estado.puntos);
         $("rot-puntos").textContent = t("puntajeFinalRotulo");
@@ -9312,55 +9344,53 @@
              solo de esta pantalla. */
           $("btn-compartir").hidden = true;
           $("btn-final-infinito").hidden = true;
+          /* Ronda 5 (auditoría de menús, propuesta 6): la
+             estadística «Nivel alcanzado» era un resto de la
+             escalera vieja — en el Desafío no se alcanza ningún
+             nivel jugando. En su lugar va el dato que sí es del
+             Desafío y del Camino: el libro en curso. */
+          var libroCurso = caminoLibroActual();
+          $("final-nivel").textContent = libroCurso ? caminoNombreLibro(libroCurso) : "—";
+          $("rot-nivel").textContent = t("rotLibroCurso");
           $("btn-otra-vez").textContent = t("otraVez");
           $("btn-otra-vez").hidden = diaDesafioCompletado();
           $("btn-final-menu").textContent = t("menuPrincipal");
           $("btn-final-menu").hidden = false;
         } else {
-          $("btn-compartir").hidden = false;
+          /* Ronda 5 (auditoría de menús, propuesta 1 — aprobada
+             íntegra por Alexis): la final de la partida normal era
+             la única que no cumplía el patrón de las demás
+             finales. Quedan «Jugar otra vez», «Compartir mi
+             progreso» y «Menú principal» (que aquí ni siquiera
+             existía: no había salida directa al menú); fuera
+             «Reta a un amigo» (vive en la pantalla del Duelo) y
+             fuera «¿Sigues? Modo Infinito» (el Infinito está en
+             el inicio, a un toque del Menú). */
+          $("btn-compartir").hidden = true;
           $("btn-otra-vez").hidden = false;
-          /* Al terminar una partida normal se ofrece seguir en el
-             Modo Infinito. */
-          $("btn-final-infinito").textContent = t("finalInfinitoBtn");
-          $("btn-final-infinito").hidden = false;
-          $("btn-final-menu").hidden = true;
+          $("btn-final-infinito").hidden = true;
+          $("btn-final-menu").textContent = t("menuPrincipal");
+          $("btn-final-menu").hidden = false;
         }
         actualizarBotonProgreso();
-      }
-
-      function mostrarCelebracionSabio() {
-        $("velo-celebracion-sabio").hidden = false;
-        var btn = $("btn-continuar-sabio");
-        if (btn) {
-          try { btn.focus({ preventScroll: true }); } catch (e) { btn.focus(); }
-        }
-      }
-
-      function mostrarCelebracionInfinito() {
-        $("velo-celebracion-infinito").hidden = false;
-        var btn = $("btn-continuar-infinito");
-        if (btn) {
-          try { btn.focus({ preventScroll: true }); } catch (e) { btn.focus(); }
-        }
       }
 
       function terminar(motivo) {
         estado.termino = true;
         estado.ultimoMotivo = motivo;
-        var avanzarASabio = false;
         /* Rediseño 1.4 (verificación final, 2026-10-26): el Nivel
            Sabio dejó de ser un modo (su banco alimenta el tramo
-           final del Camino) y su botón ya no existe en el inicio;
-           ganar una partida normal NO debe desbloquearlo ni mostrar
-           su celebración del modelo viejo. El modo queda dormido:
-           este desbloqueo ya no se dispara nunca. */
-        var avanzarAInfinito = false;
+           final del Camino) y su botón ya no existe en el inicio.
+           El modo queda dormido: este desbloqueo ya no se dispara
+           nunca. Ronda 5 (auditoría, propuesta 7): las
+           celebraciones del modelo viejo que colgaban de estas
+           banderas (velo del Sabio y velo de desbloqueo del
+           Infinito) quedaron retiradas del todo. */
         if (motivo === "campeon" && estado.modo === "sabio") {
           if (!infinitoDesbloqueado) {
             infinitoDesbloqueado = true;
             actualizarBotonInfinito();
           }
-          avanzarAInfinito = true;
         }
         if (estado.modo === "infinito") {
           estado.recordInfinito = estado.puntos > mejorInfinito;
@@ -9386,8 +9416,6 @@
         pintarAvanceFinal();
         mostrar("pantalla-final");
         if (motivo === "campeon" || (estado.modo === "infinito" && estado.recordInfinito)) lanzarConfeti();
-        if (avanzarASabio) mostrarCelebracionSabio();
-        if (avanzarAInfinito) mostrarCelebracionInfinito();
         /* Red de seguridad del Camino: si un sello quedó pendiente
            al cerrar la partida, su celebración se muestra aquí,
            sobre la pantalla final. */
@@ -9616,14 +9644,6 @@
         $("duelo-codigo").placeholder = t("dueloCodigoPh");
         $("duelo-codigo").setAttribute("aria-label", t("dueloCodigoPh"));
         $("btn-final-sabio").textContent = t("sabioIrFinal");
-        $("celebracion-titulo").textContent = t("celebracionTitulo");
-        $("celebracion-texto").textContent = t("celebracionTexto");
-        $("btn-continuar-sabio").textContent = t("continuarSabio");
-        $("btn-celebracion-resultado").textContent = t("verResultadoCeleb");
-        $("celeb-infinito-titulo").textContent = t("celebInfinitoTitulo");
-        $("celeb-infinito-texto").textContent = t("celebInfinitoTexto");
-        $("btn-continuar-infinito").textContent = t("continuarInfinito");
-        $("btn-infinito-resultado").textContent = t("verResultadoCeleb");
         $("btn-sello-continuar").textContent = t("selloSeguir");
         $("infinito-info-titulo").textContent = t("infinitoInfoTitulo");
         $("infinito-info-sub").textContent = t("infinitoInfoSub");
@@ -9647,7 +9667,6 @@
         $("corazon-frase").textContent = t("corazonFrase");
         $("dia-fila-ref").textContent = t("leerCapitulo") + " ›";
         $("btn-dia-compartir").textContent = t("compartirEnlace");
-        $("btn-devocional-leer").textContent = t("devocionalLeer");
         $("btn-versodia-menu").textContent = "‹ " + t("volverBtn");
         $("versodia-titulo-texto").textContent = t("palabraTitulo");
         pintarPildorasCorazon();
@@ -9931,27 +9950,26 @@
            vez, pasa por la tarjeta; si no, entra directo. */
         abrirModoInfinito();
       });
-      $("btn-continuar-infinito").addEventListener("click", function () {
-        $("velo-celebracion-infinito").hidden = true;
-        comenzar("infinito");
-      });
-      $("btn-infinito-resultado").addEventListener("click", function () {
-        $("velo-celebracion-infinito").hidden = true;
-      });
       $("btn-final-sabio").addEventListener("click", function () { comenzar("sabio"); });
-      $("btn-continuar-sabio").addEventListener("click", function () {
-        $("velo-celebracion-sabio").hidden = true;
-        comenzar("sabio");
-      });
-      $("btn-celebracion-resultado").addEventListener("click", function () {
-        $("velo-celebracion-sabio").hidden = true;
-      });
       $("btn-sello-continuar").addEventListener("click", function () {
         $("velo-libro-sellado").hidden = true;
         var seguir = selloContinuar;
         selloContinuar = null;
         if (seguir) seguir();
       });
+
+      /* Ronda 5 (punto 48 de Alexis): sin zoom en ninguna
+         pantalla. El meta viewport ya lo declara; estos gestos
+         tapan lo que algunos navegadores/webviews aun permiten:
+         el pellizco de iOS (gesturestart/gesturechange), el
+         pellizco con dos dedos (touchstart múltiple) y la rueda
+         con Ctrl en escritorio. Ningún gesto de la app usa dos
+         dedos ni el doble toque para otra cosa, así que
+         bloquearlos no quita nada. */
+      document.addEventListener("gesturestart", function (e) { e.preventDefault(); });
+      document.addEventListener("gesturechange", function (e) { e.preventDefault(); });
+      document.addEventListener("touchstart", function (e) { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+      document.addEventListener("wheel", function (e) { if (e.ctrlKey) e.preventDefault(); }, { passive: false });
 
       /* ================= Compartir puntaje ================= */
       var URL_RETO = "https://muse.ai/s/biblionario-qxi6xaylxo4jxrxg";
@@ -10341,7 +10359,6 @@
           cont.appendChild(p);
         });
         $("btn-capitulo-volver").textContent = t("volverAlVersiculo");
-        $("btn-capitulo-menu").textContent = t("menuPrincipal");
         mostrar("pantalla-capitulo");
         if (primeroDestacado) {
           requestAnimationFrame(function () {
@@ -10612,7 +10629,7 @@
         if (palabraVista === "resumen") fijarVistaPalabra("versiculo");
       });
       $("tarjeta-devocional").addEventListener("click", function (ev) {
-        if (ev.target.closest("#btn-devocional-compartir") || ev.target.closest("#btn-devocional-leer")) return;
+        if (ev.target.closest("#btn-devocional-compartir")) return;
         if (palabraVista === "resumen") fijarVistaPalabra("devocional");
       });
       /* Ronda 4B (punto 42 de Alexis): TODO el recuadro del
@@ -10628,19 +10645,12 @@
       $("tarjeta-corazon").addEventListener("keydown", function (ev) {
         if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); abrirCorazonLista(); }
       });
-      $("btn-devocional-leer").addEventListener("click", function (ev) {
-        ev.stopPropagation();
-        fijarVistaPalabra("devocional");
-      });
       $("btn-versodia-menu").addEventListener("click", function () {
         if (palabraVista !== "resumen") { fijarVistaPalabra("resumen"); return; }
         mostrar("pantalla-inicio");
       });
       $("btn-capitulo-volver").addEventListener("click", function () {
         mostrar("pantalla-verso-dia");
-      });
-      $("btn-capitulo-menu").addEventListener("click", function () {
-        mostrar("pantalla-inicio");
       });
       $("btn-buscador-compartir").addEventListener("click", function () {
         var act = versiculoBuscador();
