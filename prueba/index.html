@@ -1461,7 +1461,16 @@
         padding: 12px 14px;
         box-shadow: 0 0 30px rgba(232, 182, 76, 0.35), var(--sombra);
       }
-      .camino-corona-icono { font-size: 2.4rem; display: inline-block; animation: camino-pulso 2.6s ease-in-out infinite; }
+      .camino-corona-icono { width: 112px; display: inline-block; animation: camino-pulso-corona 2.6s ease-in-out infinite; }
+      .camino-corona-icono svg { width: 100%; height: auto; display: block; }
+      /* El pulso de la corona de la meta sigue la SILUETA de la
+         diadema (drop-shadow), no la caja: con el emoji el
+         box-shadow compartido bastaba; con el dibujo nuevo
+         pintaría un marco rectangular alrededor. */
+      @keyframes camino-pulso-corona {
+        0%, 100% { filter: drop-shadow(0 0 5px rgba(232, 182, 76, 0.55)) drop-shadow(0 0 12px rgba(232, 182, 76, 0.28)); transform: scale(1); }
+        50% { filter: drop-shadow(0 0 10px rgba(232, 182, 76, 0.95)) drop-shadow(0 0 22px rgba(232, 182, 76, 0.5)); transform: scale(1.05); }
+      }
       @media (prefers-reduced-motion: reduce) { .camino-corona-icono { animation: none; } }
       .camino-corona-nombre {
         font-family: "Cinzel", serif; font-weight: 800; font-size: 1.25rem; letter-spacing: 0.14em;
@@ -3157,7 +3166,7 @@
           <button class="btn-secundario" id="btn-abrir-tesoro" type="button">Mi tesoro</button>
         </div>
         <div class="camino-corona-final" id="camino-corona-final">
-          <span class="camino-corona-icono" aria-hidden="true">👑</span>
+          <span class="camino-corona-icono" id="camino-corona-icono" aria-hidden="true"></span>
           <p class="camino-corona-nombre">BIBLIONARIO</p>
           <p class="camino-corona-sub" id="camino-corona-sub"></p>
         </div>
@@ -5734,23 +5743,97 @@
       function tramosCompletados() {
         return Math.floor(Math.min(caminoEstado.sellados.length, 66) / 11);
       }
-      /* La corona en SVG: la forma dorada y los 6 huecos en la
-         frente; las gemas ganadas brillan en su color y las que
-         faltan se ven en contorno. `destacar` anima la gema nueva. */
-      function coronaSVG(destacar) {
-        var hechas = tramosCompletados();
-        var gemas = "";
-        for (var i = 0; i < 6; i++) {
-          var cx = 44 + i * 30.4;
-          var encendida = i < hechas;
-          gemas += '<circle cx="' + cx.toFixed(1) + '" cy="34" r="8.5" ' +
-            (encendida
-              ? 'fill="' + GEMAS_NIVEL[i].color + '" stroke="#8a6414" stroke-width="1.6"' + (destacar === i ? ' class="gema-nueva"' : "")
-              : 'fill="none" stroke="rgba(232,182,76,0.45)" stroke-width="1.6" stroke-dasharray="3 3"') + "/>";
+      /* La corona en SVG (Ronda 8, punto 51: fuera el aspecto de
+         juguete/cartoon): diadema de realeza antigua en oro
+         trabajado — siete rayos-hoja sobrios sobre el aro, banda
+         ancha con surcos y filigrana incisa, y los 6 engastes de
+         la frente: la gema ganada va facetada en su engaste de
+         oro; la que falta es un hueco oscuro elegante con sus
+         garras. Gradientes metálicos en la familia del dorado de
+         la opción 8. `destacar` anima la gema nueva; `forzar`
+         fija cuántas gemas se encienden (la corona-meta del
+         Camino lleva las 6). Cada instancia usa ids propios: la
+         misma corona vive en varias pantallas a la vez. */
+      var coronaUID = 0;
+      var CORONA_RAYOS = [
+        { x: 26, base: 53.5, punta: 32, ancho: 3.3 },
+        { x: 56, base: 50.5, punta: 23, ancho: 3.6 },
+        { x: 82, base: 48.5, punta: 14, ancho: 4.0 },
+        { x: 110, base: 48, punta: 6, ancho: 4.6 },
+        { x: 138, base: 48.5, punta: 14, ancho: 4.0 },
+        { x: 164, base: 50.5, punta: 23, ancho: 3.6 },
+        { x: 194, base: 53.5, punta: 32, ancho: 3.3 }
+      ];
+      function coronaHoja(r) {
+        return "M" + r.x + " " + r.punta +
+          " C" + (r.x + r.ancho + 1.2) + " " + (r.punta + (r.base - r.punta) * 0.38) + ", " + (r.x + r.ancho) + " " + (r.base - 7) + ", " + (r.x + r.ancho - 0.5) + " " + r.base +
+          " L" + (r.x - r.ancho + 0.5) + " " + r.base +
+          " C" + (r.x - r.ancho) + " " + (r.base - 7) + ", " + (r.x - r.ancho - 1.2) + " " + (r.punta + (r.base - r.punta) * 0.38) + ", " + r.x + " " + r.punta + " Z";
+      }
+      function coronaEngasteSVG(uid, i, destacar) {
+        var cx = 44 + i * 30.4, cy = 69;
+        var s = '<circle cx="' + cx + '" cy="' + cy + '" r="10.6" fill="url(#coronaEng' + uid + ')" stroke="#7c5a10" stroke-width="1.1"/>' +
+          '<circle cx="' + cx + '" cy="' + cy + '" r="9.3" fill="none" stroke="rgba(80,52,4,0.6)" stroke-width="0.7"/>';
+        if (i < coronaHechasActual) {
+          s += '<g' + (destacar === i ? ' class="gema-nueva"' : "") + ">" +
+            '<circle cx="' + cx + '" cy="' + cy + '" r="7.7" fill="' + GEMAS_NIVEL[i].color + '" stroke="rgba(58,34,0,0.5)" stroke-width="0.8"/>' +
+            '<polygon points="' + (cx - 3.4) + "," + (cy - 3.4) + " " + (cx + 3.4) + "," + (cy - 3.4) + " " + (cx + 5.8) + "," + (cy + 1) + " " + cx + "," + (cy + 6.4) + " " + (cx - 5.8) + "," + (cy + 1) + '" fill="rgba(255,255,255,0.20)"/>' +
+            '<path d="M' + (cx - 5.8) + " " + (cy + 1) + " H" + (cx + 5.8) + '" stroke="rgba(255,255,255,0.38)" stroke-width="0.7"/>' +
+            '<path d="M' + (cx - 3.4) + " " + (cy - 3.4) + " L" + cx + " " + (cy + 6.4) + " M" + (cx + 3.4) + " " + (cy - 3.4) + " L" + cx + " " + (cy + 6.4) + '" stroke="rgba(0,0,0,0.20)" stroke-width="0.6" fill="none"/>' +
+            '<ellipse cx="' + (cx - 2.7) + '" cy="' + (cy - 3.6) + '" rx="2.3" ry="1.25" transform="rotate(-24 ' + (cx - 2.7) + " " + (cy - 3.6) + ')" fill="rgba(255,255,255,0.65)"/>' +
+            "</g>";
+        } else {
+          var gar = "";
+          for (var k = 0; k < 4; k++) {
+            var ang = (45 + k * 90) * Math.PI / 180;
+            gar += "M" + (cx + Math.cos(ang) * 8.6).toFixed(1) + " " + (cy + Math.sin(ang) * 8.6).toFixed(1) +
+              " L" + (cx + Math.cos(ang) * 6.4).toFixed(1) + " " + (cy + Math.sin(ang) * 6.4).toFixed(1) + " ";
+          }
+          s += '<circle cx="' + cx + '" cy="' + cy + '" r="7.7" fill="url(#coronaHue' + uid + ')" stroke="rgba(0,0,0,0.6)" stroke-width="0.8"/>' +
+            '<path d="' + gar + '" stroke="rgba(232,182,76,0.55)" stroke-width="1.1"/>' +
+            '<circle cx="' + cx + '" cy="' + cy + '" r="1" fill="rgba(232,182,76,0.30)"/>';
         }
-        return '<svg viewBox="0 0 220 92" fill="none" aria-hidden="true">' +
-          '<path d="M18 74 L8 26 L58 50 L110 12 L162 50 L212 26 L202 74 Z" fill="rgba(232,182,76,0.12)" stroke="#e8b64c" stroke-width="3" stroke-linejoin="round"/>' +
-          '<path d="M18 82 H202" stroke="#e8b64c" stroke-width="3" stroke-linecap="round"/>' + gemas + "</svg>";
+        return s;
+      }
+      var coronaHechasActual = 0;
+      function coronaSVG(destacar, forzar) {
+        var hechas = (typeof forzar === "number") ? forzar : tramosCompletados();
+        coronaHechasActual = hechas;
+        var uid = ++coronaUID;
+        var s = '<svg viewBox="0 0 220 92" fill="none" aria-hidden="true"><defs>' +
+          '<linearGradient id="coronaOroB' + uid + '" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0" stop-color="#f7dc8d"/><stop offset="0.38" stop-color="#f2cd77"/><stop offset="0.68" stop-color="#e8b64c"/><stop offset="1" stop-color="#c08f2e"/></linearGradient>' +
+          '<linearGradient id="coronaOroR' + uid + '" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0" stop-color="#f9e29c"/><stop offset="0.55" stop-color="#eec25e"/><stop offset="1" stop-color="#d29a33"/></linearGradient>' +
+          '<radialGradient id="coronaEng' + uid + '" cx="0.38" cy="0.32" r="0.95">' +
+          '<stop offset="0" stop-color="#f6d67c"/><stop offset="0.72" stop-color="#c99b34"/><stop offset="1" stop-color="#9c7418"/></radialGradient>' +
+          '<radialGradient id="coronaHue' + uid + '" cx="0.5" cy="0.42" r="0.75">' +
+          '<stop offset="0" stop-color="#3a2c17"/><stop offset="0.7" stop-color="#231809"/><stop offset="1" stop-color="#140d04"/></radialGradient>' +
+          "</defs>";
+        for (var j = 0; j < CORONA_RAYOS.length; j++) {
+          var r = CORONA_RAYOS[j];
+          s += '<path d="' + coronaHoja(r) + '" fill="url(#coronaOroR' + uid + ')" stroke="#8a6414" stroke-width="1.05" stroke-linejoin="round"/>' +
+            '<path d="M' + r.x + " " + (r.punta + 5) + " L" + r.x + " " + (r.base - 4) + '" stroke="rgba(122,84,10,0.45)" stroke-width="0.8"/>';
+        }
+        s += '<path d="M13 55 Q110 43 207 55 L206 59.5 Q110 47.5 14 59.5 Z" fill="url(#coronaOroB' + uid + ')" stroke="#8a6414" stroke-width="0.9" stroke-linejoin="round"/>';
+        s += '<path d="M14 58 Q110 46.5 206 58 L201.5 80 Q110 90.5 18.5 80 Z" fill="url(#coronaOroB' + uid + ')" stroke="#8a6414" stroke-width="1.35" stroke-linejoin="round"/>';
+        s += '<path d="M20.5 61.5 Q110 50.5 199.5 61.5" stroke="rgba(255,244,205,0.5)" stroke-width="0.9" fill="none"/>';
+        s += '<path d="M21 63.5 Q110 52.5 199 63.5" stroke="rgba(122,84,10,0.5)" stroke-width="0.85" fill="none"/>';
+        s += '<path d="M21 77.5 Q110 87 199 77.5" stroke="rgba(122,84,10,0.5)" stroke-width="0.85" fill="none"/>';
+        var puntos = [59.2, 89.6, 120, 150.4, 180.8];
+        for (var q = 0; q < puntos.length; q++) {
+          s += '<circle cx="' + puntos[q] + '" cy="70.5" r="1.15" fill="rgba(122,84,10,0.6)"/>';
+        }
+        for (var i = 0; i < 6; i++) s += coronaEngasteSVG(uid, i, destacar);
+        return s + "</svg>";
+      }
+      /* La silueta de la misma corona para el punto final del
+         sendero del inicio (sustituye al emoji 👑): a ese tamaño
+         basta el perfil en oro oscuro sobre el halo. */
+      function coronaPuntoSVG() {
+        return '<svg viewBox="0 0 24 24" style="width:64%;height:auto;display:block" aria-hidden="true">' +
+          '<path d="M3.4 17.6 L4.9 8.2 L8.9 12.3 L12 5.2 L15.1 12.3 L19.1 8.2 L20.6 17.6 Z" fill="#8a6414"/>' +
+          '<path d="M3.6 20.2 H20.4" stroke="#8a6414" stroke-width="1.7" stroke-linecap="round"/></svg>';
       }
 
       function celebracionAbierta() {
@@ -5915,26 +5998,87 @@
          borde dorado, Cinzel) pero SIN código QR: la verificación
          pública es exclusiva del Título final. Lleva la corona
          con las gemas ganadas hasta ese nivel. */
+      /* La misma corona de la Ronda 8 en canvas (mini-diploma y
+         diploma del Título): diadema antigua en oro trabajado,
+         con sus engastes facetados o su hueco oscuro con garras.
+         Mismas coordenadas locales 220×92 que la versión SVG. */
       function dibujarCoronaCanvas(ctx, cx, cy, ancho, encendidas) {
         var k = ancho / 220;
         ctx.save();
         ctx.translate(cx - 110 * k, cy - 46 * k);
         ctx.scale(k, k);
-        var forma = new Path2D("M18 74 L8 26 L58 50 L110 12 L162 50 L212 26 L202 74 Z");
-        ctx.fillStyle = "rgba(166,124,26,0.16)";
-        ctx.fill(forma);
-        ctx.strokeStyle = "#a67c1a"; ctx.lineWidth = 3; ctx.lineJoin = "round";
-        ctx.stroke(forma);
-        ctx.beginPath(); ctx.moveTo(18, 82); ctx.lineTo(202, 82);
-        ctx.strokeStyle = "#a67c1a"; ctx.lineWidth = 3; ctx.stroke();
+        ctx.lineJoin = "round";
+        var oroB = ctx.createLinearGradient(0, 42, 0, 92);
+        oroB.addColorStop(0, "#f7dc8d"); oroB.addColorStop(0.38, "#f2cd77");
+        oroB.addColorStop(0.68, "#e8b64c"); oroB.addColorStop(1, "#c08f2e");
+        var oroR = ctx.createLinearGradient(0, 0, 0, 58);
+        oroR.addColorStop(0, "#f9e29c"); oroR.addColorStop(0.55, "#eec25e"); oroR.addColorStop(1, "#d29a33");
+        var j, r;
+        for (j = 0; j < CORONA_RAYOS.length; j++) {
+          r = CORONA_RAYOS[j];
+          var hoja = new Path2D(coronaHoja(r));
+          ctx.fillStyle = oroR; ctx.fill(hoja);
+          ctx.strokeStyle = "#8a6414"; ctx.lineWidth = 1.3; ctx.stroke(hoja);
+          ctx.beginPath(); ctx.moveTo(r.x, r.punta + 5); ctx.lineTo(r.x, r.base - 4);
+          ctx.strokeStyle = "rgba(122,84,10,0.45)"; ctx.lineWidth = 1; ctx.stroke();
+        }
+        ctx.fillStyle = oroB;
+        ctx.strokeStyle = "#8a6414"; ctx.lineWidth = 1.2;
+        var aro = new Path2D("M13 55 Q110 43 207 55 L206 59.5 Q110 47.5 14 59.5 Z");
+        ctx.fill(aro); ctx.stroke(aro);
+        ctx.lineWidth = 1.8;
+        var banda = new Path2D("M14 58 Q110 46.5 206 58 L201.5 80 Q110 90.5 18.5 80 Z");
+        ctx.fill(banda); ctx.stroke(banda);
+        ctx.lineWidth = 1.1; ctx.strokeStyle = "rgba(255,244,205,0.5)";
+        ctx.stroke(new Path2D("M20.5 61.5 Q110 50.5 199.5 61.5"));
+        ctx.strokeStyle = "rgba(122,84,10,0.5)";
+        ctx.stroke(new Path2D("M21 63.5 Q110 52.5 199 63.5"));
+        ctx.stroke(new Path2D("M21 77.5 Q110 87 199 77.5"));
+        ctx.fillStyle = "rgba(122,84,10,0.6)";
+        [59.2, 89.6, 120, 150.4, 180.8].forEach(function (px) {
+          ctx.beginPath(); ctx.arc(px, 70.5, 1.15, 0, Math.PI * 2); ctx.fill();
+        });
         for (var i = 0; i < 6; i++) {
-          ctx.beginPath();
-          ctx.arc(44 + i * 30.4, 34, 8.5, 0, Math.PI * 2);
+          var gx = 44 + i * 30.4, gy = 69;
+          var eng = ctx.createRadialGradient(gx - 3.5, gy - 3.5, 1, gx, gy, 11);
+          eng.addColorStop(0, "#f6d67c"); eng.addColorStop(0.72, "#c99b34"); eng.addColorStop(1, "#9c7418");
+          ctx.beginPath(); ctx.arc(gx, gy, 10.6, 0, Math.PI * 2);
+          ctx.fillStyle = eng; ctx.fill();
+          ctx.strokeStyle = "#7c5a10"; ctx.lineWidth = 1.4; ctx.stroke();
+          ctx.beginPath(); ctx.arc(gx, gy, 9.3, 0, Math.PI * 2);
+          ctx.strokeStyle = "rgba(80,52,4,0.6)"; ctx.lineWidth = 0.9; ctx.stroke();
           if (i < encendidas) {
+            ctx.beginPath(); ctx.arc(gx, gy, 7.7, 0, Math.PI * 2);
             ctx.fillStyle = GEMAS_NIVEL[i].color; ctx.fill();
-            ctx.strokeStyle = "#8a6414"; ctx.lineWidth = 1.6; ctx.stroke();
+            ctx.strokeStyle = "rgba(58,34,0,0.5)"; ctx.lineWidth = 1; ctx.stroke();
+            var tabla = new Path2D("M" + (gx - 3.4) + " " + (gy - 3.4) + " L" + (gx + 3.4) + " " + (gy - 3.4) +
+              " L" + (gx + 5.8) + " " + (gy + 1) + " L" + gx + " " + (gy + 6.4) + " L" + (gx - 5.8) + " " + (gy + 1) + " Z");
+            ctx.fillStyle = "rgba(255,255,255,0.20)"; ctx.fill(tabla);
+            ctx.beginPath(); ctx.moveTo(gx - 5.8, gy + 1); ctx.lineTo(gx + 5.8, gy + 1);
+            ctx.strokeStyle = "rgba(255,255,255,0.38)"; ctx.lineWidth = 0.9; ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(gx - 3.4, gy - 3.4); ctx.lineTo(gx, gy + 6.4);
+            ctx.moveTo(gx + 3.4, gy - 3.4); ctx.lineTo(gx, gy + 6.4);
+            ctx.strokeStyle = "rgba(0,0,0,0.20)"; ctx.lineWidth = 0.8; ctx.stroke();
+            ctx.save(); ctx.translate(gx - 2.7, gy - 3.6); ctx.rotate(-24 * Math.PI / 180);
+            ctx.beginPath(); ctx.ellipse(0, 0, 2.3, 1.25, 0, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(255,255,255,0.65)"; ctx.fill(); ctx.restore();
           } else {
-            ctx.strokeStyle = "rgba(138,100,20,0.5)"; ctx.lineWidth = 1.6; ctx.stroke();
+            var hue = ctx.createRadialGradient(gx, gy - 1, 1, gx, gy, 8.5);
+            hue.addColorStop(0, "#3a2c17"); hue.addColorStop(0.7, "#231809"); hue.addColorStop(1, "#140d04");
+            ctx.beginPath(); ctx.arc(gx, gy, 7.7, 0, Math.PI * 2);
+            ctx.fillStyle = hue; ctx.fill();
+            ctx.strokeStyle = "rgba(0,0,0,0.6)"; ctx.lineWidth = 1; ctx.stroke();
+            ctx.strokeStyle = "rgba(232,182,76,0.55)"; ctx.lineWidth = 1.3;
+            for (var g2 = 0; g2 < 4; g2++) {
+              var ang = (45 + g2 * 90) * Math.PI / 180;
+              ctx.beginPath();
+              ctx.moveTo(gx + Math.cos(ang) * 8.6, gy + Math.sin(ang) * 8.6);
+              ctx.lineTo(gx + Math.cos(ang) * 6.4, gy + Math.sin(ang) * 6.4);
+              ctx.stroke();
+            }
+            ctx.beginPath(); ctx.arc(gx, gy, 1, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(232,182,76,0.30)"; ctx.fill();
           }
         }
         ctx.restore();
@@ -6209,8 +6353,9 @@
               ctx.fillStyle = "#8a6414";
               ctx.font = "800 52px Cinzel, Georgia, serif";
               ctx.fillText("BIBLIONARIO", 540, 148);
-              ctx.font = "105px serif";
-              ctx.fillText("👑", 540, 292);
+              /* Ronda 8: la corona dibujada (diadema antigua de
+                 oro, con las 6 gemas ganadas) en vez del emoji 👑. */
+              dibujarCoronaCanvas(ctx, 540, 254, 370, 6);
               var tit = t("tituloDiplomaTitulo"), tSize = 86;
               ctx.fillStyle = "#6b4e12";
               do { ctx.font = "800 " + tSize + "px Cinzel, Georgia, serif"; tSize -= 4; }
@@ -6343,7 +6488,7 @@
             var esFinal = n === nombres.length - 1;
             var clase = "camino-estacion" + (esFinal ? " corona" : "") +
               (n < p.nivelIdx ? " hecha" : "") + (n === p.nivelIdx ? " actual" : "");
-            var punto = esFinal ? "👑" : (n < p.nivelIdx ? "✓" : String(n + 1));
+            var punto = esFinal ? coronaPuntoSVG() : (n < p.nivelIdx ? "✓" : String(n + 1));
             html += '<span class="' + clase + '"><span class="camino-punto">' + punto + "</span></span>";
             if (!esFinal) {
               html += '<span class="camino-tramo' + (n === nombres.length - 2 ? " rayo" : "") + '"></span>';
@@ -6411,6 +6556,11 @@
         if (btnTesoro) btnTesoro.textContent = t("caminoMiTesoro");
         var coronaSub = $("camino-corona-sub");
         if (coronaSub) coronaSub.textContent = t("caminoCoronaSub");
+        /* Ronda 8: la corona de la meta ya no es el emoji 👑,
+           sino la diadema nueva con las 6 gemas encendidas: es
+           la corona que espera al final del Camino. */
+        var coronaMeta = $("camino-corona-icono");
+        if (coronaMeta) coronaMeta.innerHTML = coronaSVG(null, 6);
         var bloque = $("camino-titulo-bloque");
         if (bloque) {
           bloque.hidden = !tituloEstado.entregado;
