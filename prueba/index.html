@@ -1477,6 +1477,62 @@
       /* ===== Diploma del Título de Biblionario (etapa D) ===== */
       .titulo-canvas-wrap { margin: 12px auto 4px; max-width: 320px; }
       .titulo-canvas-wrap canvas { width: 100%; height: auto; display: block; border-radius: 10px; box-shadow: var(--sombra); }
+      /* ============ Recompensas del Camino (Ronda 7) ============ */
+      /* La gema del tramo en la cabecera de cada tramo del mapa y
+         la línea del premio especial de ese nivel. */
+      .camino-mapa-cab-izq { display: inline-flex; align-items: center; gap: 8px; }
+      .camino-mapa-gema { width: 15px; height: 15px; flex: 0 0 auto; display: inline-flex; }
+      .camino-mapa-gema svg { width: 100%; height: 100%; display: block; }
+      .camino-mapa-premio { margin: 2px 0 8px; font-size: 0.82rem; color: var(--texto-suave); }
+      .camino-mapa-premio .premio-estado { font-weight: 700; }
+      .camino-mapa-tramo.hecho .camino-mapa-premio .premio-estado { color: #7bc47f; }
+      .camino-mapa-tramo.actual .camino-mapa-premio .premio-estado { color: var(--dorado); }
+      /* Entrada a «Mi tesoro» en la pantalla del Camino: la corona
+         pequeña con sus 6 huecos y el botón. El inicio no se toca. */
+      .camino-tesoro-entrada { max-width: 30rem; margin: 18px auto 0; text-align: center; }
+      .camino-corona-mini { width: 150px; margin: 0 auto 6px; }
+      .camino-corona-mini svg { width: 100%; height: auto; display: block; }
+      #btn-abrir-tesoro { margin-top: 4px; }
+      /* Pantalla «Mi tesoro» */
+      .tesoro-corona { width: 230px; margin: 10px auto 2px; }
+      .tesoro-corona svg { width: 100%; height: auto; display: block; }
+      .tesoro-nivel-actual { text-align: center; color: var(--texto-suave); font-size: 0.95rem; margin: 4px 0 0; }
+      .tesoro-nivel-actual b { color: var(--dorado); }
+      .tesoro-seccion { max-width: 30rem; margin: 22px auto 8px; text-align: left; font-family: Cinzel, Georgia, serif; color: var(--dorado); font-size: 1.02rem; }
+      .tesoro-diplomas { max-width: 30rem; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
+      .tesoro-diploma-btn { display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(232, 182, 76, 0.45); background: rgba(232, 182, 76, 0.08); color: var(--texto); font: inherit; font-size: 0.92rem; cursor: pointer; text-align: left; }
+      .tesoro-diploma-btn .gema-mini { width: 13px; height: 13px; flex: 0 0 auto; display: inline-flex; }
+      .tesoro-diploma-btn .gema-mini svg { width: 100%; height: 100%; }
+      .tesoro-diploma-btn.pendiente { opacity: 0.55; cursor: default; }
+      .tesoro-diploma-btn .diploma-fecha { color: var(--texto-suave); font-size: 0.82rem; white-space: nowrap; }
+      .tesoro-sellos { max-width: 30rem; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+      .tesoro-sello { border: 1px solid rgba(232, 182, 76, 0.25); border-radius: 14px; padding: 10px 6px 8px; text-align: center; background: rgba(255, 255, 255, 0.03); color: var(--texto-suave); font: inherit; cursor: default; }
+      .tesoro-sello .sello-ico { width: 40px; height: 40px; margin: 0 auto 4px; color: rgba(230, 225, 210, 0.35); }
+      .tesoro-sello .sello-ico svg { width: 100%; height: 100%; display: block; }
+      .tesoro-sello .sello-nombre { display: block; font-size: 0.8rem; font-weight: 700; line-height: 1.2; }
+      .tesoro-sello .sello-fecha { display: block; font-size: 0.7rem; margin-top: 2px; }
+      button.tesoro-sello { cursor: pointer; }
+      .tesoro-sello.sellado { border-color: rgba(232, 182, 76, 0.65); background: rgba(232, 182, 76, 0.1); color: var(--texto); }
+      .tesoro-sello.sellado .sello-ico { color: var(--dorado); filter: drop-shadow(0 0 6px rgba(232, 182, 76, 0.55)); }
+      /* Celebración de libro sellado: el medallón con el símbolo
+         del sello encendiéndose. */
+      .sello-medallon { width: 118px; height: 118px; margin: 2px auto 8px; border-radius: 50%; border: 2px solid var(--dorado); display: flex; align-items: center; justify-content: center; color: var(--dorado); background: radial-gradient(circle at 50% 42%, rgba(232, 182, 76, 0.28), rgba(232, 182, 76, 0.05) 70%); animation: sello-enciende 1.4s ease-out; }
+      .sello-medallon svg { width: 74px; height: 74px; display: block; }
+      @keyframes sello-enciende { 0% { transform: scale(0.7); opacity: 0.2; box-shadow: 0 0 0 rgba(232,182,76,0); } 55% { transform: scale(1.06); box-shadow: 0 0 42px rgba(232,182,76,0.65); } 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 18px rgba(232,182,76,0.35); } }
+      @media (prefers-reduced-motion: reduce) { .sello-medallon { animation: none; } }
+      .sello-versiculo { font-style: italic; font-size: 1rem; line-height: 1.5; margin: 10px auto 2px; max-width: 26rem; }
+      .sello-cita { color: var(--dorado); font-weight: 800; font-family: Cinzel, Georgia, serif; margin: 2px auto 6px; }
+      /* Celebración de nivel: la corona con la gema nueva. */
+      .nivel-corona { width: 210px; margin: 2px auto 6px; }
+      .nivel-corona svg { width: 100%; height: auto; display: block; }
+      .nivel-corona .gema-nueva { animation: gema-enciende 1.6s ease-out; transform-origin: center; transform-box: fill-box; }
+      @keyframes gema-enciende { 0% { transform: scale(0.2); opacity: 0; } 55% { transform: scale(1.5); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) { .nivel-corona .gema-nueva { animation: none; } }
+      /* Velo del libro en «Mi tesoro» (su versículo y su tarjeta) */
+      .tesoro-libro-simbolo { width: 84px; height: 84px; margin: 0 auto 6px; color: var(--dorado); }
+      .tesoro-libro-simbolo svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 0 8px rgba(232, 182, 76, 0.5)); }
+      .lienzo-ancho-wrap { margin: 12px auto 4px; max-width: 400px; }
+      .lienzo-ancho-wrap canvas { width: 100%; height: auto; display: block; border-radius: 10px; box-shadow: var(--sombra); }
       .titulo-nombre-fila { margin: 14px auto 0; max-width: 320px; text-align: left; }
       .titulo-nombre-fila label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--texto-suave); margin-bottom: 6px; }
       .titulo-nombre-fila input {
@@ -3093,6 +3149,13 @@
         <h2 class="vers-titulo" id="camino-mapa-titulo">El Camino a Biblionario</h2>
         <p class="camino-mapa-sub" id="camino-mapa-sub"></p>
         <div id="camino-mapa"></div>
+        <!-- Ronda 7: la entrada a «Mi tesoro» vive aquí, en la
+             pantalla del Camino (el inicio no se toca): la corona
+             pequeña con sus 6 huecos y el botón a la colección. -->
+        <div class="camino-tesoro-entrada">
+          <div class="camino-corona-mini" id="camino-corona-mini" aria-hidden="true"></div>
+          <button class="btn-secundario" id="btn-abrir-tesoro" type="button">Mi tesoro</button>
+        </div>
         <div class="camino-corona-final" id="camino-corona-final">
           <span class="camino-corona-icono" aria-hidden="true">👑</span>
           <p class="camino-corona-nombre">BIBLIONARIO</p>
@@ -3104,6 +3167,25 @@
         </div>
         <div class="camino-volver-barra">
           <button class="btn-principal" id="btn-camino-volver" type="button">Volver</button>
+        </div>
+      </section>
+
+      <!-- ============ PANTALLA «MI TESORO» (Ronda 7) ============
+           La colección del jugador: la corona con sus 6 gemas,
+           el nivel actual y sus mini-diplomas, los 66 sellos y
+           los versículos tesoro ganados. Se entra desde la
+           pantalla del Camino. -->
+      <section id="pantalla-tesoro" class="pantalla" hidden>
+        <h2 class="vers-titulo" id="tesoro-titulo">Mi tesoro</h2>
+        <p class="camino-mapa-sub" id="tesoro-sub"></p>
+        <div class="tesoro-corona" id="tesoro-corona" aria-hidden="true"></div>
+        <p class="tesoro-nivel-actual" id="tesoro-nivel-actual"></p>
+        <h3 class="tesoro-seccion" id="tesoro-diplomas-titulo"></h3>
+        <div class="tesoro-diplomas" id="tesoro-diplomas"></div>
+        <h3 class="tesoro-seccion" id="tesoro-sellos-titulo"></h3>
+        <div class="tesoro-sellos" id="tesoro-sellos"></div>
+        <div class="camino-volver-barra">
+          <button class="btn-principal" id="btn-tesoro-volver" type="button">Volver</button>
         </div>
       </section>
     </main>
@@ -3135,13 +3217,78 @@
          Infinito» (hoy nace desbloqueado). Eran pantallas
          inalcanzables: ni el HTML ni su código quedan. -->
 
-    <!-- ============ MODAL LIBRO SELLADO (Camino) ============ -->
+    <!-- ============ MODAL LIBRO SELLADO (Camino) ============
+         Ronda 7: la celebración completa del diseño — el sello
+         encendiéndose, el versículo tesoro ganado, la línea de
+         avance y los botones de tarjeta / compartir / seguir.
+         Nunca interrumpe: se muestra al cierre natural de cada
+         modo o al reabrir la app si quedó pendiente. -->
     <div class="velo velo-celebracion" id="velo-libro-sellado" hidden>
       <div class="modal" role="dialog" aria-modal="true" aria-labelledby="sello-titulo">
-        <p class="sello-icono" aria-hidden="true">📖</p>
+        <div class="sello-medallon" id="sello-simbolo" aria-hidden="true"></div>
         <h3 id="sello-titulo">¡Libro sellado!</h3>
+        <p class="sello-versiculo" id="sello-versiculo"></p>
+        <p class="sello-cita" id="sello-cita"></p>
         <p class="sub" id="sello-texto"></p>
-        <button class="btn-cerrar" id="btn-sello-continuar" type="button">¡Seguir!</button>
+        <button class="btn-cerrar" id="btn-sello-tarjeta" type="button">Ver mi tarjeta</button>
+        <button class="btn-ver-resultado" id="btn-sello-compartir" type="button">Compartir</button>
+        <button class="btn-ver-resultado" id="btn-sello-continuar" type="button">¡Seguir!</button>
+      </div>
+    </div>
+
+    <!-- ============ MODAL PREMIO DE NIVEL (Ronda 7) ============
+         Celebración propia, más solemne: la corona recibe la
+         gema del tramo completado y nace el mini-diploma. -->
+    <div class="velo velo-celebracion" id="velo-nivel" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="nivel-titulo-txt">
+        <div class="nivel-corona" id="nivel-corona" aria-hidden="true"></div>
+        <h3 id="nivel-titulo-txt">¡Nuevo nivel!</h3>
+        <p class="sub" id="nivel-texto"></p>
+        <button class="btn-cerrar" id="btn-nivel-diploma" type="button">Ver mi mini-diploma</button>
+        <button class="btn-ver-resultado" id="btn-nivel-seguir" type="button">¡Seguir!</button>
+      </div>
+    </div>
+
+    <!-- ============ MODAL TARJETA DEL LIBRO (Ronda 7) ============
+         La tarjeta pergamino 4:5 generada al momento: se ve y
+         se comparte (solo imagen + enlace). -->
+    <div class="velo" id="velo-tarjeta" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tarjeta-titulo">
+        <h3 id="tarjeta-titulo">Tarjeta del libro</h3>
+        <div class="titulo-canvas-wrap" id="tarjeta-canvas-wrap"></div>
+        <button class="btn-cerrar" id="btn-tarjeta-compartir" type="button">Compartir tarjeta</button>
+        <button class="btn-ver-resultado" id="btn-tarjeta-cerrar" type="button">Cerrar</button>
+      </div>
+    </div>
+
+    <!-- ============ MODAL MINI-DIPLOMA DE NIVEL (Ronda 7) ============
+         El mismo formato serio del Título, en horizontal y SIN
+         QR: la verificación pública es exclusiva del Título. -->
+    <div class="velo" id="velo-minidiploma" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="minidiploma-titulo">
+        <h3 id="minidiploma-titulo">Mini-diploma de nivel</h3>
+        <div class="lienzo-ancho-wrap" id="minidiploma-canvas-wrap"></div>
+        <div class="titulo-nombre-fila">
+          <label for="minidiploma-nombre" id="minidiploma-nombre-etiqueta">Tu nombre en el diploma:</label>
+          <input id="minidiploma-nombre" type="text" maxlength="40" autocomplete="name">
+        </div>
+        <button class="btn-cerrar" id="btn-minidiploma-compartir" type="button">Compartir</button>
+        <button class="btn-ver-resultado" id="btn-minidiploma-cerrar" type="button">Cerrar</button>
+      </div>
+    </div>
+
+    <!-- ============ MODAL LIBRO DEL TESORO (Ronda 7) ============
+         Al tocar un sello encendido en «Mi tesoro»: su
+         versículo completo, la fecha de sellado y su tarjeta. -->
+    <div class="velo" id="velo-tesoro-libro" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tesoro-libro-nombre">
+        <div class="tesoro-libro-simbolo" id="tesoro-libro-simbolo" aria-hidden="true"></div>
+        <h3 id="tesoro-libro-nombre"></h3>
+        <p class="sello-versiculo" id="tesoro-libro-versiculo"></p>
+        <p class="sello-cita" id="tesoro-libro-cita"></p>
+        <p class="sub" id="tesoro-libro-fecha"></p>
+        <button class="btn-cerrar" id="btn-tesoro-libro-tarjeta" type="button">Ver mi tarjeta</button>
+        <button class="btn-ver-resultado" id="btn-tesoro-libro-cerrar" type="button">Cerrar</button>
       </div>
     </div>
 
@@ -3553,6 +3700,50 @@
               : "Ya llevas " + sellados + " de 66 libros sellados. El Camino sigue con " + siguiente + ".";
           },
           selloSeguir: "¡Seguir!",
+          selloVerTarjeta: "Ver mi tarjeta",
+          selloCompartir: "Compartir",
+          selloAvance: function (numLibro, nivel) {
+            return "Libro " + numLibro + " de 66 · Nivel " + nivel;
+          },
+          caminoMiTesoro: "Mi tesoro",
+          caminoPremioTexto: function (gema) {
+            return "Premio del nivel: gema " + gema + " + mini-diploma";
+          },
+          premioGanado: "¡Ganado!",
+          premioEnCurso: "Tu tramo actual",
+          premioPorAlcanzar: "Al completar el tramo",
+          nivelCelebTitulo: function (nivel) { return "¡Nivel alcanzado: " + nivel + "!"; },
+          nivelCelebTexto: function (gema, nivel) {
+            return "Completaste un tramo entero del Camino: tu corona recibe la gema " + gema +
+              " y el mini-diploma de " + nivel + " queda guardado en Mi tesoro.";
+          },
+          nivelVerDiploma: "Ver mi mini-diploma",
+          tesoroTitulo: "Mi tesoro",
+          tesoroSub: "Tus sellos, tus versículos y tus premios del Camino, guardados para siempre.",
+          tesoroNivelActual: function (nivel, sellados) {
+            return "Nivel actual: " + nivel + " · " + sellados + " de 66 libros sellados";
+          },
+          tesoroDiplomasTitulo: "Premio especial de cada nivel",
+          tesoroSellosTitulo: "Los 66 sellos y sus versículos tesoro",
+          tesoroDiplomaDe: function (nivel) { return "Mini-diploma de " + nivel; },
+          tesoroDiplomaPendiente: function (nivel) { return "Nivel " + nivel + " — aún por alcanzar"; },
+          tesoroSelladoEl: function (fecha) { return "Sellado el " + fecha; },
+          tarjetaTitulo: function (libro) { return "Tarjeta de " + libro; },
+          tarjetaCompartir: "Compartir tarjeta",
+          tarjetaCerrar: "Cerrar",
+          tarjetaCabecera: "Biblionario — El Camino",
+          tarjetaSellado: "SELLADO",
+          tarjetaPieLibro: function (numLibro, nivel) {
+            return "Libro " + numLibro + " de 66 · Nivel " + nivel;
+          },
+          tarjetaFecha: function (fecha) { return "Sellado el " + fecha; },
+          miniDiplomaRotulo: "MINI-DIPLOMA DE NIVEL",
+          miniDiplomaTexto: function (desde, hasta) {
+            return "Selló los libros " + desde + "–" + hasta + " del Camino a Biblionario";
+          },
+          miniDiplomaTitulo: function (nivel) { return "Mini-diploma · " + nivel; },
+          miniDiplomaCompartir: "Compartir",
+          miniDiplomaCerrar: "Cerrar",
           infinitoInfoTitulo: "♾️ Modo Infinito",
           infinitoInfoSub: "¿CÓMO FUNCIONA?",
           infinitoInfo1: "Preguntas de <b>toda la Biblia</b>, mezcladas y <b>sin repetir</b>: el banco completo antes de que veas la primera otra vez.",
@@ -3902,6 +4093,50 @@
               : "You have sealed " + sellados + " of 66 books. The Path continues with " + siguiente + ".";
           },
           selloSeguir: "Keep going!",
+          selloVerTarjeta: "View my card",
+          selloCompartir: "Share",
+          selloAvance: function (numLibro, nivel) {
+            return "Book " + numLibro + " of 66 · Level " + nivel;
+          },
+          caminoMiTesoro: "My Treasure",
+          caminoPremioTexto: function (gema) {
+            return "Level prize: " + gema + " gem + mini-diploma";
+          },
+          premioGanado: "Earned!",
+          premioEnCurso: "Your current stretch",
+          premioPorAlcanzar: "When you complete the stretch",
+          nivelCelebTitulo: function (nivel) { return "Level reached: " + nivel + "!"; },
+          nivelCelebTexto: function (gema, nivel) {
+            return "You completed a whole stretch of the Path: your crown receives the " + gema +
+              " gem and the " + nivel + " mini-diploma is now kept in My Treasure.";
+          },
+          nivelVerDiploma: "View my mini-diploma",
+          tesoroTitulo: "My Treasure",
+          tesoroSub: "Your seals, your verses and your Path prizes, kept forever.",
+          tesoroNivelActual: function (nivel, sellados) {
+            return "Current level: " + nivel + " · " + sellados + " of 66 books sealed";
+          },
+          tesoroDiplomasTitulo: "Special prize of each level",
+          tesoroSellosTitulo: "The 66 seals and their treasure verses",
+          tesoroDiplomaDe: function (nivel) { return nivel + " mini-diploma"; },
+          tesoroDiplomaPendiente: function (nivel) { return nivel + " level — not reached yet"; },
+          tesoroSelladoEl: function (fecha) { return "Sealed on " + fecha; },
+          tarjetaTitulo: function (libro) { return libro + " card"; },
+          tarjetaCompartir: "Share card",
+          tarjetaCerrar: "Close",
+          tarjetaCabecera: "Biblionario — The Path",
+          tarjetaSellado: "SEALED",
+          tarjetaPieLibro: function (numLibro, nivel) {
+            return "Book " + numLibro + " of 66 · " + nivel + " level";
+          },
+          tarjetaFecha: function (fecha) { return "Sealed on " + fecha; },
+          miniDiplomaRotulo: "LEVEL MINI-DIPLOMA",
+          miniDiplomaTexto: function (desde, hasta) {
+            return "Sealed books " + desde + "–" + hasta + " of the Path to Biblionario";
+          },
+          miniDiplomaTitulo: function (nivel) { return "Mini-diploma · " + nivel; },
+          miniDiplomaCompartir: "Share",
+          miniDiplomaCerrar: "Close",
           infinitoInfoTitulo: "♾️ Endless Mode",
           infinitoInfoSub: "HOW DOES IT WORK?",
           infinitoInfo1: "Questions from <b>the whole Bible</b>, shuffled and <b>with no repeats</b>: the full bank before you see the first one again.",
@@ -4827,7 +5062,14 @@
          y Biblionario (55 en adelante, con la meta en 66). */
       var CAMINO_UMBRALES = [0, 11, 22, 33, 44, 55];
       var CLAVE_CAMINO = "biblionario_camino_v1";
-      var caminoEstado = { aciertos: {}, sellados: [] };
+      /* Ronda 7 (recompensas): además de aciertos y sellados se
+         guarda la fecha (y el modo) de cada sello en sellosInfo,
+         la fecha de cada nivel completado en nivelesFecha y la
+         cola de celebraciones pendientes (celebPendientes): si
+         la app se cierra antes de mostrar una celebración, esta
+         aparece al reabrir — ninguna recompensa se pierde. Los
+         registros viejos (sin estos campos) cargan igual. */
+      var caminoEstado = { aciertos: {}, sellados: [], sellosInfo: {}, nivelesFecha: {}, celebPendientes: [] };
 
       function caminoGuardar() {
         try { localStorage.setItem(CLAVE_CAMINO, JSON.stringify(caminoEstado)); }
@@ -4841,6 +5083,9 @@
           if (d && typeof d === "object") {
             if (d.aciertos && typeof d.aciertos === "object") caminoEstado.aciertos = d.aciertos;
             if (Array.isArray(d.sellados)) caminoEstado.sellados = d.sellados;
+            if (d.sellosInfo && typeof d.sellosInfo === "object") caminoEstado.sellosInfo = d.sellosInfo;
+            if (d.nivelesFecha && typeof d.nivelesFecha === "object") caminoEstado.nivelesFecha = d.nivelesFecha;
+            if (Array.isArray(d.celebPendientes)) caminoEstado.celebPendientes = d.celebPendientes;
           }
         } catch (e) { /* datos dañados: se empieza de cero */ }
       }
@@ -4926,9 +5171,29 @@
       function caminoAciertosDe(libroCanonico) {
         return caminoEstado.aciertos[libroCanonico] || 0;
       }
+      /* Fecha larga de una fecha ISO guardada («2026-10-26»),
+         en el idioma actual, para tarjetas y diplomas. */
+      function caminoFechaLarga(iso) {
+        if (!iso) return "";
+        var partes = String(iso).split("-");
+        var f = partes.length === 3
+          ? new Date(Number(partes[0]), Number(partes[1]) - 1, Number(partes[2]))
+          : new Date(iso);
+        if (isNaN(f.getTime())) return String(iso);
+        try {
+          return f.toLocaleDateString(IDIOMA === "en" ? "en-US" : "es-ES", { day: "numeric", month: "long", year: "numeric" });
+        } catch (e) { return String(iso); }
+      }
+
       /* Registra un acierto en un libro (nombre en cualquier
-         idioma). Devuelve true solo si ese acierto SELLA el libro. */
-      function caminoRegistrarAcierto(libro) {
+         idioma). Devuelve true solo si ese acierto SELLA el libro.
+         Ronda 7: al sellar se guarda la fecha y el modo del
+         acierto 10, la celebración del libro queda en la cola de
+         pendientes y, si ese sello completa un tramo (11, 22,
+         33, 44 o 55 libros), también la del premio de nivel con
+         la fecha del tramo. El libro 66 no genera mini-diploma:
+         lo corona el Título (flujo existente). */
+      function caminoRegistrarAcierto(libro, modo) {
         var canon = caminoLibroCanonico(libro);
         if (!canon || canon === "Biblia") return false;
         caminoEstado.aciertos[canon] = caminoAciertosDe(canon) + 1;
@@ -4936,6 +5201,15 @@
         if (caminoEstado.aciertos[canon] >= 10 && caminoEstado.sellados.indexOf(canon) < 0) {
           caminoEstado.sellados.push(canon);
           selladoAhora = true;
+          var hoy = fechaHoy();
+          caminoEstado.sellosInfo[canon] = { fecha: hoy, modo: modo || "" };
+          caminoEstado.celebPendientes.push({ tipo: "libro", libro: canon });
+          var total = caminoEstado.sellados.length;
+          if (total % 11 === 0 && total < 66) {
+            var tramo = total / 11 - 1;
+            caminoEstado.nivelesFecha[tramo] = hoy;
+            caminoEstado.celebPendientes.push({ tipo: "nivel", tramo: tramo });
+          }
         }
         caminoGuardar();
         return selladoAhora;
@@ -5189,24 +5463,641 @@
       function registrarAciertoCamino() {
         var libro = libroDeActual();
         if (!libro) return;
-        if (caminoRegistrarAcierto(libro)) {
+        if (caminoRegistrarAcierto(libro, estado.modo)) {
           estado.selloPendiente = caminoNombreLibro(caminoLibroCanonico(libro));
         }
       }
 
-      /* Celebración de libro sellado: sigue el patrón de los
-         velos de celebración existentes (confeti incluido). Si
-         hay una acción en espera (avanzar de pregunta), se
-         ejecuta al tocar «¡Seguir!». */
+      /* ============ Recompensas del Camino (Ronda 7) ============
+         Diseño aprobado por Alexis el 2026-10-26 (opción 5):
+         sello único por libro, su versículo tesoro en «Mi
+         tesoro», la tarjeta pergamino 4:5 y el premio especial
+         de cada nivel (gema + mini-diploma sin QR). Los textos
+         de los versículos tesoro se extrajeron PALABRA POR
+         PALABRA de las fuentes del repo: RV1909
+         (biblia/rv1909/spaRV1909_vpl.txt) y WEB
+         (biblia/engweb/eng-web_vpl.txt). Los 10 que el diseño
+         marcaba «verificar texto» quedan así verificados, y
+         los que venían recortados se completaron con el
+         versículo que cierra la frase (Job 19:25-26, Efesios
+         2:8-9). Jonás: el voto es RV1909 2:10, que en la
+         numeración actual se cita 2:9. */
+      var SELLOS_SIMBOLOS = [
+        "<path d=\"M8 36h32\"/><path d=\"M15 36a9 9 0 0 1 18 0\"/><path d=\"M24 20v-5M13 24l-4-4M35 24l4-4\"/>",
+        "<path d=\"M7 38c6 0 9-6 9-13S13 12 9 7M41 38c-6 0-9-6-9-13s3-13 7-18\"/><path d=\"M19 40h10\"/>",
+        "<path d=\"M24 5c4 6 9 10 9 18a9 9 0 1 1-18 0c0-8 5-12 9-18z\"/><path d=\"M24 25c2 3 4 4 4 7a4 4 0 1 1-8 0c0-3 2-4 4-7z\"/>",
+        "<path d=\"M24 5v38\"/><path d=\"M14 9h20\"/><path d=\"M24 13c-7 2-7 9 0 11 6 2 6 7 1 10\"/>",
+        "<rect x=\"9\" y=\"8\" width=\"13\" height=\"32\" rx=\"6\"/><rect x=\"26\" y=\"8\" width=\"13\" height=\"32\" rx=\"6\"/><path d=\"M13 18h5M13 25h5M30 18h5M30 25h5\"/>",
+        "<path d=\"M8 33c12 1 25-5 31-17l3 9c-7 10-20 15-34 13z\"/><circle cx=\"10\" cy=\"34\" r=\"2\"/>",
+        "<path d=\"M24 5c2 3 4 5 4 8a4 4 0 1 1-8 0c0-3 2-5 4-8z\"/><path d=\"M18 20h12l2 20H16z\"/><path d=\"M16 28h16\"/>",
+        "<path d=\"M24 44V22\"/><path d=\"M24 22c-5 0-8-3-8-9 5 0 8 3 8 9zM24 22c5 0 8-3 8-9-5 0-8 3-8 9zM24 32c-5 0-8-3-8-9 5 0 8 3 8 9zM24 32c5 0 8-3 8-9-5 0-8 3-8 9z\"/>",
+        "<path d=\"M15 7c-2 13 4 25 16 32l5-7C27 27 20 18 20 7z\"/><ellipse cx=\"16\" cy=\"7\" rx=\"5\" ry=\"2.5\"/>",
+        "<path d=\"M8 33L6 17l10 7 8-13 8 13 10-7-2 16z\"/><path d=\"M9 40h30\"/>",
+        "<path d=\"M10 40V21l14-11 14 11v19\"/><path d=\"M6 40h36\"/><path d=\"M20 40V29h8v11\"/><path d=\"M24 5v5\"/>",
+        "<path d=\"M16 7c5 3 11 3 16 0l4 33H12z\"/><path d=\"M12 40h24\"/><path d=\"M17 16h14\"/>",
+        "<rect x=\"10\" y=\"28\" width=\"28\" height=\"10\"/><path d=\"M5 42h38\"/><path d=\"M14 28c0-8 6-12 10-7M34 28c0-8-6-12-10-7\"/>",
+        "<path d=\"M15 10a7 7 0 1 1 3 13h13a7 7 0 1 0-2-13 9 9 0 0 0-14 0z\"/><path d=\"M13 31v9M24 31v9M35 31v9M8 43h32\"/>",
+        "<rect x=\"12\" y=\"12\" width=\"24\" height=\"24\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/><circle cx=\"36\" cy=\"10\" r=\"3\"/><circle cx=\"12\" cy=\"38\" r=\"3\"/><circle cx=\"36\" cy=\"38\" r=\"3\"/><path d=\"M18 21h12M18 28h12\"/>",
+        "<path d=\"M6 22h36M6 31h36M6 40h36\"/><path d=\"M6 22v18M18 22v9M30 22v9M12 31v9M24 31v9M36 31v9M42 22v18\"/>",
+        "<path d=\"M9 39L33 15\"/><circle cx=\"37\" cy=\"11\" r=\"4.5\"/><path d=\"M13 31l5 5\"/>",
+        "<path d=\"M8 9h32M13 17h24M18 25h15M21 33h9M24 41h3\"/>",
+        "<path d=\"M13 6v36\"/><path d=\"M13 6c15 0 21 6 21 14 0 9-9 13-21 13\"/><path d=\"M19 10v25M25 11v23M31 15v16\"/>",
+        "<path d=\"M24 8c2 3 4 5 4 8a4 4 0 1 1-8 0c0-3 2-5 4-8z\"/><path d=\"M9 29h23l5 6c-7 5-22 5-29 0z\"/><path d=\"M37 29c3-1 5 0 6 2-2 2-4 2-6 1\"/>",
+        "<path d=\"M14 5h20M14 43h20\"/><path d=\"M16 5c0 9 6 11 8 14-2 3-8 5-8 14M32 5c0 9-6 11-8 14 2 3 8 5 8 14\"/>",
+        "<path d=\"M24 42V25\"/><path d=\"M24 25c-1-7-6-11-12-11 0 7 4 11 9 12M24 25c1-7 6-11 12-11 0 7-4 11-9 12M24 25c-2-6-2-12 0-17 3 4 3 11 0 17z\"/>",
+        "<path d=\"M15 33l5-11h8l5 11-5 8H20z\"/><path d=\"M24 7c2 2 3 4 3 7M17 10c1 2 1 4 0 6M31 10c-1 2-1 4 0 6\"/>",
+        "<path d=\"M18 9h12\"/><path d=\"M17 9C14 15 13 19 13 24c0 9 5 16 11 16s11-7 11-16c0-5-1-9-4-15\"/><path d=\"M11 43h26\"/>",
+        "<path d=\"M24 5c5 8 10 13 10 20a10 10 0 1 1-20 0c0-7 5-12 10-20z\"/>",
+        "<circle cx=\"24\" cy=\"24\" r=\"15\"/><circle cx=\"24\" cy=\"24\" r=\"6\"/><path d=\"M24 9v6M24 33v6M9 24h6M33 24h6\"/>",
+        "<circle cx=\"24\" cy=\"24\" r=\"16\" stroke-dasharray=\"3 4.5\"/><circle cx=\"24\" cy=\"24\" r=\"9.5\"/><circle cx=\"20.5\" cy=\"22\" r=\"0.5\"/><circle cx=\"27.5\" cy=\"22\" r=\"0.5\"/><path d=\"M21 29c2 1.2 4 1.2 6 0\"/>",
+        "<circle cx=\"24\" cy=\"29\" r=\"11\"/><path d=\"M18 13l6-6 6 6-6 5z\"/>",
+        "<path d=\"M27 5c7 2 12 8 12 15H19C15 13 19 7 27 5z\"/><path d=\"M15 29c0 3-2 4-2 7M23 31c0 3-2 4-2 7M31 29c0 3-2 4-2 7\"/>",
+        "<path d=\"M24 4v17\"/><path d=\"M24 21l6 10a6.5 6.5 0 1 1-13 0z\"/><path d=\"M8 44h32\" stroke-dasharray=\"3 3\"/>",
+        "<path d=\"M5 40L20 13l6 10 4-6 13 23z\"/><circle cx=\"20\" cy=\"8\" r=\"2\"/>",
+        "<path d=\"M4 24c5-7 12-11 19-11 5 0 9 2 12 5l8-5v22l-8-5c-3 3-7 5-12 5-7 0-14-4-19-11z\"/><circle cx=\"13\" cy=\"21\" r=\"0.5\"/>",
+        "<path d=\"M24 7v27\"/><path d=\"M10 12h28\"/><path d=\"M14 12l-5 11a6 3.5 0 0 0 10 0zM34 12l-5 11a6 3.5 0 0 0 10 0z\"/><path d=\"M17 41h14M24 34v7\"/>",
+        "<path d=\"M16 43V13h16v30\"/><path d=\"M16 13V8h4.5v5M21.75 13V8h4.5v5M27.5 13V8H32v5\"/><path d=\"M21.5 43V31h5v12\"/>",
+        "<path d=\"M15 43V19M33 43V19\"/><path d=\"M10 19h28l-4-9H14z\"/><path d=\"M19 43V27h10v16\"/><path d=\"M9 43h30\"/>",
+        "<path d=\"M21 31V11l14-3v13\"/><circle cx=\"17\" cy=\"31\" r=\"4.5\"/><circle cx=\"31\" cy=\"21\" r=\"4.5\"/>",
+        "<path d=\"M9 23L24 11l15 12\"/><path d=\"M14 21v19h20V21\"/><path d=\"M24 11V4M20.5 7.5h7\"/>",
+        "<path d=\"M24 34V20\"/><path d=\"M24 34c-8 0-13-6-13-14M24 34c8 0 13-6 13-14\"/><path d=\"M11 20v-5M24 14V9M37 20v-5\"/><path d=\"M17 42h14M24 34v8\"/>",
+        "<circle cx=\"24\" cy=\"24\" r=\"8\"/><path d=\"M24 7v5M24 36v5M7 24h5M36 24h5M12 12l3.5 3.5M36 12l-3.5 3.5M12 36l3.5-3.5M36 36l-3.5-3.5\"/>",
+        "<path d=\"M24 4l3.2 13.8L41 21l-13.8 3.2L24 38l-3.2-13.8L7 21l13.8-3.2z\"/>",
+        "<path d=\"M24 42V29\"/><path d=\"M24 29c0-6-4-11-11-11 0 7 4 11 11 11zM24 25c0-6 4-11 11-11 0 7-4 11-11 11z\"/><path d=\"M13 42h22\"/>",
+        "<path d=\"M11 21L24 11l13 10\"/><path d=\"M15 19v13h18V19\"/><path d=\"M24 32c-1 4-3 7-6 10M24 32c1 4 3 7 6 10\"/>",
+        "<path d=\"M24 31C18 29 11 23 9 14c6 0 10 2 13 5-.8-4 0-8 2-11 2 3 2.8 7 2 11 3-3 7-5 13-5-2 9-9 15-15 17z\"/><path d=\"M20 37c2.5 1.8 5.5 1.8 8 0\"/>",
+        "<path d=\"M24 4c3 7 10 11 10 20a10 10 0 1 1-20 0c0-5 2-8 4-11 .3 3 1.2 5 3 6.5C20.5 13 21 8 24 4z\"/>",
+        "<path d=\"M11 9h26M13 14h22\"/><path d=\"M16 14v20M24 14v20M32 14v20\"/><path d=\"M13 38h22M11 42h26\"/>",
+        "<path d=\"M13 7h22v6a11 11 0 0 1-22 0z\"/><path d=\"M24 24v7M15 35h18M24 31v4\"/>",
+        "<path d=\"M17 10h14\"/><path d=\"M16 10C13 16 12 20 12 25c0 9 5 16 12 16s12-7 12-16c0-5-1-9-4-15\"/><path d=\"M24 19v11M19 24.5h10\"/>",
+        "<path d=\"M11 31a7 7 0 0 1-1-10l5-5a7 7 0 0 1 9 2\"/><path d=\"M37 17a7 7 0 0 1 1 10l-5 5a7 7 0 0 1-9-2\"/><path d=\"M21 27l-2.5 2.5M27 21l2.5-2.5\"/>",
+        "<path d=\"M21 3h6v23l-3 5-3-5z\"/><path d=\"M14 34h20\"/><path d=\"M24 34v6\"/><circle cx=\"24\" cy=\"43\" r=\"2.2\"/>",
+        "<path d=\"M13 13a16 16 0 0 0 5 25M35 13a16 16 0 0 1-5 25\"/><path d=\"M17 7l3 4M24 5v5M31 7l-3 4\"/><path d=\"M18 40l6-3.5L30 40\"/>",
+        "<circle cx=\"24\" cy=\"15\" r=\"9\"/><path d=\"M24 24v6\"/><path d=\"M24 30c-2 4-5 7-9 9M24 30v12M24 30c2 4 5 7 9 9\"/>",
+        "<path d=\"M13 30a8 8 0 1 1 3-15.5A10.5 10.5 0 0 1 36 18a7.5 7.5 0 0 1-2 12z\"/><path d=\"M17 38l2-3.5M25 39l2-3.5M33 38l2-3.5\"/>",
+        "<path d=\"M24 4l14 4v12c0 10.5-6 18-14 23C16 38 10 30.5 10 20V8z\"/><path d=\"M24 12v20M17.5 19h13\"/>",
+        "<path d=\"M24 3c3 4 5.5 6.5 5.5 10.5a5.5 5.5 0 1 1-11 0C18.5 9.5 21 7 24 3z\"/><path d=\"M19.5 22h9L26.5 43h-5z\"/>",
+        "<path d=\"M14 43V5\"/><path d=\"M14 7h17l-4.5 5L31 17H14\"/><path d=\"M8 43h13\"/>",
+        "<path d=\"M11 41C19 31 28 18 35 5\"/><path d=\"M20 31c-5.5.8-9-2-10-7 4.5-.8 9 2 10 7zM28 20c-5.5.8-9-2-10-7 4.5-.8 9 2 10 7z\"/><circle cx=\"16\" cy=\"36\" r=\"3\"/><circle cx=\"25\" cy=\"27\" r=\"3\"/>",
+        "<rect x=\"7\" y=\"13\" width=\"34\" height=\"24\" rx=\"2\"/><path d=\"M8 15l16 12 16-12\"/><circle cx=\"24\" cy=\"32\" r=\"4\"/>",
+        "<circle cx=\"24\" cy=\"7.5\" r=\"3.5\"/><path d=\"M24 11v27\"/><path d=\"M16.5 17h15\"/><path d=\"M13 23c0 9 4.5 15 11 17 6.5-2 11-8 11-17\"/><path d=\"M13 23l-3.5 1M13 23l.5-4.5M35 23l3.5 1M35 23l-.5-4.5\"/>",
+        "<ellipse cx=\"24\" cy=\"18\" rx=\"10\" ry=\"13\"/><path d=\"M24 31v6\"/><path d=\"M17 43h14\"/><path d=\"M19.5 12l7 9\"/>",
+        "<path d=\"M10 39l3-25h22l3 25z\"/><path d=\"M24 20v11M19 25.5h10\"/>",
+        "<path d=\"M7 41h8.5v-8.5H24V24h8.5v-8.5H41\"/><path d=\"M7 45h34\"/>",
+        "<path d=\"M24 41S7.5 29.5 7.5 17.5A8.5 8.5 0 0 1 24 14a8.5 8.5 0 0 1 16.5 3.5C40.5 29.5 24 41 24 41z\"/>",
+        "<path d=\"M17 43l4.5-31M31 43L26.5 12\"/><circle cx=\"24\" cy=\"7.5\" r=\"3\"/>",
+        "<path d=\"M7 25h34\"/><path d=\"M11 25v14M37 25v14\"/><path d=\"M17 25c0-4.5 3-7 7-7s7 2.5 7 7\"/><circle cx=\"24\" cy=\"13\" r=\"2\"/>",
+        "<path d=\"M9 25a15 11 0 0 1 30 0\"/><circle cx=\"24\" cy=\"30\" r=\"4\"/><path d=\"M17 43c.8-4.5 3.5-7 7-7s6.2 2.5 7 7\"/>",
+        "<circle cx=\"24\" cy=\"14\" r=\"8.5\"/><path d=\"M24 22.5V30\"/><path d=\"M5 36c4.5-3 9-3 13.5 0s9 3 13.5 0 7-2 11 0M5 43c4.5-3 9-3 13.5 0s9 3 13.5 0 7-2 11 0\"/>"
+      ];
+      /* Versículo tesoro por libro (mismo orden del Camino):
+         ref = capítulo:versículo(s); el texto se compone con
+         el nombre del libro en el idioma actual. */
+      var TESORO_ES = [
+        { ref: "1:1", texto: "EN el principio crió Dios los cielos y la tierra." },
+        { ref: "3:14", texto: "Y respondió Dios á Moisés: YO SOY EL QUE SOY. Y dijo: Así dirás á los hijos de Israel: YO SOY me ha enviado á vosotros." },
+        { ref: "19:18", texto: "No te vengarás, ni guardarás rencor á los hijos de tu pueblo: mas amarás á tu prójimo como á ti mismo: Yo Jehová." },
+        { ref: "6:24-26", texto: "Jehová te bendiga, y te guarde: Haga resplandecer Jehová su rostro sobre ti, y haya de ti misericordia: Jehová alce á ti su rostro, y ponga en ti paz." },
+        { ref: "6:4-5", texto: "Oye, Israel: Jehová nuestro Dios, Jehová uno es: Y amarás á Jehová tu Dios de todo tu corazón, y de toda tu alma, y con todo tu poder." },
+        { ref: "1:9", texto: "Mira que te mando que te esfuerces y seas valiente: no temas ni desmayes, porque Jehová tu Dios será contigo en donde quiera que fueres." },
+        { ref: "6:12", texto: "Y el ángel de Jehová se le apareció, y díjole: Jehová es contigo, varón esforzado." },
+        { ref: "1:16", texto: "Y Ruth respondió: No me ruegues que te deje, y me aparte de ti: porque donde quiera que tú fueres, iré yo; y donde quiera que vivieres, viviré. Tu pueblo será mi pueblo, y tu Dios mi Dios." },
+        { ref: "16:7", texto: "Y Jehová respondió á Samuel: No mires á su parecer, ni á lo grande de su estatura, porque yo lo desecho; porque [Jehová mira] no lo que el hombre mira; pues que el hombre mira [lo que está] delante de sus ojos, mas Jehová mira el corazón." },
+        { ref: "22:31", texto: "Dios, perfecto su camino: la palabra de Jehová purificada, escudo es de todos los que en él esperan." },
+        { ref: "18:21", texto: "Y acercándose Elías á todo el pueblo, dijo: ¿Hasta cuándo claudicaréis vosotros entre dos pensamientos? Si Jehová es Dios, seguidle; y si Baal, id en pos de él. Y el pueblo no respondió palabra." },
+        { ref: "6:17", texto: "Y oró Eliseo, y dijo: Ruégote, oh Jehová, que abras sus ojos para que vea. Entonces Jehová abrió los ojos del mozo, y miró: y he aquí que el monte estaba lleno de gente de á caballo, y de carros de fuego alrededor de Eliseo." },
+        { ref: "29:11", texto: "Tuya es, oh Jehová, la magnificencia, y el poder, y la gloria, la victoria, y el honor; porque todas las cosas que están en los cielos y en la tierra [son tuyas]. Tuyo, oh Jehová, es el reino, y la altura sobre todos [los que están] por cabeza." },
+        { ref: "7:14", texto: "Si se humillare mi pueblo, sobre los cuales ni nombre es invocado, y oraren, y buscaren mi rostro, y se convirtieren de sus malos caminos; entonces yo oiré desde los cielos, y perdonaré sus pecados, y sanaré su tierra." },
+        { ref: "7:10", texto: "Porque Esdras había preparado su corazón para inquirir la ley de Jehová, y para hacer y enseñar á Israel mandamientos y juicios." },
+        { ref: "8:10", texto: "Díjoles luego: Id, comed grosuras, y bebed [vino] dulce, y enviad porciones á los que no tienen prevenido; porque día santo es á nuestro Señor: y no os entristezcáis, porque el gozo de Jehová es vuestra fortaleza." },
+        { ref: "4:14", texto: "Porque si absolutamente callares en este tiempo, respiro y libertación tendrán los Judíos de otra parte; mas tú y la casa de tu padre pereceréis. ¿Y quién sabe si para esta hora te han hecho llegar al reino?" },
+        { ref: "19:25-26", texto: "Yo sé que mi Redentor vive, y al fin se levantará sobre el polvo: Y después de deshecha esta mi piel, aun he de ver en mi carne á Dios;" },
+        { ref: "23:1", texto: "Salmo de David. JEHOVÁ es mi pastor; nada me faltará." },
+        { ref: "3:5", texto: "Fíate de Jehová de todo tu corazón, y no estribes en tu prudencia." },
+        { ref: "3:1", texto: "PARA todas las cosas hay sazón, y todo lo que se quiere debajo del cielo, [tiene su] tiempo:" },
+        { ref: "8:7", texto: "Las muchas aguas no podrán apagar el amor, ni lo ahogarán los ríos. Si diese el hombre toda la hacienda de su casa por este amor, de cierto lo menospreciaran." },
+        { ref: "40:31", texto: "Mas los que esperan á Jehová tendrán nuevas fuerzas; levantarán las alas como águilas; correrán, y no se cansarán; caminarán, y no se fatigarán." },
+        { ref: "29:11", texto: "Porque yo sé los pensamientos que tengo acerca de vosotros, dice Jehová, pensamientos de paz, y no de mal, para daros el fin que esperáis." },
+        { ref: "3:22-23", texto: "[Es por] la misericordia de Jehová que no somos consumidos, porque nunca decayeron sus misericordias. Nuevas son cada mañana; grande es tu fidelidad." },
+        { ref: "36:26", texto: "Y os daré corazón nuevo, y pondré espíritu nuevo dentro de vosotros; y quitaré de vuestra carne el corazón de piedra, y os daré corazón de carne." },
+        { ref: "3:17", texto: "He aquí nuestro Dios á quien honramos, puede librarnos del horno de fuego ardiendo; y de tu mano, oh rey, nos librará." },
+        { ref: "6:6", texto: "Porque misericordia quise, y no sacrificio; y conocimiento de Dios más que holocaustos." },
+        { ref: "2:28", texto: "Y será que después de esto, derramaré mi Espíritu sobre toda carne, y profetizarán vuestros hijos y vuestras hijas; vuestros viejos soñarán sueños, y vuestros mancebos verán visiones." },
+        { ref: "5:24", texto: "Antes corra el juicio como las aguas, y la justicia como impetuoso arroyo." },
+        { ref: "1:17", texto: "Mas en el monte de Sión habrá salvamento, y será santidad, y la casa de Jacob, poseerá sus posesiones." },
+        { ref: "2:9", texto: "Yo empero con voz de alabanza te sacrificaré; pagaré lo que prometí. La salvación [pertenece] á Jehová." },
+        { ref: "6:8", texto: "Oh hombre, él te ha declarado qué sea lo bueno, y qué pida de ti Jehová: solamente hacer juicio, y amar misericordia, y humillarte para andar con tu Dios." },
+        { ref: "1:7", texto: "Bueno es Jehová para fortaleza en el día de la angustia; y conoce á los que en él confían." },
+        { ref: "2:4", texto: "He aquí se enorgullece aquel cuya alma no es derecha en él: mas el justo en su fe vivirá." },
+        { ref: "3:17", texto: "Jehová en medio de ti, poderoso, él salvará; gozaráse sobre ti con alegría, callará de amor, se regocijará sobre ti con cantar." },
+        { ref: "2:9", texto: "La gloria de aquesta casa postrera será mayor que la de la primera, ha dicho Jehová de los ejércitos; y daré paz en este lugar, dice Jehová de los ejércitos." },
+        { ref: "4:6", texto: "Entonces respondió y hablóme, diciendo: Esta es palabra de Jehová á Zorobabel, en que se dice: No con ejército, ni con fuerza, sino con mi espíritu, ha dicho Jehová de los ejércitos." },
+        { ref: "3:10", texto: "Traed todos los diezmos al alfolí, y haya alimento en mi casa; y probadme ahora en esto, dice Jehová de los ejércitos, si no os abriré las ventanas de los cielos, y vaciaré sobre vosotros bendición hasta que sobreabunde." },
+        { ref: "11:28", texto: "Venid á mí todos los que estáis trabajados y cargados, que yo os haré descansar." },
+        { ref: "10:27", texto: "Entonces Jesús mirándolos, dice: Para los hombres es imposible; mas para Dios, no; porque todas las cosas son posibles para Dios." },
+        { ref: "19:10", texto: "Porque el Hijo del hombre vino á buscar y á salvar lo que se había perdido." },
+        { ref: "3:16", texto: "Porque de tal manera amó Dios al mundo, que ha dado á su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna." },
+        { ref: "1:8", texto: "Mas recibiréis la virtud del Espíritu Santo que vendrá sobre vosotros; y me sereís testigos en Jerusalem, y en toda Judea, y Samaria, y hasta lo último de la tierra." },
+        { ref: "8:28", texto: "Y sabemos que á los que á Dios aman, todas las cosas les ayudan á bien, [es á saber], á los que conforme al propósito son llamados." },
+        { ref: "13:13", texto: "Y ahora permanecen la fe, la esperanza, y la caridad, estas tres: empero la mayor de ellas es la caridad." },
+        { ref: "5:17", texto: "De modo que si alguno está en Cristo, nueva criatura [es]: las cosas viejas pasaron; he aquí todas son hechas nuevas." },
+        { ref: "2:20", texto: "Con Cristo estoy juntamente crucificado, y vivo, no ya yo, mas vive Cristo en mí: y lo que ahora vivo en la carne, [lo] vivo en la fe del Hijo de Dios, el cual me amó, y se entregó á sí mismo por mí." },
+        { ref: "2:8-9", texto: "Porque por gracia sois salvos por la fe; y esto no de vosotros, [pues es] don de Dios: No por obras, para que nadie se gloríe." },
+        { ref: "4:13", texto: "Todo lo puedo en Cristo que me fortalece." },
+        { ref: "3:23", texto: "Y todo lo que hagáis, hacedlo de ánimo, como al Señor, y no á los hombres;" },
+        { ref: "5:18", texto: "Dad gracias en todo; porque esta es la voluntad de Dios para con vosotros en Cristo Jesús." },
+        { ref: "3:3", texto: "Mas fiel es el Señor, que os confirmará y guardará del mal." },
+        { ref: "4:12", texto: "Ninguno tenga en poco tu juventud; pero sé ejemplo de los fieles en palabra, en conversación, en caridad, en espíritu, en fe, en limpieza." },
+        { ref: "3:16", texto: "Toda Escritura [es] inspirada divinamente y útil para enseñar, para redargüir, para corregir, para instituir en justicia," },
+        { ref: "2:11", texto: "Porque la gracia de Dios que trae salvación á todos los hombres, se manifestó," },
+        { ref: "1:16", texto: "No ya como siervo, antes más que siervo, [como] hermano amado, mayormente de mí, pero cuánto más de ti, en la carne y en el Señor." },
+        { ref: "11:1", texto: "ES pues la fe la sustancia de las cosas que se esperan, la demostración de las cosas que no se ven." },
+        { ref: "1:5", texto: "Y si alguno de vosotros tiene falta de sabiduría, demándela á Dios, el cual da á todos abundantemente, y no zahiere; y le será dada." },
+        { ref: "5:7", texto: "Echando toda vuestra solicitud en él, porque él tiene cuidado de vosotros." },
+        { ref: "3:9", texto: "El Señor no tarda su promesa, como algunos la tienen por tardanza; sino que es paciente para con nosotros, no queriendo que ninguno perezca, sino que todos procedan al arrepentimiento." },
+        { ref: "4:8", texto: "El que no ama, no conoce á Dios; porque Dios es amor." },
+        { ref: "1:6", texto: "Y este es amor, que andemos según sus mandamientos. Este es el mandamiento: Que andéis en él, como vosotros habéis oído desde el principio." },
+        { ref: "1:2", texto: "Amado, yo deseo que tú seas prosperado en todas cosas, y que tengas salud, así como tu alma está en prosperidad." },
+        { ref: "1:24", texto: "A aquel, pues, que es poderoso para guardaros sin caída, y presentaros delante de su gloria irreprensibles, con grande alegría," },
+        { ref: "21:4", texto: "Y limpiará Dios toda lágrima de los ojos de ellos; y la muerte no será más; y no habrá más llanto, ni clamor, ni dolor: porque las primeras cosas son pasadas." }
+      ];
+      var TESORO_EN = [
+        { ref: "1:1", texto: "In the beginning, God created the heavens and the earth." },
+        { ref: "3:14", texto: "God said to Moses, “I AM WHO I AM,” and he said, “You shall tell the children of Israel this: ‘I AM has sent me to you.’”" },
+        { ref: "19:18", texto: "“‘You shall not take vengeance, nor bear any grudge against the children of your people; but you shall love your neighbor as yourself. I am Yahweh." },
+        { ref: "6:24-26", texto: "‘Yahweh bless you, and keep you. Yahweh make his face to shine on you, and be gracious to you. Yahweh lift up his face toward you, and give you peace.’" },
+        { ref: "6:4-5", texto: "Hear, Israel: Yahweh is our God. Yahweh is one. You shall love Yahweh your God with all your heart, with all your soul, and with all your might." },
+        { ref: "1:9", texto: "Haven’t I commanded you? Be strong and courageous. Don’t be afraid. Don’t be dismayed, for Yahweh your God is with you wherever you go.”" },
+        { ref: "6:12", texto: "Yahweh’s angel appeared to him, and said to him, “Yahweh is with you, you mighty man of valor!”" },
+        { ref: "1:16", texto: "Ruth said, “Don’t urge me to leave you, and to return from following you, for where you go, I will go; and where you stay, I will stay. Your people will be my people, and your God my God." },
+        { ref: "16:7", texto: "But Yahweh said to Samuel, “Don’t look on his face, or on the height of his stature, because I have rejected him; for I don’t see as man sees. For man looks at the outward appearance, but Yahweh looks at the heart.”" },
+        { ref: "22:31", texto: "As for God, his way is perfect. Yahweh’s word is tested. He is a shield to all those who take refuge in him." },
+        { ref: "18:21", texto: "Elijah came near to all the people, and said, “How long will you waver between the two sides? If Yahweh is God, follow him; but if Baal, then follow him.” The people didn’t say a word." },
+        { ref: "6:17", texto: "Elisha prayed, and said, “Yahweh, please open his eyes, that he may see.” Yahweh opened the young man’s eyes, and he saw; and behold, the mountain was full of horses and chariots of fire around Elisha." },
+        { ref: "29:11", texto: "Yours, Yahweh, is the greatness, the power, the glory, the victory, and the majesty! For all that is in the heavens and on the earth is yours. Yours is the kingdom, Yahweh, and you are exalted as head above all." },
+        { ref: "7:14", texto: "if my people who are called by my name will humble themselves, pray, seek my face, and turn from their wicked ways, then I will hear from heaven, will forgive their sin, and will heal their land." },
+        { ref: "7:10", texto: "For Ezra had set his heart to seek Yahweh’s law, and to do it, and to teach statutes and ordinances in Israel." },
+        { ref: "8:10", texto: "Then he said to them, “Go your way. Eat the fat, drink the sweet, and send portions to him for whom nothing is prepared, for today is holy to our Lord. Don’t be grieved, for the joy of Yahweh is your strength.”" },
+        { ref: "4:14", texto: "For if you remain silent now, then relief and deliverance will come to the Jews from another place, but you and your father’s house will perish. Who knows if you haven’t come to the kingdom for such a time as this?”" },
+        { ref: "19:25-26", texto: "But as for me, I know that my Redeemer lives. In the end, he will stand upon the earth. After my skin is destroyed, then I will see God in my flesh," },
+        { ref: "23:1", texto: "A Psalm by David. Yahweh is my shepherd; I shall lack nothing." },
+        { ref: "3:5", texto: "Trust in Yahweh with all your heart, and don’t lean on your own understanding." },
+        { ref: "3:1", texto: "For everything there is a season, and a time for every purpose under heaven:" },
+        { ref: "8:7", texto: "Many waters can’t quench love, neither can floods drown it. If a man would give all the wealth of his house for love, he would be utterly scorned." },
+        { ref: "40:31", texto: "but those who wait for Yahweh will renew their strength. They will mount up with wings like eagles. They will run, and not be weary. They will walk, and not faint." },
+        { ref: "29:11", texto: "For I know the thoughts that I think toward you,” says Yahweh, “thoughts of peace, and not of evil, to give you hope and a future." },
+        { ref: "3:22-23", texto: "It is because of Yahweh’s loving kindnesses that we are not consumed, because his mercies don’t fail. They are new every morning. Great is your faithfulness." },
+        { ref: "36:26", texto: "I will also give you a new heart, and I will put a new spirit within you. I will take away the stony heart out of your flesh, and I will give you a heart of flesh." },
+        { ref: "3:17", texto: "If it happens, our God whom we serve is able to deliver us from the burning fiery furnace; and he will deliver us out of your hand, O king." },
+        { ref: "6:6", texto: "For I desire mercy, and not sacrifice; and the knowledge of God more than burnt offerings." },
+        { ref: "2:28", texto: "“It will happen afterward, that I will pour out my Spirit on all flesh; and your sons and your daughters will prophesy. Your old men will dream dreams. Your young men will see visions." },
+        { ref: "5:24", texto: "But let justice roll on like rivers, and righteousness like a mighty stream." },
+        { ref: "1:17", texto: "But in Mount Zion, there will be those who escape, and it will be holy. The house of Jacob will possess their possessions." },
+        { ref: "2:9", texto: "But I will sacrifice to you with the voice of thanksgiving. I will pay that which I have vowed. Salvation belongs to Yahweh.”" },
+        { ref: "6:8", texto: "He has shown you, O man, what is good. What does Yahweh require of you, but to act justly, to love mercy, and to walk humbly with your God?" },
+        { ref: "1:7", texto: "Yahweh is good, a stronghold in the day of trouble; and he knows those who take refuge in him." },
+        { ref: "2:4", texto: "Behold, his soul is puffed up. It is not upright in him, but the righteous will live by his faith." },
+        { ref: "3:17", texto: "Yahweh, your God, is among you, a mighty one who will save. He will rejoice over you with joy. He will calm you in his love. He will rejoice over you with singing." },
+        { ref: "2:9", texto: "‘The latter glory of this house will be greater than the former,’ says Yahweh of Armies; ‘and in this place I will give peace,’ says Yahweh of Armies.”" },
+        { ref: "4:6", texto: "Then he answered and spoke to me, saying, “This is Yahweh’s word to Zerubbabel, saying, ‘Not by might, nor by power, but by my Spirit,’ says Yahweh of Armies." },
+        { ref: "3:10", texto: "Bring the whole tithe into the storehouse, that there may be food in my house, and test me now in this,” says Yahweh of Armies, “if I will not open you the windows of heaven, and pour you out a blessing, that there will not be enough room for." },
+        { ref: "11:28", texto: "“Come to me, all you who labor and are heavily burdened, and I will give you rest." },
+        { ref: "10:27", texto: "Jesus, looking at them, said, “With men it is impossible, but not with God, for all things are possible with God.”" },
+        { ref: "19:10", texto: "For the Son of Man came to seek and to save that which was lost.”" },
+        { ref: "3:16", texto: "For God so loved the world, that he gave his only born Son, that whoever believes in him should not perish, but have eternal life." },
+        { ref: "1:8", texto: "But you will receive power when the Holy Spirit has come upon you. You will be witnesses to me in Jerusalem, in all Judea and Samaria, and to the uttermost parts of the earth.”" },
+        { ref: "8:28", texto: "We know that all things work together for good for those who love God, for those who are called according to his purpose." },
+        { ref: "13:13", texto: "But now faith, hope, and love remain—these three. The greatest of these is love." },
+        { ref: "5:17", texto: "Therefore if anyone is in Christ, he is a new creation. The old things have passed away. Behold, all things have become new." },
+        { ref: "2:20", texto: "I have been crucified with Christ, and it is no longer I who live, but Christ lives in me. That life which I now live in the flesh, I live by faith in the Son of God, who loved me and gave himself up for me." },
+        { ref: "2:8-9", texto: "for by grace you have been saved through faith, and that not of yourselves; it is the gift of God, not of works, that no one would boast." },
+        { ref: "4:13", texto: "I can do all things through Christ who strengthens me." },
+        { ref: "3:23", texto: "And whatever you do, work heartily, as for the Lord and not for men," },
+        { ref: "5:18", texto: "In everything give thanks, for this is the will of God in Christ Jesus toward you." },
+        { ref: "3:3", texto: "But the Lord is faithful, who will establish you and guard you from the evil one." },
+        { ref: "4:12", texto: "Let no man despise your youth; but be an example to those who believe, in word, in your way of life, in love, in spirit, in faith, and in purity." },
+        { ref: "3:16", texto: "Every Scripture is God-breathed and profitable for teaching, for reproof, for correction, and for instruction in righteousness," },
+        { ref: "2:11", texto: "For the grace of God has appeared, bringing salvation to all men," },
+        { ref: "1:16", texto: "no longer as a slave, but more than a slave, a beloved brother—especially to me, but how much rather to you, both in the flesh and in the Lord." },
+        { ref: "11:1", texto: "Now faith is assurance of things hoped for, proof of things not seen." },
+        { ref: "1:5", texto: "But if any of you lacks wisdom, let him ask of God, who gives to all liberally and without reproach, and it will be given to him." },
+        { ref: "5:7", texto: "casting all your worries on him, because he cares for you." },
+        { ref: "3:9", texto: "The Lord is not slow concerning his promise, as some count slowness; but he is patient with us, not wishing that anyone should perish, but that all should come to repentance." },
+        { ref: "4:8", texto: "He who doesn’t love doesn’t know God, for God is love." },
+        { ref: "1:6", texto: "This is love, that we should walk according to his commandments. This is the commandment, even as you heard from the beginning, that you should walk in it." },
+        { ref: "1:2", texto: "Beloved, I pray that you may prosper in all things and be healthy, even as your soul prospers." },
+        { ref: "1:24", texto: "Now to him who is able to keep them from stumbling, and to present you faultless before the presence of his glory in great joy," },
+        { ref: "21:4", texto: "He will wipe away every tear from their eyes. Death will be no more; neither will there be mourning, nor crying, nor pain any more. The first things have passed away.”" }
+      ];
+      var GEMAS_NIVEL = [
+        { es: "Topacio", en: "Topaz", color: "#d9962c" },
+        { es: "Esmeralda", en: "Emerald", color: "#1f9d55" },
+        { es: "Zafiro", en: "Sapphire", color: "#2f5fd0" },
+        { es: "Amatista", en: "Amethyst", color: "#7d3fd1" },
+        { es: "Rubí", en: "Ruby", color: "#c0272d" },
+        { es: "Diamante", en: "Diamond", color: "#dfe9f2" }
+      ];
+
+      /* ============ Celebraciones de recompensa (Ronda 7) ============
+         La cola persistente caminoEstado.celebPendientes manda:
+         cada sello y cada premio de nivel entran al ganarse y
+         salen al MOSTRARSE. procesarCelebraciones() enseña la
+         primera pendiente solo en cierres naturales (la pantalla
+         final de cada modo, el resumen del Duelo, la salida del
+         Infinito) o al llegar al inicio — jamás en mitad de una
+         pregunta ni tapando otra celebración. */
       var selloContinuar = null;
-      function mostrarCelebracionSello(nombreLibro, alContinuar) {
-        $("sello-titulo").textContent = t("selloTitulo")(nombreLibro);
+      var celebLibroActual = null;   /* libro de la celebración en pantalla */
+      var celebNivelActual = null;   /* tramo de la celebración en pantalla */
+
+      function tesoroDeLibro(canon) {
+        var i = CAMINO_LIBROS_ES.indexOf(canon);
+        if (i < 0) return null;
+        var datos = (IDIOMA === "en" ? TESORO_EN : TESORO_ES)[i];
+        return { indice: i, ref: datos.ref, texto: datos.texto, cita: caminoNombreLibro(canon) + " " + datos.ref };
+      }
+      function selloSVG(indice) {
+        return '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + SELLOS_SIMBOLOS[indice] + "</svg>";
+      }
+      function gemaSVG(tramo, encendida) {
+        var g = GEMAS_NIVEL[tramo];
+        return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12l3 6-9 12L3 9z" fill="' +
+          (encendida ? g.color : "none") + '" stroke="' + (encendida ? g.color : "rgba(230,225,210,0.4)") +
+          '" stroke-width="1.6" stroke-linejoin="round"/><path d="M3 9h18M9.5 3L12 9l2.5-6M12 9v12" fill="none" stroke="' +
+          (encendida ? "rgba(0,0,0,0.25)" : "rgba(230,225,210,0.4)") + '" stroke-width="1.1"/></svg>';
+      }
+      function gemaNombre(tramo) {
+        return GEMAS_NIVEL[tramo][IDIOMA === "en" ? "en" : "es"];
+      }
+      /* Tramos completados (0–6): la gema i se enciende al sellar
+         (i+1)*11 libros; la del diamante, con los 66. */
+      function tramosCompletados() {
+        return Math.floor(Math.min(caminoEstado.sellados.length, 66) / 11);
+      }
+      /* La corona en SVG: la forma dorada y los 6 huecos en la
+         frente; las gemas ganadas brillan en su color y las que
+         faltan se ven en contorno. `destacar` anima la gema nueva. */
+      function coronaSVG(destacar) {
+        var hechas = tramosCompletados();
+        var gemas = "";
+        for (var i = 0; i < 6; i++) {
+          var cx = 44 + i * 30.4;
+          var encendida = i < hechas;
+          gemas += '<circle cx="' + cx.toFixed(1) + '" cy="34" r="8.5" ' +
+            (encendida
+              ? 'fill="' + GEMAS_NIVEL[i].color + '" stroke="#8a6414" stroke-width="1.6"' + (destacar === i ? ' class="gema-nueva"' : "")
+              : 'fill="none" stroke="rgba(232,182,76,0.45)" stroke-width="1.6" stroke-dasharray="3 3"') + "/>";
+        }
+        return '<svg viewBox="0 0 220 92" fill="none" aria-hidden="true">' +
+          '<path d="M18 74 L8 26 L58 50 L110 12 L162 50 L212 26 L202 74 Z" fill="rgba(232,182,76,0.12)" stroke="#e8b64c" stroke-width="3" stroke-linejoin="round"/>' +
+          '<path d="M18 82 H202" stroke="#e8b64c" stroke-width="3" stroke-linecap="round"/>' + gemas + "</svg>";
+      }
+
+      function celebracionAbierta() {
+        return !$("velo-libro-sellado").hidden || !$("velo-nivel").hidden ||
+          !$("velo-titulo").hidden || !$("velo-tarjeta").hidden ||
+          !$("velo-minidiploma").hidden || !$("velo-tesoro-libro").hidden;
+      }
+
+      function procesarCelebraciones() {
+        if (celebracionAbierta()) return;
+        if (!$("pantalla-juego").hidden) return; /* nunca en mitad de una partida */
+        var pend = caminoEstado.celebPendientes[0];
+        if (!pend) return;
+        caminoEstado.celebPendientes.shift();
+        caminoGuardar();
+        if (pend.tipo === "nivel") mostrarCelebracionNivel(pend.tramo);
+        else mostrarCelebracionSello(pend.libro, null);
+      }
+
+      /* Celebración de libro sellado (diseño, sección 2): el
+         sello encendiéndose, su versículo tesoro completo con la
+         cita, la línea «Libro X de 66 · Nivel …» y los botones
+         «Ver mi tarjeta» · «Compartir» · «Seguir jugando». */
+      function mostrarCelebracionSello(canon, alContinuar) {
+        var tesoro = tesoroDeLibro(canon);
+        if (!tesoro) return;
+        celebLibroActual = canon;
+        var nombre = caminoNombreLibro(canon);
+        $("sello-simbolo").innerHTML = selloSVG(tesoro.indice);
+        $("sello-titulo").textContent = t("selloTitulo")(nombre);
+        $("sello-versiculo").textContent = comillasVersiculo(tesoro.texto);
+        $("sello-cita").textContent = tesoro.cita;
         var p = caminoProgreso();
-        $("sello-texto").textContent = t("selloTexto")(p.sellados, p.completo ? "" : caminoNombreLibro(p.libroActual));
+        $("sello-texto").textContent = t("selloAvance")(tesoro.indice + 1, p.nivelNombre);
+        $("btn-sello-tarjeta").textContent = t("selloVerTarjeta");
+        $("btn-sello-compartir").textContent = t("selloCompartir");
         $("btn-sello-continuar").textContent = t("selloSeguir");
         selloContinuar = alContinuar || null;
         $("velo-libro-sellado").hidden = false;
         lanzarConfeti();
+      }
+
+      /* Celebración del premio especial de nivel (diseño,
+         sección 3): la corona en el centro y la gema nueva
+         entrando en su hueco con brillo. */
+      function mostrarCelebracionNivel(tramo) {
+        celebNivelActual = tramo;
+        $("nivel-corona").innerHTML = coronaSVG(tramo);
+        var nivel = NOMBRES_NIVEL[IDIOMA][tramo];
+        $("nivel-titulo-txt").textContent = t("nivelCelebTitulo")(nivel);
+        $("nivel-texto").textContent = t("nivelCelebTexto")(gemaNombre(tramo), nivel);
+        $("btn-nivel-diploma").textContent = t("nivelVerDiploma");
+        $("btn-nivel-seguir").textContent = t("selloSeguir");
+        $("velo-nivel").hidden = false;
+        lanzarConfeti();
+      }
+
+      /* ============ La tarjeta pergamino del libro (4:5) ============
+         Se genera al momento desde los datos del jugador (nunca
+         se guarda como foto): pergamino con borde dorado, el
+         sello en grande en su medallón, el libro, «SELLADO» con
+         la fecha, el versículo tesoro completo y el pie con el
+         avance. Compartir = solo imagen + enlace (regla vigente). */
+      function imagenDeSello(indice, color) {
+        return new Promise(function (resolve) {
+          try {
+            var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke="' + color + '" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' + SELLOS_SIMBOLOS[indice] + "</svg>";
+            var img = new Image();
+            img.onload = function () { resolve(img); };
+            img.onerror = function () { resolve(null); };
+            img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+          } catch (e) { resolve(null); }
+        });
+      }
+      function dibujarTarjetaLibro(canon) {
+        return new Promise(function (resolve) {
+          var tesoro = tesoroDeLibro(canon);
+          if (!tesoro) { resolve(null); return; }
+          imagenDeSello(tesoro.indice, "#7c5a10").then(function (img) {
+            try {
+              var c = document.createElement("canvas");
+              c.width = 1080; c.height = 1350;
+              var ctx = c.getContext("2d");
+              if (!ctx) { resolve(null); return; }
+              var fuentes = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+              fuentes.then(function () {
+                var g = ctx.createLinearGradient(0, 0, 0, 1350);
+                g.addColorStop(0, "#f8edd3"); g.addColorStop(1, "#ecd9a8");
+                ctx.fillStyle = g; ctx.fillRect(0, 0, 1080, 1350);
+                ctx.strokeStyle = "#a67c1a"; ctx.lineWidth = 6; ctx.strokeRect(30, 30, 1020, 1290);
+                ctx.strokeStyle = "#e8b64c"; ctx.lineWidth = 2; ctx.strokeRect(48, 48, 984, 1254);
+                ctx.textAlign = "center";
+                ctx.fillStyle = "#8a6414";
+                ctx.font = "700 34px Manrope, system-ui, sans-serif";
+                ctx.fillText(t("tarjetaCabecera").toUpperCase(), 540, 118);
+                var cy = 336;
+                var grad = ctx.createRadialGradient(540, cy - 24, 16, 540, cy, 152);
+                grad.addColorStop(0, "#ffe9a8"); grad.addColorStop(1, "#e3b64f");
+                ctx.fillStyle = grad;
+                ctx.beginPath(); ctx.arc(540, cy, 140, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = "#8a6414"; ctx.lineWidth = 5; ctx.stroke();
+                if (img) ctx.drawImage(img, 540 - 94, cy - 94, 188, 188);
+                ctx.fillStyle = "#3a2a08";
+                var nombre = caminoNombreLibro(canon), nSize = 86;
+                do { ctx.font = "800 " + nSize + "px Cinzel, Georgia, serif"; nSize -= 4; }
+                while (ctx.measureText(nombre).width > 900 && nSize > 40);
+                ctx.fillText(nombre, 540, 592);
+                var info = caminoEstado.sellosInfo[canon];
+                ctx.fillStyle = "#8a6414";
+                ctx.font = "800 39px Manrope, system-ui, sans-serif";
+                ctx.fillText(t("tarjetaSellado") + (info && info.fecha ? " · " + caminoFechaLarga(info.fecha) : ""), 540, 660);
+                ctx.strokeStyle = "#a67c1a"; ctx.lineWidth = 3;
+                ctx.beginPath(); ctx.moveTo(240, 704); ctx.lineTo(840, 704); ctx.stroke();
+                var texto = comillasVersiculo(tesoro.texto);
+                var size = 46, lineas = [];
+                do {
+                  ctx.font = "italic 600 " + size + "px Manrope, system-ui, sans-serif";
+                  lineas = envolverTexto(ctx, texto, 860);
+                  size -= 3;
+                } while (lineas.length > 7 && size > 30);
+                var lh = (size + 3) * 1.5, y = 788;
+                ctx.fillStyle = "#5c4718";
+                lineas.forEach(function (ln) { ctx.fillText(ln, 540, y); y += lh; });
+                ctx.font = "800 42px Cinzel, Georgia, serif";
+                ctx.fillStyle = "#8a6414";
+                ctx.fillText(tesoro.cita, 540, y + 28);
+                ctx.font = "600 34px Manrope, system-ui, sans-serif";
+                ctx.fillStyle = "rgba(92,71,24,0.85)";
+                var nivelLibro = NOMBRES_NIVEL[IDIOMA][Math.floor(tesoro.indice / 11)];
+                ctx.fillText(t("tarjetaPieLibro")(tesoro.indice + 1, nivelLibro), 540, 1258);
+                resolve(c);
+              }, function () { resolve(null); });
+            } catch (e) { resolve(null); }
+          });
+        });
+      }
+      var tarjetaCanvasActual = null;
+      var tarjetaLibroActual = null;
+      function abrirTarjeta(canon) {
+        tarjetaLibroActual = canon;
+        tarjetaCanvasActual = null;
+        $("tarjeta-titulo").textContent = t("tarjetaTitulo")(caminoNombreLibro(canon));
+        $("btn-tarjeta-compartir").textContent = t("tarjetaCompartir");
+        $("btn-tarjeta-cerrar").textContent = t("tarjetaCerrar");
+        var wrap = $("tarjeta-canvas-wrap");
+        if (wrap) wrap.innerHTML = "";
+        $("velo-tarjeta").hidden = false;
+        dibujarTarjetaLibro(canon).then(function (canvas) {
+          tarjetaCanvasActual = canvas;
+          if (canvas && wrap) wrap.appendChild(canvas);
+        });
+      }
+      function compartirTarjetaDe(canon) {
+        dibujarTarjetaLibro(canon).then(function (canvas) {
+          if (canvas) compartirCanvas(canvas, t("descargaApp"), "tarjeta-biblionario.png");
+          else compartirSoloTexto(t("descargaApp"));
+        }).catch(function () { compartirSoloTexto(t("descargaApp")); });
+      }
+
+      /* ============ El mini-diploma de nivel ============
+         Horizontal, la misma familia seria del Título (pergamino,
+         borde dorado, Cinzel) pero SIN código QR: la verificación
+         pública es exclusiva del Título final. Lleva la corona
+         con las gemas ganadas hasta ese nivel. */
+      function dibujarCoronaCanvas(ctx, cx, cy, ancho, encendidas) {
+        var k = ancho / 220;
+        ctx.save();
+        ctx.translate(cx - 110 * k, cy - 46 * k);
+        ctx.scale(k, k);
+        var forma = new Path2D("M18 74 L8 26 L58 50 L110 12 L162 50 L212 26 L202 74 Z");
+        ctx.fillStyle = "rgba(166,124,26,0.16)";
+        ctx.fill(forma);
+        ctx.strokeStyle = "#a67c1a"; ctx.lineWidth = 3; ctx.lineJoin = "round";
+        ctx.stroke(forma);
+        ctx.beginPath(); ctx.moveTo(18, 82); ctx.lineTo(202, 82);
+        ctx.strokeStyle = "#a67c1a"; ctx.lineWidth = 3; ctx.stroke();
+        for (var i = 0; i < 6; i++) {
+          ctx.beginPath();
+          ctx.arc(44 + i * 30.4, 34, 8.5, 0, Math.PI * 2);
+          if (i < encendidas) {
+            ctx.fillStyle = GEMAS_NIVEL[i].color; ctx.fill();
+            ctx.strokeStyle = "#8a6414"; ctx.lineWidth = 1.6; ctx.stroke();
+          } else {
+            ctx.strokeStyle = "rgba(138,100,20,0.5)"; ctx.lineWidth = 1.6; ctx.stroke();
+          }
+        }
+        ctx.restore();
+      }
+      function dibujarMiniDiploma(tramo) {
+        return new Promise(function (resolve) {
+          try {
+            var c = document.createElement("canvas");
+            c.width = 1350; c.height = 1080;
+            var ctx = c.getContext("2d");
+            if (!ctx) { resolve(null); return; }
+            var fuentes = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+            fuentes.then(function () {
+              var g = ctx.createLinearGradient(0, 0, 0, 1080);
+              g.addColorStop(0, "#f8edd3"); g.addColorStop(1, "#ecd9a8");
+              ctx.fillStyle = g; ctx.fillRect(0, 0, 1350, 1080);
+              ctx.strokeStyle = "#a67c1a"; ctx.lineWidth = 6; ctx.strokeRect(30, 30, 1290, 1020);
+              ctx.strokeStyle = "#e8b64c"; ctx.lineWidth = 2; ctx.strokeRect(48, 48, 1254, 984);
+              ctx.textAlign = "center";
+              ctx.fillStyle = "#8a6414";
+              ctx.font = "800 50px Cinzel, Georgia, serif";
+              ctx.fillText("BIBLIONARIO", 675, 122);
+              ctx.font = "600 33px Manrope, system-ui, sans-serif";
+              ctx.fillStyle = "rgba(138,100,20,0.9)";
+              ctx.fillText(t("miniDiplomaRotulo"), 675, 178);
+              dibujarCoronaCanvas(ctx, 675, 292, 400, tramo + 1);
+              var nivel = NOMBRES_NIVEL[IDIOMA][tramo], nSize = 96;
+              ctx.fillStyle = "#6b4e12";
+              do { ctx.font = "800 " + nSize + "px Cinzel, Georgia, serif"; nSize -= 4; }
+              while (ctx.measureText(nivel).width > 1000 && nSize > 44);
+              ctx.fillText(nivel, 675, 512);
+              ctx.strokeStyle = "#a67c1a"; ctx.lineWidth = 3;
+              ctx.beginPath(); ctx.moveTo(375, 556); ctx.lineTo(975, 556); ctx.stroke();
+              var nombre = tituloEstado.nombre || "";
+              var y = 640;
+              if (nombre) {
+                ctx.fillStyle = "#8a6414";
+                ctx.font = "700 30px Manrope, system-ui, sans-serif";
+                ctx.fillText(t("tituloOtorgadoA").toUpperCase(), 675, y);
+                ctx.fillStyle = "#3a2a08";
+                var tSize = 72;
+                do { ctx.font = "800 " + tSize + "px Cinzel, Georgia, serif"; tSize -= 4; }
+                while (ctx.measureText(nombre).width > 1000 && tSize > 36);
+                ctx.fillText(nombre, 675, y + 78);
+                y += 148;
+              }
+              ctx.font = "400 38px Manrope, system-ui, sans-serif";
+              ctx.fillStyle = "#5c4718";
+              ctx.fillText(t("miniDiplomaTexto")(tramo * 11 + 1, tramo * 11 + 11), 675, y + 30);
+              var fecha = caminoEstado.nivelesFecha[tramo];
+              if (fecha) {
+                ctx.font = "600 36px Manrope, system-ui, sans-serif";
+                ctx.fillStyle = "#6b4e12";
+                ctx.fillText(t("tituloFechaRotulo") + ": " + caminoFechaLarga(fecha), 675, y + 96);
+              }
+              resolve(c);
+            }, function () { resolve(null); });
+          } catch (e) { resolve(null); }
+        });
+      }
+      var minidiplomaCanvasActual = null;
+      var minidiplomaTramoActual = null;
+      function pintarMiniDiplomaEnVelo() {
+        if (minidiplomaTramoActual === null) return;
+        dibujarMiniDiploma(minidiplomaTramoActual).then(function (canvas) {
+          minidiplomaCanvasActual = canvas;
+          var wrap = $("minidiploma-canvas-wrap");
+          if (wrap) { wrap.innerHTML = ""; if (canvas) wrap.appendChild(canvas); }
+        });
+      }
+      function abrirMiniDiploma(tramo) {
+        minidiplomaTramoActual = tramo;
+        minidiplomaCanvasActual = null;
+        $("minidiploma-titulo").textContent = t("miniDiplomaTitulo")(NOMBRES_NIVEL[IDIOMA][tramo]);
+        $("minidiploma-nombre-etiqueta").textContent = t("tituloNombreEtiqueta");
+        var input = $("minidiploma-nombre");
+        input.value = tituloEstado.nombre || "";
+        input.placeholder = t("tituloNombrePlaceholder");
+        $("btn-minidiploma-compartir").textContent = t("miniDiplomaCompartir");
+        $("btn-minidiploma-cerrar").textContent = t("miniDiplomaCerrar");
+        $("velo-minidiploma").hidden = false;
+        pintarMiniDiplomaEnVelo();
+      }
+
+      /* ============ Pantalla «Mi tesoro» (Ronda 7) ============
+         En este orden (diseño, sección 5): la corona con sus 6
+         huecos, el nivel actual y los mini-diplomas, la colección
+         de los 66 sellos y, al tocar uno encendido, su versículo
+         tesoro con la fecha y el acceso a su tarjeta. Lo no
+         ganado se ve apagado: es lo que aún no se enciende. */
+      var tesoroLibroActual = null;
+      function pintarPantallaTesoro() {
+        var p = caminoProgreso();
+        $("tesoro-titulo").textContent = t("tesoroTitulo");
+        $("tesoro-sub").textContent = t("tesoroSub");
+        $("tesoro-corona").innerHTML = coronaSVG(null);
+        $("tesoro-nivel-actual").textContent = t("tesoroNivelActual")(p.nivelNombre, p.sellados);
+        $("tesoro-diplomas-titulo").textContent = t("tesoroDiplomasTitulo");
+        var cont = $("tesoro-diplomas");
+        cont.innerHTML = "";
+        for (var n = 0; n < 6; n++) {
+          (function (n) {
+            var nivel = NOMBRES_NIVEL[IDIOMA][n];
+            var btn = document.createElement("button");
+            btn.type = "button";
+            var derecha = "";
+            if (n === 5) {
+              /* El nivel final no lleva mini-diploma: lo corona
+                 el Título-credencial, que se abre desde aquí
+                 cuando ya se ganó. */
+              btn.className = "tesoro-diploma-btn" + (tituloEstado.entregado ? "" : " pendiente");
+              btn.disabled = !tituloEstado.entregado;
+              derecha = tituloEstado.entregado ? caminoFechaLarga(tituloEstado.fecha) : t("caminoTramoRango")(56, 66);
+              btn.innerHTML = '<span class="gema-mini">' + gemaSVG(n, tituloEstado.entregado) + "</span><span>" +
+                t("tituloDiplomaTitulo") + '</span><span class="diploma-fecha">' + derecha + "</span>";
+              if (tituloEstado.entregado) btn.addEventListener("click", function () { abrirDiploma(false); });
+            } else if (caminoEstado.sellados.length >= (n + 1) * 11) {
+              btn.className = "tesoro-diploma-btn";
+              var f = caminoEstado.nivelesFecha[n];
+              derecha = f ? caminoFechaLarga(f) : "";
+              btn.innerHTML = '<span class="gema-mini">' + gemaSVG(n, true) + "</span><span>" +
+                t("tesoroDiplomaDe")(nivel) + '</span><span class="diploma-fecha">' + derecha + "</span>";
+              btn.addEventListener("click", function () { abrirMiniDiploma(n); });
+            } else {
+              btn.className = "tesoro-diploma-btn pendiente";
+              btn.disabled = true;
+              derecha = t("caminoTramoRango")(n * 11 + 1, n * 11 + 11);
+              btn.innerHTML = '<span class="gema-mini">' + gemaSVG(n, false) + "</span><span>" +
+                t("tesoroDiplomaPendiente")(nivel) + '</span><span class="diploma-fecha">' + derecha + "</span>";
+            }
+            cont.appendChild(btn);
+          })(n);
+        }
+        $("tesoro-sellos-titulo").textContent = t("tesoroSellosTitulo");
+        var grid = $("tesoro-sellos");
+        grid.innerHTML = "";
+        CAMINO_LIBROS_ES.forEach(function (canon, i) {
+          var sellado = caminoEstado.sellados.indexOf(canon) >= 0;
+          var celda = document.createElement(sellado ? "button" : "div");
+          celda.className = "tesoro-sello" + (sellado ? " sellado" : "");
+          if (sellado) celda.type = "button";
+          var info = caminoEstado.sellosInfo[canon];
+          celda.innerHTML = '<span class="sello-ico">' + selloSVG(i) + '</span><span class="sello-nombre">' +
+            caminoNombreLibro(canon) + "</span>" +
+            (sellado && info && info.fecha ? '<span class="sello-fecha">' + caminoFechaLarga(info.fecha) + "</span>" : "");
+          if (sellado) celda.addEventListener("click", function () { abrirTesoroLibro(canon); });
+          grid.appendChild(celda);
+        });
+        $("btn-tesoro-volver").textContent = t("volverBtn");
+      }
+      function abrirTesoroLibro(canon) {
+        var tesoro = tesoroDeLibro(canon);
+        if (!tesoro) return;
+        tesoroLibroActual = canon;
+        $("tesoro-libro-simbolo").innerHTML = selloSVG(tesoro.indice);
+        $("tesoro-libro-nombre").textContent = caminoNombreLibro(canon);
+        $("tesoro-libro-versiculo").textContent = comillasVersiculo(tesoro.texto);
+        $("tesoro-libro-cita").textContent = tesoro.cita;
+        var info = caminoEstado.sellosInfo[canon];
+        $("tesoro-libro-fecha").textContent = info && info.fecha ? t("tesoroSelladoEl")(caminoFechaLarga(info.fecha)) : "";
+        $("btn-tesoro-libro-tarjeta").textContent = t("selloVerTarjeta");
+        $("btn-tesoro-libro-cerrar").textContent = t("tarjetaCerrar");
+        $("velo-tesoro-libro").hidden = false;
       }
 
       /* ================= Título de Biblionario =================
@@ -5488,8 +6379,18 @@
         var html = "";
         for (var n = 0; n < 6; n++) {
           var claseTramo = "camino-mapa-tramo" + (n < p.nivelIdx ? " hecho" : "") + (n === p.nivelIdx ? " actual" : "");
-          html += '<div class="' + claseTramo + '"><div class="camino-mapa-cab"><span class="camino-mapa-nivel">' +
-            nombres[n] + '</span><span class="camino-mapa-rango">' + t("caminoTramoRango")(n * 11 + 1, n * 11 + 11) + "</span></div>";
+          /* Ronda 7 (requisito expreso de Alexis): los seis
+             niveles como recorrido visible — cada tramo lleva su
+             gema (encendida si el tramo ya se completó, en
+             contorno si falta) y la línea de su premio especial,
+             para que de un vistazo se vea dónde estoy, qué gané
+             y qué falta. */
+          var tramoHecho = p.sellados >= (n + 1) * 11;
+          var estadoPremio = tramoHecho ? t("premioGanado") : (n === p.nivelIdx ? t("premioEnCurso") : t("premioPorAlcanzar"));
+          html += '<div class="' + claseTramo + '"><div class="camino-mapa-cab"><span class="camino-mapa-cab-izq"><span class="camino-mapa-gema">' +
+            gemaSVG(n, tramoHecho) + '</span><span class="camino-mapa-nivel">' +
+            nombres[n] + '</span></span><span class="camino-mapa-rango">' + t("caminoTramoRango")(n * 11 + 1, n * 11 + 11) + "</span></div>" +
+            '<p class="camino-mapa-premio">' + t("caminoPremioTexto")(gemaNombre(n)) + ' · <span class="premio-estado">' + estadoPremio + "</span></p>";
           for (var i = n * 11; i < n * 11 + 11; i++) {
             var canon = CAMINO_LIBROS_ES[i];
             var sellado = caminoEstado.sellados.indexOf(canon) >= 0;
@@ -5502,6 +6403,12 @@
           html += "</div>";
         }
         mapa.innerHTML = html;
+        /* Ronda 7: la corona pequeña junto a la entrada de
+           «Mi tesoro», con las gemas ganadas hasta ahora. */
+        var coronaMini = $("camino-corona-mini");
+        if (coronaMini) coronaMini.innerHTML = coronaSVG(null);
+        var btnTesoro = $("btn-abrir-tesoro");
+        if (btnTesoro) btnTesoro.textContent = t("caminoMiTesoro");
         var coronaSub = $("camino-corona-sub");
         if (coronaSub) coronaSub.textContent = t("caminoCoronaSub");
         var bloque = $("camino-titulo-bloque");
@@ -8164,13 +9071,12 @@
         pintarFinal("duelo");
         mostrar("pantalla-final");
         if (ganador === "tu") lanzarConfeti();
-        /* Si un acierto del duelo selló un libro, la celebración
-           del Camino se muestra sobre la pantalla final. */
-        if (estado.selloPendiente) {
-          var libroDuelo = estado.selloPendiente;
-          estado.selloPendiente = null;
-          mostrarCelebracionSello(libroDuelo, null);
-        }
+        /* Ronda 7: si un acierto del duelo selló un libro (o
+           completó un tramo), su celebración se muestra aquí,
+           al final del resumen — jamás durante el duelo en vivo.
+           La cola de pendientes lleva el orden (libro, nivel). */
+        estado.selloPendiente = null;
+        procesarCelebraciones();
       }
 
       function pintarFinalDuelo() {
@@ -8458,12 +9364,14 @@
 
       /* ================= Pantallas ================= */
       function mostrar(id) {
-        ["pantalla-inicio", "pantalla-juego", "pantalla-final", "pantalla-versiculos", "pantalla-reglas", "pantalla-verso-dia", "pantalla-capitulo", "pantalla-camino", "pantalla-duelo"].forEach(function (p) {
+        ["pantalla-inicio", "pantalla-juego", "pantalla-final", "pantalla-versiculos", "pantalla-reglas", "pantalla-verso-dia", "pantalla-capitulo", "pantalla-camino", "pantalla-duelo", "pantalla-tesoro"].forEach(function (p) {
           $(p).hidden = p !== id;
         });
         window.scrollTo(0, 0);
         /* Al abrir el mapa del Camino se pinta con el estado vivo. */
         if (id === "pantalla-camino") pintarPantallaCamino();
+        /* Al abrir «Mi tesoro» se pinta la colección viva. */
+        if (id === "pantalla-tesoro") pintarPantallaTesoro();
         /* Al volver al inicio, un código de reto que llegó por
            enlace y quedó pendiente se procesa por fin. */
         if (id === "pantalla-inicio") {
@@ -8474,6 +9382,10 @@
           /* Si la última partida selló el libro 66, el Título se
              celebra al llegar al inicio. */
           window.setTimeout(quizasCelebrarTitulo, 400);
+          /* Ronda 7: una celebración de recompensa que quedó
+             pendiente (la app se cerró antes de mostrarla) sale
+             al llegar al inicio, detrás del Título si lo hubiera. */
+          window.setTimeout(procesarCelebraciones, 1000);
         }
       }
 
@@ -9208,14 +10120,11 @@
              ronda avanza sola cuando ambos la resolvieron. */
           return;
         }
-        /* Si el último acierto SELLÓ un libro, la celebración va
-           primero y el avance queda en espera tras su botón. */
-        if (estado.selloPendiente) {
-          var libroSellado = estado.selloPendiente;
-          estado.selloPendiente = null;
-          mostrarCelebracionSello(libroSellado, avanzarTrasRespuesta);
-          return;
-        }
+        /* Ronda 7 (diseño, sección 2): si el último acierto selló
+           un libro, su celebración NO va aquí — taparía la partida
+           o el Desafío a mitad de camino. El sello ya quedó
+           ganado y su celebración espera en la cola de
+           pendientes: sale sobre la pantalla final (terminar()). */
         avanzarTrasRespuesta();
       });
 
@@ -9552,14 +10461,14 @@
         pintarAvanceFinal();
         mostrar("pantalla-final");
         if (motivo === "campeon" || (estado.modo === "infinito" && estado.recordInfinito)) lanzarConfeti();
-        /* Red de seguridad del Camino: si un sello quedó pendiente
-           al cerrar la partida, su celebración se muestra aquí,
-           sobre la pantalla final. */
-        if (estado.selloPendiente) {
-          var libroPendiente = estado.selloPendiente;
-          estado.selloPendiente = null;
-          mostrarCelebracionSello(libroPendiente, null);
-        }
+        /* Red de seguridad del Camino y cierre natural de todos
+           los modos con cola propia (partida, Desafío, Infinito):
+           las celebraciones de recompensa pendientes — el sello
+           del libro y, si ese sello completó un tramo, el premio
+           de nivel detrás — se muestran aquí, sobre la pantalla
+           final, en orden. */
+        estado.selloPendiente = null;
+        procesarCelebraciones();
         registrarPartidaCompletada();
       }
 
@@ -10109,6 +11018,62 @@
         var seguir = selloContinuar;
         selloContinuar = null;
         if (seguir) seguir();
+        /* Si detrás venía el premio de nivel (o otro sello de la
+           misma sesión), su celebración sale ahora, en orden. */
+        procesarCelebraciones();
+      });
+
+      /* ============ Botones de las recompensas (Ronda 7) ============ */
+      $("btn-sello-tarjeta").addEventListener("click", function () {
+        if (celebLibroActual) abrirTarjeta(celebLibroActual);
+      });
+      $("btn-sello-compartir").addEventListener("click", function () {
+        if (celebLibroActual) compartirTarjetaDe(celebLibroActual);
+      });
+      $("btn-nivel-diploma").addEventListener("click", function () {
+        if (celebNivelActual !== null) abrirMiniDiploma(celebNivelActual);
+      });
+      $("btn-nivel-seguir").addEventListener("click", function () {
+        $("velo-nivel").hidden = true;
+        procesarCelebraciones();
+      });
+      $("btn-tarjeta-compartir").addEventListener("click", function () {
+        /* Solo la imagen y el enlace de la app (regla vigente). */
+        if (tarjetaCanvasActual) compartirCanvas(tarjetaCanvasActual, t("descargaApp"), "tarjeta-biblionario.png");
+      });
+      $("btn-tarjeta-cerrar").addEventListener("click", function () {
+        $("velo-tarjeta").hidden = true;
+        procesarCelebraciones();
+      });
+      $("btn-minidiploma-compartir").addEventListener("click", function () {
+        if (minidiplomaCanvasActual) compartirCanvas(minidiplomaCanvasActual, t("descargaApp"), "minidiploma-biblionario.png");
+      });
+      $("btn-minidiploma-cerrar").addEventListener("click", function () {
+        $("velo-minidiploma").hidden = true;
+        procesarCelebraciones();
+      });
+      /* El nombre del mini-diploma es el mismo del Título: se
+         escribe una vez y sirve para toda la familia de diplomas. */
+      $("minidiploma-nombre").addEventListener("input", function () {
+        tituloEstado.nombre = $("minidiploma-nombre").value.trim();
+        tituloGuardar();
+      });
+      $("minidiploma-nombre").addEventListener("change", function () {
+        tituloEstado.nombre = $("minidiploma-nombre").value.trim();
+        tituloGuardar();
+        pintarMiniDiplomaEnVelo();
+      });
+      $("btn-abrir-tesoro").addEventListener("click", function () {
+        mostrar("pantalla-tesoro");
+      });
+      $("btn-tesoro-volver").addEventListener("click", function () {
+        mostrar("pantalla-camino");
+      });
+      $("btn-tesoro-libro-tarjeta").addEventListener("click", function () {
+        if (tesoroLibroActual) abrirTarjeta(tesoroLibroActual);
+      });
+      $("btn-tesoro-libro-cerrar").addEventListener("click", function () {
+        $("velo-tesoro-libro").hidden = true;
       });
 
       /* Ronda 5 (punto 48 de Alexis): sin zoom en ninguna
@@ -10599,6 +11564,9 @@
          guarda, repinta el diploma e intenta el registro. */
       $("btn-titulo-cerrar").addEventListener("click", function () {
         $("velo-titulo").hidden = true;
+        /* Tras el Título, una celebración de recompensa que
+           hubiera quedado en espera sale por fin. */
+        procesarCelebraciones();
       });
       $("btn-titulo-compartir").addEventListener("click", function () {
         var textoPlano = t("tituloTextoCompartir")(tituloEstado.nombre || "", tituloNumeroTexto()) + "\n\n" + t("descargaApp");
@@ -11061,6 +12029,12 @@
          celebración sale ahora. */
       tituloIntentarRegistro();
       quizasCelebrarTitulo();
+      /* Ronda 7: en el arranque en frío no se pasa por
+         mostrar(), así que las celebraciones de recompensa que
+         quedaron pendientes (la app se cerró antes de verlas)
+         se disparan aquí, detrás del Título si lo hubiera
+         (procesarCelebraciones no pisa ningún velo abierto). */
+      setTimeout(procesarCelebraciones, 1000);
       /* La pista de Voz se ofrece una sola vez por visita, en el
          inicio y sin bloquear nada: sale al poco de abrir la app
          y se va sola a los 4 segundos (o al tocarla, o al usar
