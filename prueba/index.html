@@ -3300,6 +3300,7 @@
         <p class="sub" id="nivel-texto"></p>
         <button class="btn-cerrar" id="btn-nivel-diploma" type="button">Ver mi mini-diploma</button>
         <button class="btn-ver-resultado" id="btn-nivel-seguir" type="button">¡Seguir!</button>
+        <button class="btn-secundario" id="btn-nivel-menu" type="button">Menú principal</button>
       </div>
     </div>
 
@@ -6354,6 +6355,7 @@
         $("nivel-texto").textContent = t("nivelCelebTexto")(gemaNombre(tramo), nivel);
         $("btn-nivel-diploma").textContent = t("nivelVerDiploma");
         $("btn-nivel-seguir").textContent = t("selloSeguir");
+        $("btn-nivel-menu").textContent = t("menuPrincipal");
         $("velo-nivel").hidden = false;
         lanzarConfeti();
       }
@@ -11765,6 +11767,7 @@
         $("btn-final-sabio").textContent = t("sabioIrFinal");
         $("btn-sello-continuar").textContent = t("selloSeguir");
         $("btn-sello-menu").textContent = t("menuPrincipal");
+        $("btn-nivel-menu").textContent = t("menuPrincipal");
         $("infinito-info-titulo").textContent = t("infinitoInfoTitulo");
         $("infinito-info-sub").textContent = t("infinitoInfoSub");
         $("infinito-info-1").innerHTML = t("infinitoInfo1");
@@ -12138,6 +12141,15 @@
       $("btn-nivel-seguir").addEventListener("click", function () {
         $("velo-nivel").hidden = true;
         procesarCelebraciones();
+      });
+      /* Ronda 15 (punto 67 de Alexis): paridad con la celebración
+         del sello (punto 62, ronda 13) — la de nivel lleva también
+         su propio «Menú principal»: cierra la celebración y va al
+         inicio. Si detrás quedaba otra celebración en cola, rige
+         la regla de siempre: sale al llegar al inicio. */
+      $("btn-nivel-menu").addEventListener("click", function () {
+        $("velo-nivel").hidden = true;
+        mostrar("pantalla-inicio");
       });
       $("btn-tarjeta-compartir").addEventListener("click", function () {
         /* Solo la imagen y el enlace de la app (regla vigente). */
