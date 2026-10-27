@@ -503,6 +503,17 @@
         .dato { animation: none; }
       }
       .dato[hidden] { display: none; }
+      /* Ronda 13: el [hidden] de los botones del panel manda sobre
+         las reglas de display de su clase (la de escritorio y la de
+         ≤820px daban display:block a .btn-siguiente y .btn-secundario
+         trae el suyo): sin estas guardas, el «Continuar» del Desafío
+         —oculto por atributo en la ronda 13— se seguiría viendo
+         dentro del panel en el teléfono, y la salida del Infinito
+         saldría en todos los modos. */
+      .dato .btn-siguiente[hidden] { display: none; }
+      .dato .btn-secundario[hidden] { display: none; }
+      .escalera[hidden] { display: none; }
+      .dato .btn-secundario { margin: 10px auto 2px; }
       /* Al acertar, el panel queda SOLO con el botón «Continuar»:
          sin la caja vacía (corrección de Alexis, 2026-10-24: el
          versículo se borraba pero quedaba el espacio en blanco
@@ -2987,6 +2998,7 @@
               <p class="dato-titulo" id="dato-titulo" hidden></p>
               <p><span class="versiculo" id="dato-versiculo" hidden></span><span class="versiculo-ref" id="dato-versiculo-ref" hidden></span><span id="dato-texto"></span> <span class="cita" id="dato-cita"></span></p>
               <button class="btn-siguiente" id="btn-siguiente" type="button">Continuar</button>
+              <button class="btn-secundario" id="btn-dato-salir" type="button" hidden>Salir y ver mi marca</button>
             </div>
           </div>
 
@@ -3274,6 +3286,7 @@
         <button class="btn-cerrar" id="btn-sello-tarjeta" type="button">Ver mi tarjeta</button>
         <button class="btn-ver-resultado" id="btn-sello-compartir" type="button">Compartir</button>
         <button class="btn-ver-resultado" id="btn-sello-continuar" type="button">¡Seguir!</button>
+        <button class="btn-secundario" id="btn-sello-menu" type="button">Menú principal</button>
       </div>
     </div>
 
@@ -3483,6 +3496,9 @@
         en: ["Believer", "Follower", "Disciple", "Teacher", "Apostle", "Biblionary"]
       };
       var PUNTOS_NIVEL = [100, 200, 300, 500, 800, 1500];
+      /* Ronda 13 (punto 63): el Desafío del día puntúa FIJO —
+         100 pts por acierto (máximo 600), sin la escalera vieja. */
+      var PUNTOS_DIARIO = 100;
       var NOMBRES_NIVEL_SABIO = {
         es: ["Sabio I", "Sabio II", "Sabio III", "Sabio IV", "Sabio V", "Gran Sabio"],
         en: ["Sage I", "Sage II", "Sage III", "Sage IV", "Sage V", "Grand Sage"]
@@ -3704,6 +3720,7 @@
           pts: " pts",
           sinNivel: "Sin nivel",
           preguntaDe: function (i, nivel, total) { return "Pregunta " + i + " de " + (total || 6) + " · Nivel " + nivel; },
+          preguntaDesafio: function (i, total, libro) { return "Pregunta " + i + " de " + (total || 6) + " · " + libro; },
           marcada: "Respuesta marcada… ¿será la correcta?",
           correcto: function (pts) { return "¡Correcto! +" + pts + " puntos"; },
           incorrecto: function (r) { return "No es esa… La respuesta correcta era " + r + "."; },
@@ -4101,6 +4118,7 @@
           pts: " pts",
           sinNivel: "No level yet",
           preguntaDe: function (i, nivel, total) { return "Question " + i + " of " + (total || 6) + " · Level " + nivel; },
+          preguntaDesafio: function (i, total, libro) { return "Question " + i + " of " + (total || 6) + " · " + libro; },
           marcada: "Answer locked in… is it right?",
           correcto: function (pts) { return "Correct! +" + pts + " points"; },
           incorrecto: function (r) { return "Not that one… The correct answer was " + r + "."; },
@@ -6314,6 +6332,7 @@
         $("btn-sello-tarjeta").textContent = t("selloVerTarjeta");
         $("btn-sello-compartir").textContent = t("selloCompartir");
         $("btn-sello-continuar").textContent = t("selloSeguir");
+        $("btn-sello-menu").textContent = t("menuPrincipal");
         selloContinuar = alContinuar || null;
         $("velo-libro-sellado").hidden = false;
         lanzarConfeti();
@@ -10318,6 +10337,9 @@
 
       /* ================= Pantallas ================= */
       function mostrar(id) {
+        /* Ronda 13: fuera de la pantalla de juego no puede quedar
+           vivo ningún avance automático del Desafío. */
+        if (id !== "pantalla-juego") cancelarAvanceAutomatico();
         ["pantalla-inicio", "pantalla-juego", "pantalla-final", "pantalla-versiculos", "pantalla-reglas", "pantalla-verso-dia", "pantalla-capitulo", "pantalla-camino", "pantalla-duelo", "pantalla-tesoro"].forEach(function (p) {
           $(p).hidden = p !== id;
         });
@@ -10344,6 +10366,14 @@
       }
 
       function dibujarEscalera() {
+        /* Ronda 13 (punto 63 de Alexis): el Desafío NO lleva la
+           tira de la escalera — es un rezago del modelo viejo:
+           dentro del Desafío no se sube de nivel por pregunta (el
+           nivel del Camino sube sellando 11 libros por tramo).
+           La tira se oculta solo en este modo y se restaura al
+           pintar cualquier otro. */
+        if (estado && estado.modo === "diario") { $("escalera").hidden = true; return; }
+        if (estado) $("escalera").hidden = false;
         if (estado && estado.modo === "duelo") { dibujarPanelDuelo(); return; }
         if (estado && estado.modo === "infinito") { dibujarPanelInfinito(); return; }
         $("escalera-titulo").textContent = t("escaleraTitulo");
@@ -10450,6 +10480,32 @@
         }, 100);
       }
 
+      /* ============ Avance automático del Desafío (Ronda 13) ============
+         Punto 61 de Alexis: el Desafío del día es un quiz rápido y
+         NO tiene botón «Continuar»: al resolverse cada pregunta,
+         este único temporizador avanza solo — a la siguiente
+         pregunta o a la pantalla final, vía avanzarTrasRespuesta()
+         (la misma ruta del antiguo botón). Tiempos tras la marca
+         visual de la resolución: acierto 1,0 s (solo la marca) y
+         fallo/tiempo agotado 1,4 s (se ve la respuesta correcta
+         y su versículo un instante). Se limpia al pintar una
+         pregunta nueva, al terminar la partida, al arrancar otra
+         y al salir de la pantalla de juego: ningún avance puede
+         dispararse dos veces ni sobrevivir a la salida del modo. */
+      var AVANCE_DIARIO_OK_MS = 1000;
+      var AVANCE_DIARIO_FALLO_MS = 1400;
+      var avanceAutoTimer = null;
+      function cancelarAvanceAutomatico() {
+        if (avanceAutoTimer !== null) { clearTimeout(avanceAutoTimer); avanceAutoTimer = null; }
+      }
+      function programarAvanceAutomatico(ms) {
+        cancelarAvanceAutomatico();
+        avanceAutoTimer = setTimeout(function () {
+          avanceAutoTimer = null;
+          avanzarTrasRespuesta();
+        }, ms);
+      }
+
       /* ================= Celebración: pulgar con estrellitas ================= */
       var PULGAR_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1 21h4V9H1v12zM23 10c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>';
       var ESTRELLA_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.8l3 6.9 7.5.7-5.6 5 1.7 7.4L12 18l-6.6 3.8 1.7-7.4-5.6-5 7.5-.7z"/></svg>';
@@ -10534,8 +10590,9 @@
 
       /* Puntos de la pregunta en pantalla: en el Modo Infinito cada
          pregunta vale lo que vale en su banco y nivel de origen;
-         en la partida y el Desafío del Camino vale por su
-         posición en la cola, como valía por su nivel. */
+         en la partida vale por su posición en la cola, como valía
+         por su nivel; en el Desafío vale el fijo PUNTOS_DIARIO
+         (ronda 13, punto 63). */
       function puntosPreguntaActual() {
         if (estado.modo === "duelo") {
           var it = estado.pool[estado.pos];
@@ -10545,6 +10602,10 @@
           var itInf = CAMINO_POOL_CLAVE[IDIOMA][estado.pool[estado.pos].clave];
           return itInf ? itInf.puntos : estado.pool[estado.pos].puntos;
         }
+        /* Ronda 13 (punto 63): el Desafío ya no puntúa por la
+           escalera vieja según la posición (100/200/300/500/800/
+           1500): cada acierto vale el fijo PUNTOS_DIARIO. */
+        if (estado.modo === "diario") return PUNTOS_DIARIO;
         return puntosDe(estado.indice);
       }
 
@@ -10764,17 +10825,34 @@
         try { b.scrollIntoView({ block: "start", behavior: REDUCIR_MOVIMIENTO ? "auto" : "smooth" }); } catch (e) {}
       }
 
+      /* Nombre del libro en curso del Camino, en el idioma de la
+         interfaz (para el encabezado del Desafío, ronda 13). */
+      function nombreLibroEnCurso() {
+        var libro = caminoLibroActual();
+        return libro ? caminoNombreLibro(libro) : "—";
+      }
+
       function mostrarPregunta() {
         var q = preguntaActual();
         preguntasVistas[clavePreguntaActual()] = true;
         guardarVistasInfinito();
         estado.respondiendo = false;
         estado.termino = false;
+        /* Pregunta nueva pintada: cualquier avance automático
+           anterior ya cumplió o quedó cancelado (ronda 13). */
+        cancelarAvanceAutomatico();
+        /* Ronda 13 (punto 63): el encabezado del Desafío ya NO
+           rotula la pregunta con un «Nivel» de la escalera vieja:
+           dice la pregunta y el libro en curso del Camino. El
+           nivel real del jugador es el de su tramo (chip del
+           inicio), no el de la posición en la cola. */
         $("pregunta-num").textContent = estado.modo === "infinito"
           ? t("preguntaInfinito")(estado.pos + 1)
           : estado.modo === "duelo"
             ? t("preguntaDuelo")(estado.pos + 1, estado.pool.length, estado.errores)
-            : t("preguntaDe")(estado.indice + 1, nivelNombre(estado.indice), totalPreguntas());
+            : estado.modo === "diario"
+              ? t("preguntaDesafio")(estado.indice + 1, totalPreguntas(), nombreLibroEnCurso())
+              : t("preguntaDe")(estado.indice + 1, nivelNombre(estado.indice), totalPreguntas());
         $("pregunta-texto").textContent = q.pregunta;
         var tarjetaPregunta = $("pregunta-texto").closest(".tarjeta-pregunta");
         tarjetaPregunta.classList.toggle("pregunta-larga", q.pregunta.length > 92);
@@ -10790,13 +10868,19 @@
         $("dato").hidden = true;
         $("dato").classList.remove("derrota");
         $("dato").classList.remove("solo-boton");
+        /* La salida del panel (punto 64) nace oculta en cada
+           pregunta: solo se muestra con el panel del Infinito. */
+        $("btn-dato-salir").textContent = t("infinitoSalir");
+        $("btn-dato-salir").hidden = true;
         $("dato-titulo").hidden = true;
         $("pulgar-fiesta").hidden = true;
         $("franja-rival").hidden = estado.modo !== "duelo";
         if (estado.modo === "duelo") { estado.dueloBloqueada = false; estado.dueloResuelto = false; pintarRival(); }
         /* En el duelo no hay botón de avance: la ronda pasa sola cuando
-           ambos la resolvieron y terminó la pausa de resultado. */
-        $("btn-siguiente").hidden = estado.modo === "duelo";
+           ambos la resolvieron y terminó la pausa de resultado. En el
+           Desafío tampoco (ronda 13, punto 61): el avance tras
+           responder es automático, sin toque. */
+        $("btn-siguiente").hidden = estado.modo === "duelo" || estado.modo === "diario";
         /* El botón de salida se llama por su nombre en cada modo:
            en el duelo es abandonar la partida; en el Infinito,
            salir y ver la marca; en los demás, retirarse con los
@@ -10976,21 +11060,32 @@
           /* El versículo (el texto del dato) sale SOLO al fallar
              (corrección de Alexis, 2026-10-24): si acertó, ya lo
              sabía; el versículo es el momento de aprender del
-             error. PERO el panel nunca se oculta en los modos sin
-             duelo: dentro vive el botón «Continuar» y sin él la
-             partida se queda atrapada tras acertar (fallo real de
-             la prueba de la 1.3.2). Al acertar, el panel sale con
-             el texto vacío y solo el botón. En el DUELO el panel
-             no sale nunca (decisión de Alexis, 2026-10-20:
-             empujaba el espejo del rival fuera de la pantalla). */
-          if (estado.modo !== "duelo") {
+             error. En la partida normal el panel nunca se oculta
+             al acertar: dentro vive el botón «Continuar» y sin él
+             la partida se queda atrapada tras acertar (fallo real
+             de la prueba de la 1.3.2); sale con el texto vacío y
+             solo el botón. En el DUELO el panel no sale nunca
+             (decisión de Alexis, 2026-10-20: empujaba el espejo
+             del rival fuera de la pantalla). Y en el DESAFÍO no
+             sale al acertar desde la ronda 13 (punto 61): no hay
+             botón que alojar — el avance es automático. */
+          if (estado.modo === "duelo" || (estado.modo === "diario" && estado.ultimaCorrecta)) {
+            /* En el duelo el panel no sale nunca. En el Desafío no
+               sale al acertar (ronda 13): ya no aloja ningún botón
+               y el versículo es solo del fallo — bastan la marca
+               del acierto y el avance automático. */
+            $("dato").hidden = true;
+          } else {
             $("dato-texto").textContent = estado.ultimaCorrecta ? "" : q.dato;
             $("dato-cita").textContent = estado.ultimaCorrecta ? "" : "— " + q.cita;
             $("dato").classList.toggle("solo-boton", estado.ultimaCorrecta);
             $("dato").hidden = false;
-          } else {
-            $("dato").hidden = true;
           }
+          /* Ronda 13 (punto 64): en el Infinito el panel trae su
+             propia salida «Salir y ver mi marca» — el botón de
+             detrás queda tapado por el panel (y bloqueado
+             mientras la respuesta se muestra). */
+          $("btn-dato-salir").hidden = estado.modo !== "infinito" || $("dato").hidden;
           actualizarBarra();
           dibujarEscalera();
           /* En el Modo Infinito el panel lateral se repinta al
@@ -11007,6 +11102,13 @@
                cierra; si no, queda en espera sin riesgo de tiempo. */
             estado.dueloResuelto = true;
             quizasCerrarRonda();
+          }
+          /* Ronda 13 (punto 61): en el Desafío el avance tras
+             responder es AUTOMÁTICO — acierto: la marca breve y
+             sigue sola; fallo: se ve la correcta (y su versículo)
+             un instante y el Desafío se cierra solo a su final. */
+          if (estado.modo === "diario") {
+            programarAvanceAutomatico(estado.ultimaCorrecta ? AVANCE_DIARIO_OK_MS : AVANCE_DIARIO_FALLO_MS);
           }
         }, REDUCIR_MOVIMIENTO ? 250 : 1500);
       }
@@ -11052,6 +11154,8 @@
         /* En el duelo tampoco aparece el panel al agotarse el tiempo:
            la ronda sigue en pantalla dividida (ver responder()). */
         $("dato").hidden = estado.modo === "duelo";
+        /* Ronda 13 (punto 64): la salida del panel, también aquí. */
+        $("btn-dato-salir").hidden = estado.modo !== "infinito" || $("dato").hidden;
         dibujarEscalera();
         if (estado.modo === "infinito") {
           $("pregunta-num").textContent = t("preguntaInfinito")(estado.pos + 1);
@@ -11066,6 +11170,10 @@
           estado.dueloResuelto = true;
           quizasCerrarRonda();
         }
+        /* Ronda 13 (punto 61): el tiempo agotado en el Desafío
+           también avanza solo — se ve la correcta un instante y
+           el Desafío se cierra a su pantalla final, sin toque. */
+        if (estado.modo === "diario") programarAvanceAutomatico(AVANCE_DIARIO_FALLO_MS);
       }
 
       $("btn-siguiente").addEventListener("click", function () {
@@ -11402,6 +11510,7 @@
           actualizarRacha();
         }
         detenerTemporizador();
+        cancelarAvanceAutomatico();
         detenerNarracion();
         detenerMusica();
         ocultarPistaVoz();
@@ -11471,7 +11580,9 @@
           ? t("preguntaInfinito")(estado.pos + 1)
           : estado.modo === "duelo"
             ? t("preguntaDuelo")(estado.pos + 1, estado.pool.length, estado.errores)
-            : t("preguntaDe")(estado.indice + 1, nivelNombre(estado.indice), totalPreguntas());
+            : estado.modo === "diario"
+              ? t("preguntaDesafio")(estado.indice + 1, totalPreguntas(), nombreLibroEnCurso())
+              : t("preguntaDe")(estado.indice + 1, nivelNombre(estado.indice), totalPreguntas());
         $("pregunta-texto").textContent = q.pregunta;
         ajustarLetraPregunta();
         botonesRespuesta().forEach(function (b) {
@@ -11492,6 +11603,7 @@
               : (estado.ultimaCorrecta
                 ? (estado.indice === totalPreguntas() - 1 ? t("reclamar") : t("siguiente"))
                 : t("verResultado"));
+          $("btn-dato-salir").textContent = t("infinitoSalir");
         }
       }
 
@@ -11644,6 +11756,7 @@
         $("duelo-codigo").setAttribute("aria-label", t("dueloCodigoPh"));
         $("btn-final-sabio").textContent = t("sabioIrFinal");
         $("btn-sello-continuar").textContent = t("selloSeguir");
+        $("btn-sello-menu").textContent = t("menuPrincipal");
         $("infinito-info-titulo").textContent = t("infinitoInfoTitulo");
         $("infinito-info-sub").textContent = t("infinitoInfoSub");
         $("infinito-info-1").innerHTML = t("infinitoInfo1");
@@ -11830,6 +11943,7 @@
         cerrarDueloEnLinea();
         cerrarLobbyDuelo();
         detenerRival();
+        cancelarAvanceAutomatico();
         estado = nuevaPartida(modo);
         /* Arranques imposibles por la garantía anti-repetición
            (corrección 2026-10-26): sin preguntas nuevas no se
@@ -11975,6 +12089,32 @@
         /* Si detrás venía el premio de nivel (o otro sello de la
            misma sesión), su celebración sale ahora, en orden. */
         procesarCelebraciones();
+      });
+
+      /* Ronda 13 (punto 62 de Alexis): la celebración del sello
+         lleva su propio «Menú principal» — el de la pantalla
+         final queda tapado detrás del velo y el jugador se
+         quedaba sin salida directa. Cierra la celebración SIN
+         disparar su «¡Seguir!» y va al inicio, igual que el
+         «Menú principal» de las pantallas finales. Si detrás
+         quedaba otra celebración en cola, rige la regla de
+         siempre: sale al llegar al inicio. */
+      $("btn-sello-menu").addEventListener("click", function () {
+        $("velo-libro-sellado").hidden = true;
+        selloContinuar = null;
+        mostrar("pantalla-inicio");
+      });
+
+      /* Ronda 13 (punto 64 de Alexis): la salida del Infinito
+         DENTRO de su panel de respuesta. Hace lo mismo que el
+         «Salir y ver mi marca» de detrás (que el panel tapa):
+         cierra la corrida con terminar("retiro") — la marca y
+         la racha quedan registradas y las celebraciones
+         pendientes (un sello ganado en la corrida) se procesan
+         sobre la pantalla de la marca, como al salir normal. */
+      $("btn-dato-salir").addEventListener("click", function () {
+        if (!estado || estado.modo !== "infinito" || estado.termino) return;
+        terminar("retiro");
       });
 
       /* ============ Botones de las recompensas (Ronda 7) ============ */
