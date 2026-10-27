@@ -2514,6 +2514,41 @@
         #pantalla-verso-dia .corazon-pildora {
           font-size: 0.86rem; padding: 6px 11px; min-height: 34px;
         }
+        /* --- Punto 50 (Alexis, 2026-10-26): el RESUMEN usa TODA
+           la ventana — las tres tarjetas DEL MISMO TAMAÑO se
+           reparten la altura útil a tercios (columna flex) y el
+           contenido de cada una se centra en su tercio, sin el
+           hueco vacío de abajo ni tarjetas desiguales. El
+           versículo conserva su recorte con «…». Solo vive con
+           .vista-resumen: las vistas de una sola tarjeta
+           (versículo o devocional completos) no cambian. La
+           altura descuenta el mismo relleno del escenario que
+           fija la regla de esta ventana (44px + seguro arriba,
+           14px abajo). --- */
+        #pantalla-verso-dia.vista-resumen {
+          display: flex; flex-direction: column;
+          height: calc(100dvh - max(10px, env(safe-area-inset-top)) - 58px);
+        }
+        #pantalla-verso-dia.vista-resumen .palabra-cabecera { flex: none; }
+        #pantalla-verso-dia.vista-resumen .tarjeta-dia,
+        #pantalla-verso-dia.vista-resumen .tarjeta-devocional,
+        #pantalla-verso-dia.vista-resumen .tarjeta-corazon {
+          flex: 1 1 0; min-height: 0;
+          display: flex; flex-direction: column; justify-content: center;
+        }
+        /* El Corazón reparte sus píldoras en 3 filas dentro de su
+           tercio (con la medida anterior salían 4 y el contenido
+           desbordaba la tarjeta, empujando incluso el documento):
+           píldoras y frase un punto más compactas SOLO en el
+           resumen — los textos quedan completos, sin recortes. */
+        #pantalla-verso-dia.vista-resumen .corazon-frase {
+          font-size: 0.9rem; line-height: 1.24; margin-bottom: 0;
+        }
+        #pantalla-verso-dia.vista-resumen .tarjeta-corazon .dia-rotulo { margin-bottom: 2px; }
+        #pantalla-verso-dia.vista-resumen .corazon-pildoras { gap: 4px; margin-top: 3px; }
+        #pantalla-verso-dia.vista-resumen .corazon-pildora {
+          font-size: 0.8rem; padding: 4px 9px; min-height: 29px;
+        }
         /* --- Pantalla final (todos los modos): columna que se
            reparte por la altura completa, sin el hueco de arriba --- */
         .final {
@@ -3475,7 +3510,7 @@
           otraVez: "Jugar otra vez",
           pts: " pts",
           sinNivel: "Sin nivel",
-          preguntaDe: function (i, nivel) { return "Pregunta " + i + " de 6 · Nivel " + nivel; },
+          preguntaDe: function (i, nivel, total) { return "Pregunta " + i + " de " + (total || 6) + " · Nivel " + nivel; },
           marcada: "Respuesta marcada… ¿será la correcta?",
           correcto: function (pts) { return "¡Correcto! +" + pts + " puntos"; },
           incorrecto: function (r) { return "No es esa… La respuesta correcta era " + r + "."; },
@@ -3554,9 +3589,11 @@
             return "¡Desafío de hoy completado! Racha de " + r + (r === 1 ? " día" : " días") + ". Las preguntas de mañana ya están sembradas: vuelve para mantenerla.";
           },
           desafioYaAviso: "Ya completaste el desafío de hoy. La racha vuelve a contar mañana con preguntas nuevas.",
-          desafioCompletadoTitulo: "¡Desafío completado! 6 de 6",
+          desafioSinNuevas: "Hoy ya no quedan preguntas nuevas de tu libro en curso para el Desafío. Mañana habrá preguntas nuevas.",
+          bancoAgotado: "Ya recorriste todo el banco de preguntas: no queda ninguna sin ver.",
+          desafioCompletadoTitulo: function (n) { return "¡Desafío completado! " + n + " de " + n; },
           desafioCompletadoResumen: "Completaste el Desafío del día. Vuelve mañana por el siguiente.",
-          desafioNoCompletadoTitulo: function (a) { return "Acertaste " + a + " de 6 — te faltaron " + (6 - a) + " para completar el Desafío"; },
+          desafioNoCompletadoTitulo: function (a, total) { var t6 = total || 6; return "Acertaste " + a + " de " + t6 + " — te faltaron " + (t6 - a) + " para completar el Desafío"; },
           desafioNoCompletadoResumen: "El Desafío sigue abierto hoy: inténtalo de nuevo cuando quieras.",
           versiculoDia: "Versículo del día",
           devocionalTitulo: "Devocional de hoy",
@@ -3822,7 +3859,7 @@
           otraVez: "Play again",
           pts: " pts",
           sinNivel: "No level yet",
-          preguntaDe: function (i, nivel) { return "Question " + i + " of 6 · Level " + nivel; },
+          preguntaDe: function (i, nivel, total) { return "Question " + i + " of " + (total || 6) + " · Level " + nivel; },
           marcada: "Answer locked in… is it right?",
           correcto: function (pts) { return "Correct! +" + pts + " points"; },
           incorrecto: function (r) { return "Not that one… The correct answer was " + r + "."; },
@@ -3901,9 +3938,11 @@
             return "Today's challenge is done! Streak at " + r + (r === 1 ? " day" : " days") + ". Tomorrow's questions are already seeded: come back to keep it alive.";
           },
           desafioYaAviso: "You already completed today's challenge. The streak counts again tomorrow with fresh questions.",
-          desafioCompletadoTitulo: "Challenge complete! 6 out of 6",
+          desafioSinNuevas: "There are no new questions left in your current book for today's Challenge. Tomorrow brings new questions.",
+          bancoAgotado: "You have gone through the entire question bank: there are no unseen questions left.",
+          desafioCompletadoTitulo: function (n) { return "Challenge complete! " + n + " out of " + n; },
           desafioCompletadoResumen: "You completed today's Challenge. Come back tomorrow for the next one.",
-          desafioNoCompletadoTitulo: function (a) { return "You got " + a + " of 6 right — you were " + (6 - a) + " short of completing the Challenge"; },
+          desafioNoCompletadoTitulo: function (a, total) { var t6 = total || 6; return "You got " + a + " of " + t6 + " right — you were " + (t6 - a) + " short of completing the Challenge"; },
           desafioNoCompletadoResumen: "The Challenge stays open today: try again whenever you like.",
           versiculoDia: "Verse of the Day",
           devocionalTitulo: "Today's Devotional",
@@ -5084,23 +5123,15 @@
         var actual = caminoLibroActual();
         tomarDeLibro(actual);
         if (soloLibroActual) {
-          /* Desafío del día (obs. 23, 2026-10-26): EXCLUSIVAMENTE
-             el libro en curso. El relleno histórico con los
-             siguientes libros sin sellar le sirvió a Alexis
-             preguntas de Levítico con Éxodo en curso (y el avance
-             acreditó Levítico). Si las frescas del libro no
-             alcanzan — el registro acumulativo compartido las
-             consume desde todos los modos — se completa con
-             preguntas YA VISTAS DEL MISMO LIBRO: la repetición,
-             de último recurso, queda dentro del libro y jamás
-             cruza a otro. La acreditación sale del propio ítem,
-             así que también suma solo al libro en curso. */
-          if (cola.length < cantidad && actual) {
-            var yaVistas = (CAMINO_POOL_LIBRO[IDIOMA][actual] || []).filter(function (it) {
-              return !enCola[it.clave];
-            });
-            tomarDeLista(yaVistas);
-          }
+          /* Desafío del día: EXCLUSIVAMENTE preguntas NUEVAS del
+             libro en curso. Corrección 2026-10-26 (orden expresa
+             de Alexis, que revierte el relleno de la obs. 23): el
+             Desafío JAMÁS se completa con preguntas ya vistas. Si
+             las frescas del libro no llegan a la cantidad pedida,
+             la cola sale más corta con las frescas que haya; si no
+             queda ninguna, sale vacía y el arranque muestra el
+             aviso honesto de que no hay Desafío nuevo de ese
+             libro. Repetir, nunca. */
           return cola;
         }
         if (cola.length < cantidad) {
@@ -5117,11 +5148,10 @@
             if (!preguntasVistas[it2.clave]) meter(it2);
           }
         }
-        if (cola.length < cantidad) {
-          preguntasVistas = {};
-          guardarVistasInfinito();
-          return caminoCola(cantidad, rng);
-        }
+        /* SIN reinicio de memoria (corrección 2026-10-26): si ya
+           no quedan frescas en todo el banco, la cola sale con
+           las que haya (o vacía) y el arranque avisa; el registro
+           preguntasVistas NUNCA se borra. */
         return cola;
       }
 
@@ -5130,11 +5160,9 @@
          barajado solo dentro de cada banda. */
       function construirMazoInfinitoCamino() {
         var items = CAMINO_POOL[IDIOMA].filter(function (it) { return !preguntasVistas[it.clave]; });
-        if (!items.length && CAMINO_POOL[IDIOMA].length) {
-          preguntasVistas = {};
-          guardarVistasInfinito();
-          items = CAMINO_POOL[IDIOMA].slice();
-        }
+        /* SIN reinicio (corrección 2026-10-26): si el banco se
+           agotó, el mazo sale vacío y el modo se detiene con el
+           aviso de banco recorrido; la memoria nunca se borra. */
         var mazo = [];
         for (var b = 0; b <= 2; b++) {
           (function (banda) {
@@ -5738,21 +5766,85 @@
         return o ? o.slice() : [0, 1, 2, 3];
       }
 
+      /* Generación de la narración en curso: cada intento nuevo (y
+         cada detención) la incrementa, para que un respaldo asíncrono
+         tardío (el rechazo de un play() que llega cuando el jugador
+         ya respondió o avanzó) jamás hable fuera de su pregunta. */
+      var narracionGen = 0;
+
       function detenerNarracion() {
+        narracionGen++;
         try { reproductorVoz.pause(); } catch (e) {}
+        try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {}
       }
 
-      /* Reproduce el clip de la pregunta actual. Se llama desde el
-         toque del botón Voz o al mostrar una pregunta nueva con la
-         voz ya activada; en ambos casos el play() nace dentro de un
-         toque del jugador, sin intermediarios ni reintentos. */
+      /* Respaldo hablado para las preguntas SIN clip grabado.
+         CORRECCIÓN 2026-10-26 (fallo reportado por Alexis: «le di
+         jugar y la voz no habla», mientras en el Desafío sí sonaba):
+         el banco nuevo del Camino (las 638 preguntas de producción)
+         entró al pool con claveVoz = null, así que su «clip» era
+         assets/voz/<idioma>/sin-voz.mp3 — un archivo que NO existe
+         (404) — y el rechazo de play() se tragaba en silencio: sin
+         voz en la mayoría de preguntas de ¡A JUGAR!. El Desafío se
+         salvaba por su surtido: sirve el libro en curso y rellena
+         con lo ya visto del mismo libro EN ORDEN DE POOL (banco
+         viejo primero), es decir, preguntas CON clip. Arreglo: la
+         pregunta sin clip se narra con la voz del propio aparato
+         (speechSynthesis) en el idioma de la app, con las cadenas
+         de narración del diccionario (lasOpciones / opcionNarracion)
+         y siguiendo el mismo orden de opciones que se ve en
+         pantalla (ordenVozActual). Nace dentro de la misma cadena
+         del toque que muestra la pregunta, como exige iOS, y se
+         detiene con detenerNarracion() igual que el clip: si el
+         jugador silencia el juego, tampoco suena esta voz. */
+      function narrarPreguntaSinClip() {
+        if (!vozActiva || !estado || $("pantalla-juego").hidden) return;
+        if (estado.respondiendo || estado.termino) return;
+        var synth = window.speechSynthesis;
+        if (!synth || typeof SpeechSynthesisUtterance === "undefined") return;
+        var q = preguntaActual();
+        if (!q || !q.pregunta || !Array.isArray(q.opciones)) return;
+        var orden = ordenVozActual();
+        var partes = [q.pregunta, t("lasOpciones")];
+        orden.forEach(function (orig, pos) {
+          partes.push(t("opcionNarracion")(LETRAS[pos], q.opciones[orig]));
+        });
+        try {
+          synth.cancel();
+          if (synth.resume) synth.resume();
+          var u = new SpeechSynthesisUtterance(partes.join(" "));
+          u.lang = IDIOMA === "en" ? "en-US" : "es-ES";
+          if (synth.getVoices) {
+            var voces = synth.getVoices() || [];
+            var pref = IDIOMA === "en" ? "en" : "es";
+            for (var i = 0; i < voces.length; i++) {
+              if (voces[i].lang && voces[i].lang.toLowerCase().indexOf(pref) === 0) { u.voice = voces[i]; break; }
+            }
+          }
+          synth.speak(u);
+        } catch (e) { /* sin voz del aparato: la pregunta se lee, como sin el botón Voz */ }
+      }
+
+      /* Reproduce la narración de la pregunta actual. Se llama
+         desde el toque del botón Voz o al mostrar una pregunta
+         nueva con la voz ya activada; en ambos casos el arranque
+         nace dentro de un toque del jugador, sin intermediarios.
+         Con clip grabado suena el clip; sin clip (o si el clip
+         falla al cargar/reproducir) habla el respaldo del aparato:
+         ningún fallo de audio vuelve a quedar en silencio. */
       function reproducirClipVoz() {
         if (!estado || $("pantalla-juego").hidden) return;
+        var gen = ++narracionGen;
+        if (clavePregunta() === "sin-voz") { narrarPreguntaSinClip(); return; }
         try {
           reproductorVoz.src = clipDePregunta();
           var p = reproductorVoz.play();
-          if (p && p.catch) p.catch(function () {});
-        } catch (e) {}
+          if (p && p.catch) p.catch(function () {
+            if (gen === narracionGen && vozActiva && estado && !$("pantalla-juego").hidden && !estado.respondiendo && !estado.termino) {
+              narrarPreguntaSinClip();
+            }
+          });
+        } catch (e) { narrarPreguntaSinClip(); }
       }
 
       /* ============ Pista de primera vez: botón Voz ============
@@ -5955,12 +6047,22 @@
         var usadas = leerUsadasDuelo();
         var usadasSet = {};
         usadas.forEach(function (k) { usadasSet[k] = true; });
-        var disponibles = items.filter(function (it) { return !usadasSet[claveItemDuelo(it)]; });
+        /* Garantía «ninguna se repite, nunca» (corrección
+           2026-10-26): el Duelo excluye TAMBIÉN el registro
+           compartido del Camino (preguntasVistas, cuyas claves
+           «banco:nivel:idx» son las mismas de claveItemDuelo): lo
+           ya jugado en ¡A jugar!, el Desafío o el Infinito no
+           puede salir en un duelo. */
+        var disponibles = items.filter(function (it) {
+          return !usadasSet[claveItemDuelo(it)] && !preguntasVistas[claveItemDuelo(it)];
+        });
         if (disponibles.length < DUELO_PREGUNTAS) {
-          /* El banco restante no alcanza para un duelo sin repetir:
-             se reinicia la memoria y vuelve a entrar todo el banco. */
+          /* El banco restante no alcanza: el reinicio vive SOLO
+             en el registro de duelos (vuelven a entrar las ya
+             jugadas en duelos anteriores), pero el registro
+             compartido sigue vetado siempre. */
           usadas = [];
-          disponibles = items;
+          disponibles = items.filter(function (it) { return !preguntasVistas[claveItemDuelo(it)]; });
         }
         /* Sorteo al azar entre las disponibles, sin repetir ninguna
            de duelos anteriores, y registro inmediato de las elegidas. */
@@ -6226,6 +6328,17 @@
           var tmp = items[i]; items[i] = items[j]; items[j] = tmp;
         }
         var elegidas = items.slice(0, DUELO_PREGUNTAS);
+        /* Registro (corrección 2026-10-26): las claves servidas
+           por este respaldo quedan anotadas en la memoria de
+           duelos, para que los próximos sorteos locales las
+           excluyan. La SELECCIÓN no puede filtrar por el registro
+           compartido local: el mazo se deriva del código de forma
+           determinista y cada teléfono lleva su propio registro —
+           filtrar aquí desincronizaría los dos mazos. El camino
+           normal (el anfitrión publica su lista desde
+           construirMazoDuelo) sí respeta el compartido por
+           completo. */
+        registrarClavesDuelo(elegidas.map(claveItemDuelo));
         elegidas.forEach(function (it) { it.orden = it.dif + rng() * 2.5; });
         elegidas.sort(function (a, b) { return a.orden - b.orden; });
         return elegidas;
@@ -8370,7 +8483,7 @@
         $("escalera-titulo").textContent = t("escaleraTitulo");
         var ol = $("lista-escalera");
         ol.innerHTML = "";
-        for (var i = 0; i < 6; i++) {
+        for (var i = 0; i < totalPreguntas(); i++) {
           var li = document.createElement("li");
           if (i < estado.indice) li.className = "superado";
           if (i === estado.indice && !estado.termino) li.className = "actual";
@@ -8569,13 +8682,22 @@
         return puntosDe(estado.indice);
       }
 
-      /* Avanza en el mazo sin repetir; al agotarlo, se reconstruye
-         entero (con las mismas bandas por dificultad) y la partida
-         sigue en una vuelta nueva. */
+      /* Avanza en el mazo sin repetir. Al agotarlo se reconstruye
+         SOLO con las preguntas que aún no se han visto en ningún
+         modo; si ya no queda ninguna fresca en todo el banco, la
+         corrida se cierra con su marca y el aviso de banco
+         recorrido (corrección 2026-10-26: la memoria jamás se
+         reinicia para volver a servir repetidas). */
       function siguienteInfinito() {
         estado.pos++;
         if (estado.pos >= estado.pool.length) {
-          estado.pool = construirMazoInfinitoCamino();
+          var nuevoPool = construirMazoInfinitoCamino();
+          if (!nuevoPool.length) {
+            estado.bancoAgotado = true;
+            terminar("retiro");
+            return;
+          }
+          estado.pool = nuevoPool;
           estado.pos = 0;
         }
         mostrarPregunta();
@@ -8786,7 +8908,7 @@
           ? t("preguntaInfinito")(estado.pos + 1)
           : estado.modo === "duelo"
             ? t("preguntaDuelo")(estado.pos + 1, estado.pool.length, estado.errores)
-            : t("preguntaDe")(estado.indice + 1, nivelNombre(estado.indice));
+            : t("preguntaDe")(estado.indice + 1, nivelNombre(estado.indice), totalPreguntas());
         $("pregunta-texto").textContent = q.pregunta;
         var tarjetaPregunta = $("pregunta-texto").closest(".tarjeta-pregunta");
         tarjetaPregunta.classList.toggle("pregunta-larga", q.pregunta.length > 92);
@@ -8958,7 +9080,7 @@
               ? (estado.pos + 1 >= estado.pool.length ? t("verResultado") : t("siguiente"))
               : estado.modo === "infinito"
                 ? t("siguiente")
-                : (estado.indice === 5 ? t("reclamar") : t("siguiente"));
+                : (estado.indice === totalPreguntas() - 1 ? t("reclamar") : t("siguiente"));
             /* Al acertar se mantiene el dato normal (sin versículo grande) */
             $("dato").classList.remove("derrota");
             $("dato-titulo").hidden = true;
@@ -9097,6 +9219,14 @@
         avanzarTrasRespuesta();
       });
 
+      /* Total de preguntas de la partida en curso: con la
+         garantía anti-repetición, el Desafío (y en el límite la
+         partida) puede salir con menos de 6 — manda la cola
+         servida, no el 6 fijo de antes. */
+      function totalPreguntas() {
+        return estado && estado.cola && estado.cola.length ? estado.cola.length : 6;
+      }
+
       function avanzarTrasRespuesta() {
         if (!estado || estado.modo === "duelo") return;
         if (estado.modo === "infinito") {
@@ -9106,7 +9236,7 @@
           return;
         }
         var fueCorrecta = $("mensaje").classList.contains("bien");
-        if (fueCorrecta && estado.indice < 5) {
+        if (fueCorrecta && estado.indice < totalPreguntas() - 1) {
           estado.indice++;
           mostrarPregunta();
         } else if (fueCorrecta) {
@@ -9303,10 +9433,10 @@
         if (estado.modo === "diario" && motivo === "campeon") {
           /* Ronda 4 (obs. 24): titular propio del Desafío; el de la
              escalera («Llegaste hasta…») es de la partida normal. */
-          $("final-titulo").textContent = t("desafioCompletadoTitulo");
+          $("final-titulo").textContent = t("desafioCompletadoTitulo")(totalPreguntas());
           $("final-resumen").textContent = t("desafioCompletadoResumen");
         } else if (estado.modo === "diario") {
-          $("final-titulo").textContent = t("desafioNoCompletadoTitulo")(estado.aciertos);
+          $("final-titulo").textContent = t("desafioNoCompletadoTitulo")(estado.aciertos, totalPreguntas());
           $("final-resumen").textContent = t("desafioNoCompletadoResumen");
         } else if (motivo === "campeon") {
           if (estado.modo === "sabio") {
@@ -9328,7 +9458,7 @@
 
         $("final-puntos").textContent = fmt(estado.puntos);
         $("final-nivel").textContent = nivelAlcanzado;
-        $("final-aciertos").textContent = estado.aciertos + "/6";
+        $("final-aciertos").textContent = estado.aciertos + "/" + totalPreguntas();
         $("rot-aciertos").textContent = t("rotAciertos");
         $("final-racha").textContent = fmt(rachaDiaria);
         $("rot-racha").textContent = t("rotRacha");
@@ -9413,6 +9543,12 @@
         detenerMusica();
         ocultarPistaVoz();
         pintarFinal(motivo);
+        if (estado.modo === "infinito" && estado.bancoAgotado) {
+          /* El Infinito se detuvo porque el banco se recorrió
+             entero (corrección 2026-10-26): el aviso va primero
+             en el resumen de la marca. */
+          $("final-resumen").textContent = t("bancoAgotado") + " " + $("final-resumen").textContent;
+        }
         pintarAvanceFinal();
         mostrar("pantalla-final");
         if (motivo === "campeon" || (estado.modo === "infinito" && estado.recordInfinito)) lanzarConfeti();
@@ -9472,7 +9608,7 @@
           ? t("preguntaInfinito")(estado.pos + 1)
           : estado.modo === "duelo"
             ? t("preguntaDuelo")(estado.pos + 1, estado.pool.length, estado.errores)
-            : t("preguntaDe")(estado.indice + 1, nivelNombre(estado.indice));
+            : t("preguntaDe")(estado.indice + 1, nivelNombre(estado.indice), totalPreguntas());
         $("pregunta-texto").textContent = q.pregunta;
         ajustarLetraPregunta();
         botonesRespuesta().forEach(function (b) {
@@ -9491,7 +9627,7 @@
             : estado.modo === "infinito"
               ? (estado.errores >= 3 ? t("verResultado") : t("siguiente"))
               : (estado.ultimaCorrecta
-                ? (estado.indice === 5 ? t("reclamar") : t("siguiente"))
+                ? (estado.indice === totalPreguntas() - 1 ? t("reclamar") : t("siguiente"))
                 : t("verResultado"));
         }
       }
@@ -9832,6 +9968,23 @@
         cerrarLobbyDuelo();
         detenerRival();
         estado = nuevaPartida(modo);
+        /* Arranques imposibles por la garantía anti-repetición
+           (corrección 2026-10-26): sin preguntas nuevas no se
+           sirve nada — se vuelve al inicio con el aviso honesto,
+           en vez de repetir preguntas o de reventar en la primera
+           pregunta con una cola vacía. */
+        if ((modo === "base" || modo === "diario") && (!estado.cola || !estado.cola.length)) {
+          estado = null;
+          mostrar("pantalla-inicio");
+          mostrarAvisoTemporal("aviso-diario", modo === "diario" ? t("desafioSinNuevas") : t("bancoAgotado"));
+          return;
+        }
+        if (modo === "infinito" && (!estado.pool || !estado.pool.length)) {
+          estado = null;
+          mostrar("pantalla-inicio");
+          mostrarAvisoTemporal("aviso-infinito", t("bancoAgotado"));
+          return;
+        }
         estado.caminoAntes = fotoCamino();
         mostrar("pantalla-juego");
         reproducirMusica();
