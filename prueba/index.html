@@ -182,6 +182,16 @@
       .aviso-sabio[hidden] { display: none; }
       .final .btn-secundario { margin-top: 18px; }
       #btn-final-sabio[hidden] { display: none; }
+      /* Ronda 4B (punto 38): los demás botones de la pantalla
+         final también se muestran/ocultan con el atributo hidden,
+         pero sus clases (.btn-compartir, .btn-compartir-progreso y
+         .btn-secundario) fijan display: block, y el CSS de autor
+         gana al [hidden] del navegador: sin esta regla, los
+         botones que pintarFinal oculta SEGUÍAN VIÉNDOSE (la final
+         del Desafío y la del Infinito mostraban los 5 botones en
+         el teléfono real, aunque la propiedad hidden era true). */
+      #btn-compartir[hidden], #btn-progreso[hidden], #btn-otra-vez[hidden],
+      #btn-final-infinito[hidden], #btn-final-menu[hidden] { display: none; }
 
       /* ---------- Insignias Nivel / Puntos (viven en la barra superior) ---------- */
       .insignia {
@@ -1241,6 +1251,20 @@
         font-family: "Cinzel", serif; font-weight: 800; font-size: 1.06rem;
       }
       .camino-palabra-titulo { color: #241703; font-size: 1em; }
+      /* Ronda 4B (punto 41): el botón «Dios te habla hoy» lleva
+         como su símbolo el ICONO OFICIAL de la app (el mismo
+         asset que encabeza su ventana), a tamaño sobrio: 1,3 em,
+         por debajo de la caja de línea del título (line-height
+         1,35 del régimen del inicio) para no alterar la altura
+         igualada a «¡A jugar!» en la ronda 4. */
+      .camino-palabra-titulo .icono-oficial-btn {
+        /* 1,28 em y -0,38 em: el mayor tamaño sobrio que NO mueve
+           la altura del botón (medido: 47,27 px a 390×700, idéntica
+           a la de antes de poner el icono). */
+        width: 1.28em; height: 1.28em; border-radius: 23%;
+        vertical-align: -0.38em; margin-right: 0.3em;
+        box-shadow: 0 1px 4px rgba(36, 23, 3, 0.35), 0 0 0 1px rgba(122, 84, 10, 0.45);
+      }
       .camino-palabra-sub {
         color: #5a3d07; font-style: normal; font-weight: 600;
         font-size: 0.58em; letter-spacing: 0.02em; line-height: 1.25;
@@ -1517,6 +1541,10 @@
       .dia-enlaces-sep { color: var(--texto-suave); }
       #pantalla-verso-dia .tarjeta-dia,
       #pantalla-verso-dia .tarjeta-devocional { cursor: pointer; margin-top: 10px; padding: 12px 18px; }
+      /* Ronda 4B (punto 42): todo el recuadro del Corazón es
+         tocable (abre la lista completa de temas), no solo sus
+         píldoras: el cursor lo anuncia en todo el recuadro. */
+      #pantalla-verso-dia .tarjeta-corazon { cursor: pointer; }
       .tarjeta-corazon {
         margin: 10px auto 0; max-width: 30rem; text-align: left;
         background: var(--panel); border: 2px solid rgba(232, 182, 76, 0.55);
@@ -2386,6 +2414,15 @@
       .inicio .ico-biblia svg { width: 1.68em; height: 1.40em; }
       .inicio .ico-calendario { vertical-align: -0.32em; }
       .inicio .ico-calendario svg { width: 1.44em; height: 1.44em; }
+      /* Ronda 4B (punto 40): el símbolo del Infinito vive en un
+         span .ico-fila con la MISMA caja que el calendario del
+         Desafío (svg de 1,44 em y el mismo vertical-align): la
+         línea del título mide lo mismo en ambos botones y quedan
+         a la misma altura y proporciones. Antes el ♾️ era texto
+         a 1 em, sin caja de icono, y el botón del Infinito salía
+         ~9 px más bajo que el del Desafío. */
+      .inicio .ico-infinito { vertical-align: -0.32em; }
+      .inicio .ico-infinito svg { width: 1.44em; height: 1.44em; }
       /* ============ PASADA v9 (2026-10-24, muestra aprobada) ============
          Dos cambios pedidos por Alexis sobre la v8:
          (1) El ícono del VERSÍCULO DEL DÍA ya no es la Biblia
@@ -2861,7 +2898,7 @@
           <p class="dia-ref" id="devocional-ref"></p>
           <button class="btn-dia-compartir" id="btn-devocional-compartir" type="button">Compartir devocional</button>
         </div>
-        <div class="tarjeta-corazon" id="tarjeta-corazon">
+        <div class="tarjeta-corazon" id="tarjeta-corazon" role="button" tabindex="0">
           <p class="dia-rotulo" id="corazon-rotulo">¿Cómo está tu corazón hoy?</p>
           <p class="corazon-frase" id="corazon-frase">Toca cómo te sientes y la Palabra te responde:</p>
           <div class="corazon-pildoras" id="corazon-pildoras"></div>
@@ -9496,6 +9533,14 @@
         + '<circle cx="24" cy="5.4" r="4.8" fill="url(#brilloBibliaV8)"/>'
         + '<path d="M23.15 0.9 L24.85 0.9 L24.85 3.4 L27.5 3.4 L27.5 5 L24.85 5 L24.85 10.2 L23.15 10.2 L23.15 5 L20.5 5 L20.5 3.4 L23.15 3.4 Z" fill="url(#oroBibliaV8)" stroke="#8a6414" stroke-width="0.45"/>'
         + '</svg>';
+      /* Ronda 4B (punto 40): el símbolo del Modo Infinito en SVG
+         (como el calendario v8 del Desafío): un ocho tumbado de
+         trazo dorado que se pinta en la misma caja de 1,44 em, así
+         la línea del título del botón mide lo mismo que la del
+         Desafío y ambos botones quedan a la misma altura. */
+      var SVG_INFINITO_V8 = '<svg viewBox="0 0 44 44" aria-hidden="true" focusable="false">'
+        + '<path d="M22 22 C17 15.5 13.8 12.5 10.6 12.5 C6.6 12.5 3.8 16.6 3.8 22 C3.8 27.4 6.6 31.5 10.6 31.5 C13.8 31.5 17 28.5 22 22 C27 15.5 30.2 12.5 33.4 12.5 C37.4 12.5 40.2 16.6 40.2 22 C40.2 27.4 37.4 31.5 33.4 31.5 C30.2 31.5 27 28.5 22 22 Z" fill="none" stroke="#e8b64c" stroke-width="3.2" stroke-linejoin="round"/>'
+        + '</svg>';
       var SVG_CAL_V8 = '<svg viewBox="0 0 44 44" aria-hidden="true" focusable="false">'
         + '<defs>'
         + '<linearGradient id="cabCalV8" x1="0" y1="0" x2="0" y2="1">'
@@ -9558,7 +9603,7 @@
         $("btn-jugar").innerHTML = '<span class="ico-fila ico-mando" aria-hidden="true">🎮</span>' + t("jugar") + '<span class="camino-btn-sub">' + t("jugarSub") + '</span>';
         $("regla-5").innerHTML = t("regla5");
         var btnSabioTxt = $("btn-sabio"); if (btnSabioTxt) btnSabioTxt.textContent = t("sabioBtn");
-        $("btn-infinito").innerHTML = "♾️ " + t("infinitoBtn") + '<span class="camino-btn-sub">' + t("infinitoSub") + "</span>";
+        $("btn-infinito").innerHTML = '<span class="ico-fila ico-infinito" aria-hidden="true">' + SVG_INFINITO_V8 + "</span>" + t("infinitoBtn") + '<span class="camino-btn-sub">' + t("infinitoSub") + "</span>";
         $("btn-duelo").innerHTML = '<span class="duelo-espadas" aria-hidden="true"><span class="espada espada-izq">🗡️</span><span class="espada espada-der">🗡️</span><span class="destello"></span></span>' + t("dueloBtn").replace("⚔️", "").trim() + '<span class="camino-btn-sub">' + t("dueloSub") + "</span>";
         $("duelo-lobby-tit").textContent = t("dueloLobbyTit");
         $("duelo-titulo").textContent = t("dueloBtn");
@@ -9614,7 +9659,9 @@
         $("btn-versiculos-volver").textContent = t("volverBtn");
         $("btn-reglas").textContent = t("reglasBtn");
         $("rotulo-palabra").textContent = t("rotuloPalabra");
-        $("palabra-titulo").textContent = "📖 " + t("palabraTitulo");
+        /* Ronda 4B (punto 41): el símbolo del botón es el icono
+           oficial de la app (imagen), no el emoji 📖. */
+        $("palabra-titulo").innerHTML = '<img class="icono-oficial-btn" src="assets/icono-oficial.png" alt="" draggable="false">' + t("palabraTitulo");
         $("palabra-sub").textContent = t("palabraSub");
         /* Ronda 2B: el rótulo «A JUGAR» ya no existe en el marcado
            (inicio más compacto); se protege la referencia. */
@@ -10082,6 +10129,20 @@
         s.classList.toggle("vista-devocional", vista === "devocional");
         try { s.scrollTop = 0; window.scrollTo(0, 0); } catch (e) {}
       }
+      /* Abrir el Corazón en su vista completa: la LISTA de temas
+         (sin tema elegido), desde arriba y con la guarda de
+         400 ms contra el toque duplicado del visor sobre la
+         parrilla recién mostrada (el patrón de «Cambiar tema» de
+         la ronda 4). La usan la píldora «… y más» y el recuadro
+         entero del Corazón (punto 42). */
+      function abrirCorazonLista() {
+        buscadorTema = null;
+        buscadorPos = 0;
+        suprimirChipHasta = Date.now() + 400;
+        mostrar("pantalla-versiculos");
+        pintarTemas();
+        try { window.scrollTo(0, 0); } catch (e) {}
+      }
       /* Píldoras de sentimientos del resumen: las primeras del
          banco y una «… y más» que abre la parrilla completa. Cada
          píldora abre el flujo de siempre (pantalla-versiculos) con
@@ -10109,10 +10170,7 @@
           mas.type = "button";
           mas.className = "corazon-pildora";
           mas.textContent = t("corazonMas");
-          mas.addEventListener("click", function () {
-            mostrar("pantalla-versiculos");
-            pintarTemas();
-          });
+          mas.addEventListener("click", abrirCorazonLista);
           cont.appendChild(mas);
         }
       }
@@ -10556,6 +10614,19 @@
       $("tarjeta-devocional").addEventListener("click", function (ev) {
         if (ev.target.closest("#btn-devocional-compartir") || ev.target.closest("#btn-devocional-leer")) return;
         if (palabraVista === "resumen") fijarVistaPalabra("devocional");
+      });
+      /* Ronda 4B (punto 42 de Alexis): TODO el recuadro del
+         Corazón abre la vista completa (la lista de temas): el
+         fondo, el título y la frase de instrucción ya no son
+         zonas muertas. Las píldoras conservan su selección
+         directa: su propio handler corre y este no duplica la
+         apertura (se retira si el toque fue en una píldora). */
+      $("tarjeta-corazon").addEventListener("click", function (ev) {
+        if (ev.target.closest(".corazon-pildora")) return;
+        abrirCorazonLista();
+      });
+      $("tarjeta-corazon").addEventListener("keydown", function (ev) {
+        if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); abrirCorazonLista(); }
       });
       $("btn-devocional-leer").addEventListener("click", function (ev) {
         ev.stopPropagation();
