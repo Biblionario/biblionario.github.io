@@ -3025,7 +3025,7 @@
         </div>
 <button class="camino-tira" id="camino-tira" type="button"><span class="camino-tira-texto" id="camino-tira-texto"></span><span class="camino-mini-barra" id="camino-mini-barra" aria-hidden="true"></span></button>
         <p class="camino-seccion-rotulo" id="rotulo-palabra">LA PALABRA DE HOY</p>
-        <button class="camino-palabra" id="btn-palabra" type="button"><span class="camino-palabra-titulo" id="palabra-titulo">📖 Dios te habla hoy</span><span class="camino-palabra-sub" id="palabra-sub">Conéctate con la Palabra</span></button>
+        <button class="camino-palabra" id="btn-palabra" type="button"><span class="camino-palabra-titulo" id="palabra-titulo">📖 Dios te habla hoy</span><span class="camino-palabra-sub" id="palabra-sub">Versículo y devocional · ¿Cómo está tu corazón?</span></button>
         <button class="btn-principal" id="btn-jugar" type="button">¡A jugar!</button>
         <button class="btn-diario" id="btn-diario" type="button">Desafío del día <span class="tag-rapidisima">⚡ RONDA RAPIDÍSIMA</span><span class="camino-btn-sub">6 preguntas de tu libro, 10 segundos cada una, una vez al día</span></button>
         <p class="aviso-diario" id="aviso-diario" hidden></p>
@@ -3783,10 +3783,10 @@
           sobretitulo: "¿Quieres ser",
           tituloGrande: "BIBLIONARIO",
           lema: "¿Quieres ser Biblionario?",
-          jugarSub: "Con 10 aciertos sellas el libro · o retírate con tus puntos",
+          jugarSub: "Acierta 10 y completas tu libro · si te retiras, guardas tus aciertos",
           rotuloPalabra: "LA PALABRA DE HOY",
           palabraTitulo: "Dios te habla hoy",
-          palabraSub: "Conéctate con la Palabra",
+          palabraSub: "Versículo y devocional · ¿Cómo está tu corazón?",
           rotuloJugar: "A JUGAR",
           fraseTitulo: "Cada respuesta te acerca al título",
           chipNivel: "Nivel actual:",
@@ -3806,11 +3806,11 @@
           rotuloMeta: "LA META",
           caminoTitulo: "Camino a Biblionario",
           caminoTiraTexto: function (sellados, faltan, libro) {
-            return "🗺️ " + sellados + " de 66 libros · Te falta" + (faltan === 1 ? "" : "n") + " " + faltan + " acierto" + (faltan === 1 ? "" : "s") + " para sellar " + libro;
+            return "🗺️ " + sellados + " de 66 libros · Te falta" + (faltan === 1 ? "" : "n") + " " + faltan + " acierto" + (faltan === 1 ? "" : "s") + " para completar " + libro;
           },
           caminoTiraCompleta: "🗺️ 66 de 66 libros · ¡Ya eres Biblionario! 👑",
           caminoEstadoTexto: function (sellados) {
-            return "<b>" + sellados + " de 66 libros</b> · Sella cada libro con 10 aciertos y alcanza el título de Biblionario.";
+            return "<b>" + sellados + " de 66 libros</b> · Completa cada libro con 10 aciertos y alcanza el título de Biblionario.";
           },
           caminoMapaTitulo: "El Camino a Biblionario",
           caminoMapaSub: function (sellados) {
@@ -4212,10 +4212,10 @@
           sobretitulo: "Do you want to be",
           tituloGrande: "BIBLIONARIO",
           lema: "Do you want to be a Biblionario?",
-          jugarSub: "10 correct answers seal the book · or walk away with your points",
+          jugarSub: "Get 10 right, finish your book · stop and keep your correct answers",
           rotuloPalabra: "TODAY'S WORD",
           palabraTitulo: "God speaks to you today",
-          palabraSub: "Connect with the Word",
+          palabraSub: "Verse, devotional and how is your heart today?",
           rotuloJugar: "LET'S PLAY",
           fraseTitulo: "Every answer brings you closer to the title",
           chipNivel: "Current level:",
@@ -4235,11 +4235,11 @@
           rotuloMeta: "THE GOAL",
           caminoTitulo: "Road to Biblionario",
           caminoTiraTexto: function (sellados, faltan, libro) {
-            return "🗺️ " + sellados + " of 66 books · " + faltan + " correct answer" + (faltan === 1 ? "" : "s") + " left to seal " + libro;
+            return "🗺️ " + sellados + " of 66 books · " + faltan + " correct answer" + (faltan === 1 ? "" : "s") + " left to finish " + libro;
           },
           caminoTiraCompleta: "🗺️ 66 of 66 books · You are a Biblionario! 👑",
           caminoEstadoTexto: function (sellados) {
-            return "<b>" + sellados + " of 66 books</b> · Seal each book with 10 correct answers and earn the title of Biblionario.";
+            return "<b>" + sellados + " of 66 books</b> · Finish each book with 10 correct answers and earn the title of Biblionario.";
           },
           caminoMapaTitulo: "The Road to Biblionario",
           caminoMapaSub: function (sellados) {
