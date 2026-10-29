@@ -4073,8 +4073,12 @@
           copiar: "Copiar texto",
           copiado: "¡Copiado!",
           enlaceCopiado: "¡Enlace copiado!",
-          textoReto: function (pts, url) {
-            return "¡Hice " + pts + " puntos en Biblionario! ¿Te atreves a superarme? Juega aquí: " + url;
+          textoReto: function (pts) {
+            /* RONDA 28 (2026-10-29): el cuerpo ya NO incrusta la
+               URL («Juega aquí: …»): el mensaje se cierra con la
+               línea descargaApp, así el enlace inteligente sale
+               UNA sola vez (antes salía duplicado en este texto). */
+            return "¡Hice " + pts + " puntos en Biblionario! ⚔️ ¿Te atreves a superarme? Descarga el juego y acéptame el reto 👇";
           },
           descargaApp: "📲 Descarga Biblionario: https://biblionario.github.io/descargar",
           rotRacha: "Racha diaria",
@@ -4494,8 +4498,12 @@
           copiar: "Copy text",
           copiado: "Copied!",
           enlaceCopiado: "Link copied!",
-          textoReto: function (pts, url) {
-            return "I scored " + pts + " points in Biblionary! Think you can beat me? Play here: " + url;
+          textoReto: function (pts) {
+            /* ROUND 28 (2026-10-29): the body no longer embeds the
+               URL ("Play here: …"): the message closes with the
+               descargaApp line, so the smart link appears exactly
+               ONCE (it was duplicated in this text before). */
+            return "I scored " + pts + " points in Biblionary! ⚔️ Think you can beat me? Download the game and take my challenge 👇";
           },
           descargaApp: "📲 Download Biblionario: https://biblionario.github.io/descargar",
           rotRacha: "Daily streak",
@@ -17396,7 +17404,12 @@
       var URL_RETO = "https://biblionario.github.io/descargar";
 
       function textoParaCompartir() {
-        return t("textoReto")(fmt(estado.puntos), URL_RETO) + "\n\n" + t("descargaApp");
+        /* RONDA 28 (2026-10-29): textoReto ya no incrusta la URL;
+           el único enlace del mensaje es el de la línea
+           descargaApp (antes el enlace inteligente salía dos
+           veces en este mismo texto). URL_RETO queda solo como
+           respaldo si la composición fallara. */
+        return t("textoReto")(fmt(estado.puntos)) + "\n\n" + t("descargaApp");
       }
 
       function abrirOpcionesDeReto(texto) {
