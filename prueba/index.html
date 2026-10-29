@@ -216,6 +216,19 @@
       }
       .aviso-sabio[hidden] { display: none; }
       .final .btn-secundario { margin-top: 18px; }
+      /* Ronda 24 (QA ronda 23, hallazgo 4): los botones de la
+         pantalla final salían con anchos dispares (compartir
+         ~65%, «Jugar otra vez» 100%, «Menú principal» ~48%)
+         porque unos se centran con márgenes automáticos y otros
+         no. En la final TODOS comparten el mismo ancho: el de
+         la columna del marcador (22rem), centrados. */
+      #pantalla-final .btn-compartir,
+      #pantalla-final .btn-compartir-progreso,
+      #pantalla-final .btn-principal,
+      #pantalla-final .btn-secundario {
+        display: block; width: 100%; max-width: 22rem;
+        margin-left: auto; margin-right: auto;
+      }
       #btn-final-sabio[hidden] { display: none; }
       /* Ronda 4B (punto 38): los demás botones de la pantalla
          final también se muestran/ocultan con el atributo hidden,
@@ -423,6 +436,7 @@
         background: var(--violeta-oscuro); color: var(--texto);
         border: 1px solid var(--dorado); border-radius: 10px;
         padding: 12px 10px; font: inherit; font-weight: 800; font-size: 0.9rem; cursor: pointer;
+        position: relative; overflow: hidden;
       }
 /* La etiqueta puede encogerse y se centra: sin min-width: 0 el
          flex la dejaba a su ancho de contenido y la última letra de
@@ -433,11 +447,43 @@
       .comodin > span { min-width: 0; text-align: center; overflow-wrap: break-word; }
       .comodin svg { width: 19px; height: 19px; fill: var(--dorado); flex: none; }
       .comodin:disabled { opacity: 0.35; cursor: default; text-decoration: line-through; }
+      /* Punto 80 (Alexis, 2026-10-29; simulación aprobada por él
+         antes de aplicar): DESTELLO periódico en los comodines
+         para que la gente note que están ahí — a veces no los
+         ven. El color NO cambia (sigue el violeta con borde
+         dorado de siempre): solo pasa una luz suave sobre cada
+         botón, en secuencia, cada ~3,6 s. Un comodín ya gastado
+         (disabled) no destella. */
+      .comodin:not(:disabled)::after {
+        content: ""; position: absolute; top: 0; bottom: 0; width: 45%; left: -70%;
+        background: linear-gradient(100deg, transparent, rgba(255, 240, 200, 0.42), transparent);
+        transform: skewX(-18deg); pointer-events: none;
+        animation: destelloComodin 3.6s ease-in-out infinite;
+      }
+      .comodines .comodin:nth-of-type(2)::after { animation-delay: 0.45s; }
+      .comodines .comodin:nth-of-type(3)::after { animation-delay: 0.9s; }
+      @keyframes destelloComodin {
+        0% { transform: skewX(-18deg) translateX(0); }
+        24% { transform: skewX(-18deg) translateX(460%); }
+        100% { transform: skewX(-18deg) translateX(460%); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .comodin:not(:disabled)::after { animation: none; }
+      }
       .btn-retirarse {
         min-width: 0; text-align: center;
-        background: transparent; border: 1px solid rgba(207, 195, 230, 0.4);
-        color: var(--texto-suave); border-radius: 10px; padding: 12px 16px;
-        font: inherit; font-weight: 700; font-size: 0.9rem; cursor: pointer;
+        /* Punto 80 (Alexis, 2026-10-29; simulación aprobada por él
+           antes de aplicar): el «Retirarme» pasa a AMARILLO — el
+           dorado uniforme de los botones principales (el mismo de
+           .en-infinito) — en vez del translúcido discreto de antes:
+           retirarse con los puntos es importante en ¡A jugar! y
+           tiene que VERSE. En el Duelo manda su rojo protegido
+           (.en-duelo) y en el Infinito ya era este mismo dorado. */
+        background: linear-gradient(160deg, #f2cd77, #e8b64c 52%, #dda63c);
+        border: 1px solid #8a6414;
+        color: #2a1802; border-radius: 10px; padding: 12px 16px;
+        font: inherit; font-weight: 800; font-size: 0.9rem; cursor: pointer;
+        box-shadow: 0 10px 30px rgba(232, 182, 76, 0.35);
       }
       /* En el duelo este botón es «Abandonar partida» y debe VERSE
          (corrección de Alexis, 2026-10-24: se veía apagado, como
@@ -2706,6 +2752,23 @@
         #pantalla-final .btn-secundario {
           margin-top: 8px; padding: 10px 18px; font-size: 1rem; min-height: 0;
         }
+        /* Ronda 20 (punto 73, foto de Alexis): en su iPhone la
+           final se cortaba abajo — había que desplazar para ver
+           «Menú principal». El Chromium sin cabeza NO lo
+           reproduce (a 390×844 y 440×956 medía sobra 0): su
+           teléfono rinde a mayor escala (misma lección de la
+           ronda 3). Se recorta el presupuesto vertical de la
+           final ~150px: menos aire arriba, trofeo menor y el
+           título más compacto (el del Desafío envuelve hasta
+           4 líneas). El bloque de ≤730px de alto, más abajo,
+           sigue apretando más en pantallas cortas. */
+        .escenario:has(#pantalla-final:not([hidden])) {
+          padding-top: calc(max(10px, env(safe-area-inset-top)) + 22px);
+        }
+        .final { padding-top: 1vh; }
+        .final .trofeo { width: 52px; height: 52px; }
+        .final h2 { font-size: clamp(1.45rem, 6.4vw, 2rem); line-height: 1.12; margin-top: 8px; }
+        .final .resumen { margin-top: 8px; line-height: 1.42; }
         /* --- Panel del fallo: el versículo se centra en su franja
            (el hueco se reparte arriba y abajo, no queda arriba).
            OJO: la regla base del panel usa el selector de alta
@@ -2725,6 +2788,36 @@
         .duelo-lobby { padding: 10px 12px; margin-top: 6px; }
         .duelo-lobby-tit { font-size: 0.9rem; line-height: 1.35; margin-bottom: 4px; }
         .duelo-lobby-btn { min-height: 38px; padding: 7px 14px; margin-top: 5px; }
+        /* --- Ronda 24 (QA ronda 23, hallazgo T2): las vistas de
+           UNA sola tarjeta de «Dios te habla hoy» (versículo y
+           devocional completos) y la pantalla del Duelo dejaban
+           ~440 px en blanco bajo el contenido. Ahora la columna
+           reparte la altura disponible del escenario (100dvh
+           menos su relleno: 64px arriba y 40px abajo): la tarjeta
+           única crece con su contenido centrado, y el «Volver»
+           del Duelo queda anclado al pie (margin-top: auto) a
+           ancho completo de su columna (30rem, como la tarjeta
+           del lobby), con su dorado de siempre. La vista resumen
+           de tres tarjetas NO se toca: ya llena la pantalla, y el
+           capítulo completo conserva su lectura con scroll. --- */
+        #pantalla-verso-dia.vista-versiculo,
+        #pantalla-verso-dia.vista-devocional {
+          display: flex; flex-direction: column;
+          min-height: calc(100dvh - 104px);
+        }
+        #pantalla-verso-dia.vista-versiculo .tarjeta-dia,
+        #pantalla-verso-dia.vista-devocional .tarjeta-devocional {
+          flex: 1 1 auto; width: 100%;
+          display: flex; flex-direction: column; justify-content: center;
+        }
+        #pantalla-duelo {
+          display: flex; flex-direction: column;
+          min-height: calc(100dvh - 104px);
+        }
+        #btn-duelo-volver {
+          margin-top: auto; align-self: center;
+          width: 100%; max-width: 30rem;
+        }
       }
       @media (max-width: 820px) and (max-height: 730px) {
         .final .trofeo { width: 32px; height: 32px; }
@@ -2970,7 +3063,7 @@
                 </svg>
                 <span class="segundos" id="segundos">20</span>
               </div>
-              <p class="num" id="pregunta-num">Pregunta 1 de 6</p>
+              <p class="num" id="pregunta-num">Pregunta 1</p>
               <h2 id="pregunta-texto"></h2>
             </div>
 
@@ -3186,10 +3279,10 @@
           <ul>
             <li id="regla-1">🧭 <b>La meta: el Camino a Biblionario.</b> Sella cada libro de la Biblia con <b>10 aciertos</b> de ese libro. Al sellar los <b>66 libros</b> ganas el <b>Título de Biblionario</b>: una credencial única con tu nombre y tu número.</li>
             <li id="regla-2">Subes de nivel sellando libros: <b>Creyente → Seguidor → Discípulo → Maestro → Apóstol → Biblionario</b>. Cada nivel reúne 11 libros, y las preguntas se van haciendo más difíciles.</li>
-            <li id="regla-3">🎮 <b>¡A jugar!</b> Preguntas de tu libro en curso, <b>20 segundos</b> por pregunta y <b>3 comodines</b> que te ayudan una vez por partida: el <b>50:50</b>, <b>Pregunta a la Congregación</b> y <b>Llama a un Sabio</b>. Si fallas, la partida termina; cada acierto te acerca al sello. También puedes retirarte con tus puntos.</li>
+            <li id="regla-3">🎮 <b>¡A jugar!</b> El asalto a tu libro en curso: acierta <b>en fila</b> las que le faltan —hasta 10— y lo sellas. Tus aciertos quedan <b>en la mesa</b>: si fallas, los de la corrida no cuentan y vuelven a la fila de tu libro; si te retiras, los cobras. <b>20 segundos</b> por pregunta y <b>3 comodines</b> por corrida: el <b>50:50</b>, <b>Pregunta a la Congregación</b> y <b>Llama a un Sabio</b>. Lo ganado en otros modos nunca se pierde.</li>
             <li id="regla-4">⚡ <b>Desafío del día:</b> 6 preguntas de tu libro en curso con solo <b>10 segundos</b> por respuesta. Se completa acertando las 6, y sus aciertos también cuentan para sellar.</li>
             <li id="regla-5">⚔️ <b>Duelo Bíblico en Vivo:</b> reta a un amigo con su enlace o juega con alguien al azar. Rondas sincronizadas: ves la pantalla de tu rival y nadie puede copiar. Cada acierto también suma a su libro.</li>
-            <li id="regla-6">♾️ <b>Modo Infinito:</b> preguntas de los 66 libros sin parar y sin repetir. Si fallas, ves la respuesta correcta y sigues; la dificultad sube sola. Paras cuando quieras y queda tu marca.</li>
+            <li id="regla-6">♾️ <b>Modo Infinito:</b> preguntas de los 66 libros sin parar y sin repetir, con 20 segundos por pregunta. Si fallas o se te acaba el tiempo, ves la respuesta correcta y sigues; la dificultad sube sola. Sin comodines. Paras cuando quieras y queda tu marca.</li>
             <li id="regla-7">📖 <b>Dios te habla hoy:</b> tu versículo y tu devocional de cada día, y <b>«¿Cómo está tu corazón hoy?»</b> para recibir una Palabra según tu momento.</li>
             <li id="regla-8">✨ <b>Cada respuesta te acerca al título.</b></li>
           </ul>
@@ -3541,6 +3634,66 @@
       }
       cargarVistasInfinito();
 
+      /* ============ Reciclaje de FALLADAS (punto 71, decisión de
+         Alexis 2026-10-28 — MEDIDA TEMPORAL hasta ampliar el
+         banco): la pregunta que el jugador FALLA no se quema:
+         pasa al final de la fila de su libro y solo vuelve cuando
+         ya no queda ninguna fresca de ese libro (en ¡A jugar! al
+         completar lo que falta para el sello; en el Desafío al
+         completar las 6). La pregunta ACERTADA no se repite
+         JAMÁS: queda retirada para siempre. Así ningún libro
+         puede trancar a un jugador por agotamiento del banco.
+         El registro guarda las claves (mismo esquema que las
+         vistas) de las preguntas falladas en los modos locales
+         (partida, Desafío, Infinito); el Duelo queda fuera en
+         esta versión. Al acertar una reciclada, sale del
+         registro y queda retirada como cualquier acertada. ===== */
+      var CLAVE_FALLADAS = "biblionario_falladas_v1";
+      var preguntasFalladas = {};
+      try { preguntasFalladas = JSON.parse(localStorage.getItem(CLAVE_FALLADAS) || "{}") || {}; } catch (e) { preguntasFalladas = {}; }
+      function guardarFalladas() {
+        try { localStorage.setItem(CLAVE_FALLADAS, JSON.stringify(preguntasFalladas)); } catch (e) {}
+      }
+      function registrarResultadoPregunta(acierto) {
+        if (!estado || estado.modo === "duelo") return;
+        var clave;
+        try { clave = clavePreguntaActual(); } catch (e) { return; }
+        if (!clave || clave === "sin-voz") return;
+        if (acierto) {
+          if (preguntasFalladas[clave]) { delete preguntasFalladas[clave]; guardarFalladas(); }
+        } else if (!preguntasFalladas[clave]) {
+          preguntasFalladas[clave] = true;
+          guardarFalladas();
+        }
+      }
+      /* Preguntas de un libro que el jugador falló y que pueden
+         volver — SOLO cuando las frescas no alcanzan. */
+      function caminoReciclablesDe(libroCanon) {
+        var arr = (typeof CAMINO_POOL_LIBRO !== "undefined" && CAMINO_POOL_LIBRO[IDIOMA] && CAMINO_POOL_LIBRO[IDIOMA][libroCanon]) || [];
+        return arr.filter(function (it) { return !!preguntasFalladas[it.clave]; });
+      }
+
+      /* ============ RESCATE anti-tranque (punto 75, aprobado por
+         Alexis el 2026-10-29, con su REGLA del mismo día: «prefiero
+         que repita una y no que la aplicación diga que no hay
+         preguntas disponibles — eso no lo acepto»): si un libro se
+         queda sin frescas y sin falladas por reciclar, el Desafío y
+         ¡A jugar! DESEMPOLVAN preguntas ya vistas de ese libro —
+         las retiradas por acertadas — empezando por la vista hace
+         más tiempo (el orden en que entraron al registro). Es el
+         ÚLTIMO recurso: la garantía de que la acertada no se
+         repite manda en todo lo demás; esto solo evita que la app
+         deje al jugador sin jugar. El registro NUNCA se borra: la
+         rescatada sigue marcada como vista, y si la acierta cuenta
+         para el libro como cualquier acierto. ============ */
+      function caminoRescateDe(libroCanon) {
+        var arr = (typeof CAMINO_POOL_LIBRO !== "undefined" && CAMINO_POOL_LIBRO[IDIOMA] && CAMINO_POOL_LIBRO[IDIOMA][libroCanon]) || [];
+        var orden = {};
+        Object.keys(preguntasVistas).forEach(function (clave, i) { orden[clave] = i; });
+        return arr.filter(function (it) { return !!preguntasVistas[it.clave] && !preguntasFalladas[it.clave]; })
+          .sort(function (a, b) { return (orden[a.clave] || 0) - (orden[b.clave] || 0); });
+      }
+
       /* Racha diaria: se guarda en localStorage para que sobreviva entre
          sesiones. El desafío de cada día se siembra con la fecha, así que
          las preguntas son las mismas todo el día y cambian solas al día
@@ -3630,7 +3783,7 @@
           sobretitulo: "¿Quieres ser",
           tituloGrande: "BIBLIONARIO",
           lema: "¿Quieres ser Biblionario?",
-          jugarSub: "Mientras más juegas, más rápido serás Biblionario",
+          jugarSub: "Con 10 aciertos sellas el libro · o retírate con tus puntos",
           rotuloPalabra: "LA PALABRA DE HOY",
           palabraTitulo: "Dios te habla hoy",
           palabraSub: "Conéctate con la Palabra",
@@ -3691,7 +3844,7 @@
           reglasTitulo: "Cómo se juega",
           regla1: "🧭 <b>La meta: el Camino a Biblionario.</b> Sella cada libro de la Biblia con <b>10 aciertos</b> de ese libro. Al sellar los <b>66 libros</b> ganas el <b>Título de Biblionario</b>: una credencial única con tu nombre y tu número.",
           regla2: "Subes de nivel sellando libros: <b>Creyente → Seguidor → Discípulo → Maestro → Apóstol → Biblionario</b>. Cada nivel reúne 11 libros, y las preguntas se van haciendo más difíciles.",
-          regla3: "🎮 <b>¡A jugar!</b> Preguntas de tu libro en curso, <b>20 segundos</b> por pregunta y <b>3 comodines</b> que te ayudan una vez por partida: el <b>50:50</b>, <b>Pregunta a la Congregación</b> y <b>Llama a un Sabio</b>. Si fallas, la partida termina; cada acierto te acerca al sello. También puedes retirarte con tus puntos.",
+          regla3: "🎮 <b>¡A jugar!</b> El asalto a tu libro en curso: acierta <b>en fila</b> las que le faltan —hasta 10— y lo sellas. Tus aciertos quedan <b>en la mesa</b>: si fallas, los de la corrida no cuentan y vuelven a la fila de tu libro; si te retiras, los cobras. <b>20 segundos</b> por pregunta y <b>3 comodines</b> por corrida: el <b>50:50</b>, <b>Pregunta a la Congregación</b> y <b>Llama a un Sabio</b>. Lo ganado en otros modos nunca se pierde.",
           regla4: "⚡ <b>Desafío del día:</b> 6 preguntas de tu libro en curso con solo <b>10 segundos</b> por respuesta. Se completa acertando las 6, y sus aciertos también cuentan para sellar.",
           jugar: "¡A jugar!",
           etNivel: "Nivel:",
@@ -3727,6 +3880,7 @@
           sinNivel: "Sin nivel",
           preguntaDe: function (i, nivel, total) { return "Pregunta " + i + " de " + (total || 6) + " · Nivel " + nivel; },
           preguntaDesafio: function (i, total, libro) { return "Pregunta " + i + " de " + (total || 6) + " · " + libro; },
+          preguntaContinua: function (n, libro) { return "Pregunta " + n + " · " + libro; },
           marcada: "Respuesta marcada… ¿será la correcta?",
           correcto: function (pts) { return "¡Correcto! +" + pts + " puntos"; },
           incorrecto: function (r) { return "No es esa… La respuesta correcta era " + r + "."; },
@@ -3760,7 +3914,7 @@
           infinitoSalir: "Salir y ver mi marca",
           infinitoMarcaTitulo: "Modo Infinito — tu marca",
           infinitoResumenMarca: function (r, a) {
-            return "Respondiste " + r + " preguntas, con " + a + " aciertos.";
+            return "Respondiste " + r + (r === 1 ? " pregunta" : " preguntas") + ", con " + a + (a === 1 ? " acierto." : " aciertos.");
           },
           selloTitulo: function (libro) { return "¡Libro sellado: " + libro + "!"; },
           selloTexto: function (sellados, siguiente) {
@@ -3831,14 +3985,14 @@
           jugarDeNuevo: "Jugar otra vez",
           menuPrincipal: "Menú principal",
           infinitoResumen: function (a, pts, record) {
-            return "Acertaste " + a + " preguntas y sumaste " + pts + " puntos antes del tercer error." + (record ? " ¡Nuevo mejor puntaje del modo!" : "");
+            return "Acertaste " + a + (a === 1 ? " pregunta" : " preguntas") + " y sumaste " + pts + " puntos antes del tercer error." + (record ? " ¡Nuevo mejor puntaje del modo!" : "");
           },
           mejorRotulo: "Mejor puntaje",
           celebInfinitoTitulo: "¡Felicitaciones, desbloqueaste el Modo Infinito!",
           celebInfinitoTexto: "Llegaste a Gran Sabio y completaste todo el concurso. El Modo Infinito ya está abierto: preguntas de todo el banco sin repetir, cada vez más difíciles, hasta el tercer error. ¿Hasta dónde eres capaz de llegar?",
           continuarInfinito: "¡A jugar sin fin!",
           textoCompartirInfinito: function (pts, a, mejor) {
-            return "Jugué el Modo Infinito de «¿Quieres ser Biblionario?» y sumé " + pts + " puntos con " + a + " aciertos (mi mejor puntaje: " + mejor + "). ¿Te atreves a superarme? #Biblionario";
+            return "Jugué el Modo Infinito de «¿Quieres ser Biblionario?» y sumé " + pts + " puntos con " + a + (a === 1 ? " acierto" : " aciertos") + " (mi mejor puntaje: " + mejor + "). ¿Te atreves a superarme? #Biblionario";
           },
           regla6: "♾️ <b>Modo Infinito:</b> preguntas de los 66 libros sin parar y sin repetir, con 20 segundos por pregunta. Si fallas o se te acaba el tiempo, ves la respuesta correcta y sigues; la dificultad sube sola. Sin comodines. Paras cuando quieras y queda tu marca.",
           rachaRotulo: "Racha:",
@@ -3857,7 +4011,7 @@
           bancoAgotado: "Ya recorriste todo el banco de preguntas: no queda ninguna sin ver.",
           desafioCompletadoTitulo: function (n) { return "¡Desafío completado! " + n + " de " + n; },
           desafioCompletadoResumen: "Completaste el Desafío del día. Vuelve mañana por el siguiente.",
-          desafioNoCompletadoTitulo: function (a, total) { var t6 = total || 6; return "Acertaste " + a + " de " + t6 + " — te faltaron " + (t6 - a) + " para completar el Desafío"; },
+          desafioNoCompletadoTitulo: function (a, total) { var t6 = total || 6; var faltan = t6 - a; return "Acertaste " + a + " de " + t6 + " — " + (faltan === 1 ? "te faltó 1" : "te faltaron " + faltan) + " para completar el Desafío"; },
           desafioNoCompletadoResumen: "El Desafío sigue abierto hoy: inténtalo de nuevo cuando quieras.",
           versiculoDia: "Versículo del día",
           devocionalTitulo: "Devocional de hoy",
@@ -3903,15 +4057,14 @@
           notifRachaTexto: function (r) { return r > 0 ? "Llevas una racha de " + r + (r === 1 ? " día" : " días") + ". Juega una partida hoy y mantenla viva." : "Juega una partida hoy y empieza tu racha."; },
           compartirProgresoBtn: "Compartir mi progreso",
           ariaCompartirRacha: "Compartir mi racha",
-          muyProntoTiendas: "Muy pronto en App Store y Google Play.",
           retoPie: "¿Te atreves a superarme?",
           tarjetaMarcaPie: "Biblionario · @biblionarioapp",
           progresoRachaTitular: function (n) { return "¡Racha de " + n + (n === 1 ? " día" : " días") + " en Biblionario!"; },
           progresoEmpezar: "¡Estoy jugando Biblionario!",
-          textoCompartirRacha: function (n) { return "\u{1F525} Llevo " + n + (n === 1 ? " día" : " días") + " de racha en Biblionario. ¿Te atreves a superarme? Muy pronto en App Store y Google Play. #Biblionario"; },
-          textoCompartirEmpezar: "Estoy jugando Biblionario, el concurso de preguntas de la Biblia. ¿Te atreves a superarme? Muy pronto en App Store y Google Play. #Biblionario",
+          textoCompartirRacha: function (n) { return "\u{1F525} Llevo " + n + (n === 1 ? " día" : " días") + " de racha en Biblionario. ¿Te atreves a superarme? #Biblionario"; },
+          textoCompartirEmpezar: "Estoy jugando Biblionario, el concurso de preguntas de la Biblia. ¿Te atreves a superarme? #Biblionario",
           progresoNivelTitular: function (nivel) { return "Llegué a " + nivel + " en Biblionario"; },
-          progresoInfinitoDatos: function (a, pts) { return a + " aciertos · " + pts + " puntos"; },
+          progresoInfinitoDatos: function (a, pts) { return a + (a === 1 ? " acierto" : " aciertos") + " · " + pts + " puntos"; },
           progresoRecord: "¡Nuevo récord!",
           compartirBtn: "Reta a un amigo",
           compartirTitulo: "Reta a un amigo",
@@ -3924,11 +4077,24 @@
           },
           descargaApp: "📲 Descarga Biblionario: https://biblionario.github.io/descargar",
           rotRacha: "Racha diaria",
-          textoCompartir: function (pts, nivel, aciertos, esDiario) {
-            var base = "Jugué «¿Quieres ser Biblionario?» y llegué a " + nivel + " con " + pts + " puntos (" + aciertos + "/6 correctas).";
-            return esDiario
-              ? base + " Completé el Desafío del día y mantuve mi racha. ¿Te atreves a superarme? #Biblionario"
-              : base + " ¿Te atreves a superarme? #Biblionario";
+          textoCompartir: function (pts, nivel, aciertos, esDiario, modo) {
+            /* Punto 69 (2026-10-28): nada de «/6» fuera del Desafío — el
+               denominador fijo salía también en partidas largas y duelos
+               («10/6 correctas»). Cada modo dice lo suyo y todo cierra con
+               el avance en el Camino y el nivel real. */
+            if (esDiario) {
+              return "Completé el Desafío del día de Biblionario (" + aciertos + "/6 correctas) con " + pts + " puntos y sigo avanzando en el Camino (nivel " + nivel + "). ¿Te atreves a superarme? #Biblionario";
+            }
+            if (modo === "duelo") {
+              return "\u{1F3C6} Sumé " + pts + " puntos en un duelo de Biblionario y sigo avanzando en el Camino (nivel " + nivel + "). ¿Te atreves a superarme? #Biblionario";
+            }
+            /* Punto 72: si la corrida de ¡A jugar! se perdió, la
+               mesa se perdió con ella — el texto no presume
+               puntos que no se cobraron. */
+            if (typeof estado !== "undefined" && estado && estado.ultimoMotivo === "derrota") {
+              return "\u{1F3C6} Me la jugué en Biblionario: " + aciertos + (aciertos === 1 ? " acierto" : " aciertos") + " en la mesa en una sola corrida. Sigo en el Camino (nivel " + nivel + "). ¿Te atreves a superarme? #Biblionario";
+            }
+            return "\u{1F3C6} Sumé " + pts + " puntos en Biblionario (" + aciertos + (aciertos === 1 ? " acierto" : " aciertos") + ") y sigo avanzando en el Camino (nivel " + nivel + "). ¿Te atreves a superarme? #Biblionario";
           },
           sabioCampeonTitulo: "¡Gran Sabio de las Escrituras!",
           sabioCampeonResumen: "Seis de seis en el Nivel Sabio: profecía, cronología, cartas de Pablo y Apocalipsis. Un conocimiento de la Biblia muy por encima del promedio.",
@@ -3936,16 +4102,29 @@
           celebracionTexto: "Superaste los 6 niveles y eres Biblionario. El Nivel Sabio ya está desbloqueado: profecía, cronología, cartas de Pablo y Apocalipsis, con la misma dinámica y comodines.",
           continuarSabio: "Continuar",
           verResultadoCeleb: "Ver mi resultado",
-          campeonTitulo: "¡Partida perfecta!",
-          campeonResumen: "Seis de seis. Cada acierto sumó a tu libro en curso del Camino: sigue sellando libros hasta ganar el Título de Biblionario.",
+          campeonTitulo: "¡Libro sellado en una corrida!",
+          campeonResumen: "Lo lograste en fila: los aciertos de la mesa se cobraron y el libro quedó sellado. Cada respuesta te acerca al título.",
+          finLibroTitulo: "Sin preguntas por ahora en este libro",
+          finLibroResumen: "Cobraste los aciertos de la mesa. Este libro se quedó sin preguntas nuevas ni falladas por reciclar; tu avance queda guardado y el Camino continúa.",
           retiroTitulo: "Te retiraste a tiempo",
-          retiroResumen: function (pts) {
-            return "Saliste con " + pts + " puntos. Cada acierto de esta partida ya cuenta para tu libro en curso en el Camino.";
+          retiroResumen: function (pts, a) {
+            return "Te retiraste a tiempo con " + pts + " puntos: cobraste " +
+              (a === 1 ? "el acierto de la mesa y ya cuenta" : "los " + a + " aciertos de la mesa y ya cuentan") +
+              " en tu Camino.";
           },
           derrotaTitulo0: "El concurso terminó pronto",
           derrotaTituloN: "La partida terminó",
           derrotaResumen: function (a) {
-            return "Acertaste " + a + " de 6 preguntas. Cada partida trae preguntas distintas: inténtalo de nuevo — cada acierto suma para sellar tu libro en curso.";
+            /* Ronda 24 (QA ronda 23, hallazgo 3): el texto viejo
+               decía que al caer «perdiste lo que había en la
+               mesa» — con la mesa vacía no se pierde nada, y
+               desde el punto 75 los aciertos de la corrida
+               perdida NO se queman: vuelven al final de la fila
+               de su libro. Tres casos, todos ciertos. */
+            if (a <= 0) {
+              return "No acertaste ninguna en esta corrida: la mesa quedó vacía y tu Camino queda como estaba al empezar — vuelve a intentarlo.";
+            }
+            return "Acertaste " + a + (a === 1 ? " acierto" : " aciertos") + " en esta corrida, pero al caer no se sumaron. No se pierden: vuelven al final de la fila de tu libro para otro intento. Tu Camino queda como estaba al empezar.";
           },
           dueloBtn: "⚔️ Duelo Bíblico en Vivo",
           dueloBarra: "⚔️ Duelo",
@@ -4028,7 +4207,7 @@
           sobretitulo: "Do you want to be",
           tituloGrande: "BIBLIONARIO",
           lema: "Do you want to be a Biblionario?",
-          jugarSub: "The more you play, the faster you'll become a Biblionario",
+          jugarSub: "10 correct answers seal the book · or walk away with your points",
           rotuloPalabra: "TODAY'S WORD",
           palabraTitulo: "God speaks to you today",
           palabraSub: "Connect with the Word",
@@ -4089,7 +4268,7 @@
           reglasTitulo: "How to play",
           regla1: "🧭 <b>The goal: the Road to Biblionario.</b> Seal each book of the Bible with <b>10 correct answers</b> from that book. Seal all <b>66 books</b> and you earn the <b>Title of Biblionario</b>: a unique credential with your name and your number.",
           regla2: "You level up by sealing books: <b>Believer → Follower → Disciple → Teacher → Apostle → Biblionario</b>. Each level gathers 11 books, and the questions keep getting harder.",
-          regla3: "🎮 <b>Let's play!</b> Questions from your current book, <b>20 seconds</b> per question and <b>3 lifelines</b> that help you once per game: the <b>50:50</b>, <b>Ask the Congregation</b>, and <b>Call a Wise Man</b>. Miss one and the game ends; every correct answer brings you closer to the seal. You can also walk away with your points.",
+          regla3: "🎮 <b>Let's play!</b> The assault on your current book: answer <b>in a row</b> the ones it still needs —up to 10— and you seal it. Your correct answers stay <b>on the table</b>: miss one and this run's don't count — they go back into your book's queue; walk away and you bank them. <b>20 seconds</b> per question and <b>3 lifelines</b> per run: the <b>50:50</b>, <b>Ask the Congregation</b>, and <b>Call a Wise Man</b>. What you earned in other modes is never lost.",
           regla4: "⚡ <b>Daily Challenge:</b> 6 questions from your current book with only <b>10 seconds</b> per answer. You complete it by getting all 6 right, and those answers also count toward the seal.",
           jugar: "Let's play!",
           etNivel: "Level:",
@@ -4125,6 +4304,7 @@
           sinNivel: "No level yet",
           preguntaDe: function (i, nivel, total) { return "Question " + i + " of " + (total || 6) + " · Level " + nivel; },
           preguntaDesafio: function (i, total, libro) { return "Question " + i + " of " + (total || 6) + " · " + libro; },
+          preguntaContinua: function (n, libro) { return "Question " + n + " · " + libro; },
           marcada: "Answer locked in… is it right?",
           correcto: function (pts) { return "Correct! +" + pts + " points"; },
           incorrecto: function (r) { return "Not that one… The correct answer was " + r + "."; },
@@ -4158,7 +4338,7 @@
           infinitoSalir: "Exit and see my mark",
           infinitoMarcaTitulo: "Endless Mode — your mark",
           infinitoResumenMarca: function (r, a) {
-            return "You answered " + r + " questions, with " + a + " correct.";
+            return "You answered " + r + (r === 1 ? " question" : " questions") + ", with " + a + " correct.";
           },
           selloTitulo: function (libro) { return "Book sealed: " + libro + "!"; },
           selloTexto: function (sellados, siguiente) {
@@ -4229,14 +4409,14 @@
           jugarDeNuevo: "Play Again",
           menuPrincipal: "Main Menu",
           infinitoResumen: function (a, pts, record) {
-            return "You answered " + a + " questions correctly and scored " + pts + " points before the third mistake." + (record ? " A new best score for the mode!" : "");
+            return "You answered " + a + (a === 1 ? " question" : " questions") + " correctly and scored " + pts + " points before the third mistake." + (record ? " A new best score for the mode!" : "");
           },
           mejorRotulo: "Best score",
           celebInfinitoTitulo: "Congratulations, you unlocked Endless Mode!",
           celebInfinitoTexto: "You reached Grand Sage and completed the whole contest. Endless Mode is now open: questions from the whole bank without repeats, growing harder as you go, until your third mistake. How far can you go?",
           continuarInfinito: "Play endless!",
           textoCompartirInfinito: function (pts, a, mejor) {
-            return "I played Endless Mode in \"Do You Want to Be a Biblionario?\" and scored " + pts + " points with " + a + " correct answers (my best score: " + mejor + "). Think you can beat me? #Biblionary";
+            return "I played Endless Mode in \"Do You Want to Be a Biblionario?\" and scored " + pts + " points with " + a + (a === 1 ? " correct answer" : " correct answers") + " (my best score: " + mejor + "). Think you can beat me? #Biblionary";
           },
           regla6: "♾️ <b>Endless Mode:</b> questions from all 66 books, nonstop and with no repeats, with 20 seconds per question. Miss one or run out of time and you see the right answer and keep going; the difficulty rises on its own. No lifelines. Stop whenever you want — your record stays.",
           rachaRotulo: "Streak:",
@@ -4297,13 +4477,12 @@
           notifRachaTexto: function (r) { return r > 0 ? "You're on a " + r + "-day streak. Play a game today to keep it alive." : "Play a game today and start your streak."; },
           compartirProgresoBtn: "Share my progress",
           ariaCompartirRacha: "Share my streak",
-          muyProntoTiendas: "Coming soon to the App Store and Google Play.",
           retoPie: "Think you can beat me?",
           tarjetaMarcaPie: "Biblionary · @biblionarioapp",
           progresoRachaTitular: function (n) { return "A " + n + "-day streak in Biblionary!"; },
           progresoEmpezar: "I'm playing Biblionary!",
-          textoCompartirRacha: function (n) { return "\u{1F525} I'm on a " + n + "-day streak in Biblionary. Think you can beat me? Coming soon to the App Store and Google Play. #Biblionary"; },
-          textoCompartirEmpezar: "I'm playing Biblionary, the Bible quiz game. Think you can beat me? Coming soon to the App Store and Google Play. #Biblionary",
+          textoCompartirRacha: function (n) { return "\u{1F525} I'm on a " + n + "-day streak in Biblionary. Think you can beat me? #Biblionary"; },
+          textoCompartirEmpezar: "I'm playing Biblionary, the Bible quiz game. Think you can beat me? #Biblionary",
           progresoNivelTitular: function (nivel) { return "I reached " + nivel + " in Biblionary"; },
           progresoInfinitoDatos: function (a, pts) { return a + " correct · " + pts + " points"; },
           progresoRecord: "New record!",
@@ -4318,11 +4497,21 @@
           },
           descargaApp: "📲 Download Biblionario: https://biblionario.github.io/descargar",
           rotRacha: "Daily streak",
-          textoCompartir: function (pts, nivel, aciertos, esDiario) {
-            var base = "I played \"Do You Want to Be a Biblionario?\" and reached " + nivel + " with " + pts + " points (" + aciertos + "/6 correct).";
-            return esDiario
-              ? base + " I finished the Daily Challenge and kept my streak alive. Think you can beat me? #Biblionary"
-              : base + " Think you can beat me? #Biblionary";
+          textoCompartir: function (pts, nivel, aciertos, esDiario, modo) {
+            /* Point 69 (2026-10-28): no «/6» outside the Daily Challenge —
+               the fixed denominator also appeared in long games and duels
+               («10/6 correct»). Each mode says its own thing and everything
+               closes with the Road progress and the real level. */
+            if (esDiario) {
+              return "I completed Biblionario's Daily Challenge (" + aciertos + "/6 correct) with " + pts + " points and I'm still advancing on the Road (level " + nivel + "). Think you can beat me? #Biblionary";
+            }
+            if (modo === "duelo") {
+              return "\u{1F3C6} I scored " + pts + " points in a Biblionario duel and I'm still advancing on the Road (level " + nivel + "). Think you can beat me? #Biblionary";
+            }
+            if (typeof estado !== "undefined" && estado && estado.ultimoMotivo === "derrota") {
+              return "\u{1F3C6} I went for it in Biblionario: " + aciertos + (aciertos === 1 ? " correct answer" : " correct answers") + " on the table in a single run. I'm still on the Road (level " + nivel + "). Think you can beat me? #Biblionary";
+            }
+            return "\u{1F3C6} I scored " + pts + " points in Biblionario (" + aciertos + " correct) and I'm still advancing on the Road (level " + nivel + "). Think you can beat me? #Biblionary";
           },
           sabioCampeonTitulo: "Grand Sage of the Scriptures!",
           sabioCampeonResumen: "Six for six on the Sage Level: prophecy, chronology, Paul's letters, and Revelation. Bible knowledge well above average.",
@@ -4330,16 +4519,28 @@
           celebracionTexto: "You cleared all 6 levels and you're a Biblionary. The Sage Level is now unlocked: prophecy, chronology, Paul's letters, and Revelation, with the same dynamics and lifelines.",
           continuarSabio: "Continue",
           verResultadoCeleb: "See my result",
-          campeonTitulo: "A perfect game!",
-          campeonResumen: "Six for six. Every correct answer counted toward your current book on the Road: keep sealing books until you earn the Biblionary Title.",
+          campeonTitulo: "Book sealed in a single run!",
+          campeonResumen: "You did it in a row: the correct answers on the table were banked and the book is sealed. Every answer brings you closer to the title.",
+          finLibroTitulo: "No questions left in this book for now",
+          finLibroResumen: "You banked the correct answers on the table. This book has run out of new questions and missed ones to recycle; your progress is saved and the Road goes on.",
           retiroTitulo: "You walked away in time",
-          retiroResumen: function (pts) {
-            return "You left with " + pts + " points. Every correct answer from this game already counts toward your current book on the Road.";
+          retiroResumen: function (pts, a) {
+            return "You walked away in time with " + pts + " points: you banked " +
+              (a === 1 ? "the 1 correct answer on the table and it now counts" : "the " + a + " correct answers on the table and they now count") +
+              " on your Road.";
           },
           derrotaTitulo0: "The contest ended early",
           derrotaTituloN: "The game is over",
           derrotaResumen: function (a) {
-            return "You got " + a + " of 6 questions right. Every game brings different questions: try again — every correct answer counts toward sealing your current book.";
+            /* Round 24 (round-23 QA, finding 3): the old text said
+               falling cost you "everything on the table" — with an
+               empty table nothing is lost, and since point 75 the
+               run's correct answers are NOT burned: they go back
+               to the end of their book's queue. Three true cases. */
+            if (a <= 0) {
+              return "You got none right on this run: the table stayed empty and your Road stays as it was when you started — try again.";
+            }
+            return "You got " + a + (a === 1 ? " correct answer" : " correct answers") + " on this run, but falling kept them from counting. They are not lost: they go back to the end of your book's queue for another try. Your Road stays as it was when you started.";
           },
           dueloBtn: "⚔️ Live Bible Duel",
           dueloBarra: "⚔️ Duel",
@@ -6591,15 +6792,59 @@
         var actual = caminoLibroActual();
         tomarDeLibro(actual);
         if (soloLibroActual) {
-          /* Desafío del día: EXCLUSIVAMENTE preguntas NUEVAS del
-             libro en curso. Corrección 2026-10-26 (orden expresa
-             de Alexis, que revierte el relleno de la obs. 23): el
-             Desafío JAMÁS se completa con preguntas ya vistas. Si
-             las frescas del libro no llegan a la cantidad pedida,
-             la cola sale más corta con las frescas que haya; si no
-             queda ninguna, sale vacía y el arranque muestra el
-             aviso honesto de que no hay Desafío nuevo de ese
-             libro. Repetir, nunca. */
+          /* Desafío del día: preguntas NUEVAS del libro en curso
+             (corrección 2026-10-26, que revirtió el relleno de la
+             obs. 23). REFINADO por el punto 71 (decisión expresa
+             de Alexis, 2026-10-28, medida temporal hasta ampliar
+             el banco): si las frescas no llegan a la cantidad
+             pedida, el Desafío se completa SOLO con preguntas
+             FALLADAS de este libro — las acertadas no se repiten
+             jamás, eso no cambia. Si ni falladas quedan, la cola
+             sale más corta (o vacía y el arranque avisa). */
+          if (cola.length < cantidad) {
+            var recD = caminoReciclablesDe(actual).slice();
+            if (rng) {
+              for (var ri = recD.length - 1; ri > 0; ri--) {
+                var rj = Math.floor(rng() * (ri + 1));
+                var rtmp = recD[ri]; recD[ri] = recD[rj]; recD[rj] = rtmp;
+              }
+            }
+            for (var rd = 0; rd < recD.length && cola.length < cantidad; rd++) meter(recD[rd]);
+          }
+          /* Desafío MIXTO (decisión de Alexis, 2026-10-29): el
+             libro en curso MANDA, pero ya no es la única fuente —
+             atarlo a un solo libro lo dejaba morir en cuanto el
+             libro se agotaba (ayer mismo le salió el aviso de «ya
+             viste todas» y la racha quedaba en riesgo). Si las
+             frescas y las falladas del libro en curso no llenan
+             las 6, se completa con preguntas FRESCAS de otros
+             libros: primero los ya SELLADOS (repaso) y después
+             cualquier otro. La semilla del día sigue mandando en
+             la elección, así que el Desafío es el mismo todo el
+             día. Los aciertos de otros libros cuentan para esos
+             libros, como ya pasa en el Duelo y el Infinito. */
+          if (cola.length < cantidad) {
+            var frescasSellados = [], frescasOtros = [];
+            for (var bi = 0; bi < CAMINO_LIBROS_ES.length; bi++) {
+              var libroB = CAMINO_LIBROS_ES[bi];
+              if (libroB === actual) continue;
+              var frescasB = caminoFrescosDe(libroB);
+              if (caminoEstado.sellados.indexOf(libroB) >= 0) frescasSellados = frescasSellados.concat(frescasB);
+              else frescasOtros = frescasOtros.concat(frescasB);
+            }
+            tomarDeLista(frescasSellados);
+            if (cola.length < cantidad) tomarDeLista(frescasOtros);
+          }
+          /* Rescate (punto 75): solo si ni con todo el banco
+             fresco se llenó — se desempolvan vistas del libro en
+             curso, de la más vieja a la más nueva. Entre las
+             frescas de otros libros y este rescate, la cola del
+             Desafío siempre sale completa: el aviso de «sin
+             preguntas» ya no puede ocurrir. */
+          if (cola.length < cantidad) {
+            var rescateD = caminoRescateDe(actual);
+            for (var rk = 0; rk < rescateD.length && cola.length < cantidad; rk++) meter(rescateD[rk]);
+          }
           return cola;
         }
         if (cola.length < cantidad) {
@@ -6620,6 +6865,57 @@
            no quedan frescas en todo el banco, la cola sale con
            las que haya (o vacía) y el arranque avisa; el registro
            preguntasVistas NUNCA se borra. */
+        return cola;
+      }
+
+      /* Cola del ¡A JUGAR! (punto 72, decisión de Alexis
+         2026-10-28 — SUPERSEDE al continuo del punto 70): la
+         partida es EL ASALTO AL LIBRO EN CURSO. La cola trae
+         SOLO las preguntas que le faltan a ese libro para
+         sellarse (10 menos sus aciertos ya bancados), frescas
+         en orden de dificultad; si las frescas no alcanzan, se
+         completa con las FALLADAS recicladas de ese libro
+         (punto 71, al final de la fila — nunca acertadas).
+         Completar la cola en fila = sellar el libro y ganar la
+         partida; un fallo la termina. Los aciertos de la
+         corrida NO se acreditan al instante: quedan EN LA MESA
+         (ver registrarAciertoMesa/cobrarMesa) y se cobran al
+         retirarse o al ganar; si la partida se pierde, se
+         pierden SOLO los de esa corrida. */
+      function caminoColaAsalto() {
+        var cola = [];
+        var enCola = {};
+        var libro = caminoLibroActual();
+        if (!libro) return cola;
+        var faltan = 10 - caminoAciertosDe(libro);
+        if (faltan <= 0) return cola;
+        var frescas = caminoFrescosDe(libro);
+        var n = Math.min(faltan, frescas.length);
+        for (var j = 0; j < n; j++) {
+          var it = frescas[j];
+          if (it && !enCola[it.clave]) { enCola[it.clave] = true; cola.push(it); }
+        }
+        if (n < faltan) {
+          var rec = caminoReciclablesDe(libro);
+          for (var k = 0; k < rec.length && n < faltan; k++) {
+            var itr = rec[k];
+            if (itr && !enCola[itr.clave]) { enCola[itr.clave] = true; cola.push(itr); n++; }
+          }
+        }
+        /* Rescate (punto 75): si ni frescas ni falladas alcanzan
+           para lo que le falta al libro, el asalto se completa
+           desempolvando vistas de ESTE libro (de la más vieja a
+           la más nueva) — el asalto es por definición sobre el
+           libro en curso, así que aquí no entran otros libros.
+           La cola solo puede salir vacía si el libro no tuviera
+           ninguna pregunta, cosa que no ocurre. */
+        if (n < faltan) {
+          var rescateA = caminoRescateDe(libro);
+          for (var m2 = 0; m2 < rescateA.length && n < faltan; m2++) {
+            var itres = rescateA[m2];
+            if (itres && !enCola[itres.clave]) { enCola[itres.clave] = true; cola.push(itres); n++; }
+          }
+        }
         return cola;
       }
 
@@ -6660,6 +6956,53 @@
         if (caminoRegistrarAcierto(libro, estado.modo)) {
           estado.selloPendiente = caminoNombreLibro(caminoLibroCanonico(libro));
         }
+      }
+
+      /* ============ Aciertos EN LA MESA (punto 72, 2026-10-28):
+         SOLO en ¡A jugar!, el acierto no se acredita al instante:
+         queda en la mesa de la corrida. cobrarMesa() lo banca al
+         cerrar la partida — victoria o retiro — y si la partida
+         se pierde (derrota), la mesa se pierde con ella (solo lo
+         de ESA corrida; lo ganado antes, en cualquier modo,
+         jamás se toca). Los demás modos siguen acreditando al
+         instante con registrarAciertoCamino(). ============ */
+      function registrarAciertoMesa() {
+        var libro = libroDeActual();
+        if (!libro) return;
+        if (!estado.mesa) estado.mesa = [];
+        estado.mesa.push(libro);
+        /* Punto 75: junto al libro se guarda la CLAVE de la
+           pregunta, para poder devolverla a la fila si la corrida
+           se pierde (ver cobrarMesa). */
+        if (!estado.mesaClaves) estado.mesaClaves = [];
+        try { estado.mesaClaves.push(clavePreguntaActual()); } catch (e) {}
+      }
+      function cobrarMesa(motivo) {
+        if (!estado || estado.modo !== "base" || !estado.mesa || !estado.mesa.length) return;
+        if (motivo === "derrota") {
+          estado.mesaPerdida = estado.mesa.length;
+          /* Punto 75 (aprobado por Alexis el 2026-10-29): las
+             preguntas acertadas en esta corrida PERDIDA no se
+             queman — vuelven al final de la fila de su libro
+             (entran al registro de reciclables, el mismo de las
+             falladas del punto 71) y solo volverán cuando no
+             queden frescas. Solo se retira para siempre lo
+             acertado que SÍ contó: lo bancado al retirarse o al
+             sellar. Sin esto, perder corridas drenaba el libro
+             hasta trancar al jugador. */
+          if (estado.mesaClaves && estado.mesaClaves.length) {
+            estado.mesaClaves.forEach(function (claveM) { if (claveM) preguntasFalladas[claveM] = true; });
+            guardarFalladas();
+          }
+        } else {
+          estado.mesa.forEach(function (libro) {
+            if (caminoRegistrarAcierto(libro, "base")) {
+              estado.selloCobrado = caminoNombreLibro(caminoLibroCanonico(libro));
+            }
+          });
+        }
+        estado.mesa = [];
+        estado.mesaClaves = [];
       }
 
       /* ============ Recompensas del Camino (Ronda 7) ============
@@ -11923,15 +12266,22 @@
           };
         }
         if (modo === "base" || modo === "diario") {
-          /* Partida y Desafío del Camino: 6 preguntas del LIBRO
-             EN CURSO en orden de dificultad ascendente (la cola
-             sale del pool unificado y respeta el registro
-             acumulativo de vistas compartido). El Desafío conserva
-             su semilla diaria para repartir la elección. */
+          /* Desafío del Camino: 6 preguntas SOLO del libro en
+             curso, con su semilla diaria (sin cambios).
+             ¡A JUGAR! (punto 72, decisión de Alexis 2026-10-28):
+             el ASALTO al libro en curso — la cola trae solo las
+             que le faltan para sellarse; los aciertos quedan EN
+             LA MESA y se cobran al retirarse o al ganar la
+             partida (si se pierde, se pierden solo los de esa
+             corrida). Ambas colas respetan el registro
+             acumulativo de vistas compartido (cero repeticiones
+             de acertadas; las falladas reciclan al final, p. 71). */
           var rngCamino = modo === "diario" ? rngSembrado(semillaDe(fechaHoy())) : null;
           return {
             modo: modo,
-            cola: caminoCola(6, rngCamino, modo === "diario"),
+            cola: modo === "diario" ? caminoCola(6, rngCamino, true) : caminoColaAsalto(),
+            mesa: [],
+            mesaClaves: [],
             indice: 0,
             puntos: 0,
             aciertos: 0,
@@ -12149,10 +12499,14 @@
          NO tiene botón «Continuar»: al resolverse cada pregunta,
          este único temporizador avanza solo — a la siguiente
          pregunta o a la pantalla final, vía avanzarTrasRespuesta()
-         (la misma ruta del antiguo botón). Tiempos tras la marca
-         visual de la resolución: acierto 1,0 s (solo la marca) y
-         fallo/tiempo agotado 1,4 s (se ve la respuesta correcta
-         y su versículo un instante). Se limpia al pintar una
+         (la misma ruta del antiguo botón). Tiempo tras la marca
+         visual de la resolución: acierto 1,0 s (solo la marca).
+         El fallo/tiempo agotado YA NO usa este temporizador
+         (aclaración del punto 74, 2026-10-28: los 1,4 s no
+         dejaban leer la respuesta para aprender — el panel se
+         queda hasta el toque en «Ver resultado»;
+         AVANCE_DIARIO_FALLO_MS queda como constante histórica).
+         Se limpia al pintar una
          pregunta nueva, al terminar la partida, al arrancar otra
          y al salir de la pantalla de juego: ningún avance puede
          dispararse dos veces ni sobrevivir a la salida del modo. */
@@ -12498,6 +12852,14 @@
         return libro ? caminoNombreLibro(libro) : "—";
       }
 
+      /* Nombre del libro de la pregunta en pantalla (¡A jugar!
+         continuo, punto 70: el río pasa de un libro al siguiente
+         dentro de la misma partida). */
+      function nombreLibroPregunta() {
+        var libro = libroDeActual();
+        return libro ? caminoNombreLibro(caminoLibroCanonico(libro)) : "—";
+      }
+
       function mostrarPregunta() {
         var q = preguntaActual();
         preguntasVistas[clavePreguntaActual()] = true;
@@ -12514,12 +12876,18 @@
            inicio), no el de la posición en la cola.
            Ronda 14 (punto 66): la partida normal usa el MISMO
            encabezado — tampoco rotula por posición: «Pregunta X
-           de 6 · <libro en curso>» en ambos modos del Camino. */
+           de 6 · <libro en curso>» en ambos modos del Camino.
+           Punto 70: la partida continua ya no dice «de 6» — dice
+           la pregunta corrida y el libro de ESA pregunta, porque
+           el río pasa de un libro al siguiente. El Desafío
+           conserva su «Pregunta X de 6 · <libro en curso>». */
         $("pregunta-num").textContent = estado.modo === "infinito"
           ? t("preguntaInfinito")(estado.pos + 1)
           : estado.modo === "duelo"
             ? t("preguntaDuelo")(estado.pos + 1, estado.pool.length, estado.errores)
-            : t("preguntaDesafio")(estado.indice + 1, totalPreguntas(), nombreLibroEnCurso());
+            : estado.modo === "diario"
+              ? t("preguntaDesafio")(estado.indice + 1, totalPreguntas(), nombreLibroPregunta())
+              : t("preguntaContinua")(estado.indice + 1, nombreLibroPregunta());
         $("pregunta-texto").textContent = q.pregunta;
         var tarjetaPregunta = $("pregunta-texto").closest(".tarjeta-pregunta");
         tarjetaPregunta.classList.toggle("pregunta-larga", q.pregunta.length > 92);
@@ -12679,7 +13047,12 @@
                progreso): cuenta para el libro de esta pregunta,
                venga del modo que venga. El Duelo registra el suyo
                en su propio punto de resolución local. */
-            if (estado.modo !== "duelo") registrarAciertoCamino();
+            /* Punto 72: en ¡A jugar! el acierto queda EN LA MESA
+               (se cobra al cerrar la partida); en los demás
+               modos locales acredita al Camino al instante. */
+            if (estado.modo === "base") registrarAciertoMesa();
+            else if (estado.modo !== "duelo") registrarAciertoCamino();
+            if (estado.modo !== "duelo") registrarResultadoPregunta(true);
             /* Modo Infinito: la racha de la sesión y la mejor
                racha histórica (persistida al superarla). */
             if (estado.modo === "infinito") {
@@ -12705,6 +13078,7 @@
           } else {
             tonoError();
             estado.ultimaCorrecta = false;
+            if (estado.modo !== "duelo") registrarResultadoPregunta(false);
             if (estado.modo === "infinito" || estado.modo === "duelo") estado.errores++;
             /* En el Infinito el fallo solo corta la racha: la
                partida CONTINÚA (se ve la respuesta y se sigue). */
@@ -12773,9 +13147,19 @@
           /* Ronda 13 (punto 61): en el Desafío el avance tras
              responder es AUTOMÁTICO — acierto: la marca breve y
              sigue sola; fallo: se ve la correcta (y su versículo)
-             un instante y el Desafío se cierra solo a su final. */
+             un instante y el Desafío se cierra solo a su final.
+             ACLARACIÓN DEL PUNTO 74 (Alexis, 2026-10-28 22:30
+             EDT): ese «instante» del fallo eran 1,4 s — no
+             alcanzaba a leer la respuesta para aprender. Ahora
+             el auto-avance es SOLO del acierto; al fallar, el
+             panel se queda hasta que el jugador toque
+             «Ver resultado», como en los demás modos. */
           if (estado.modo === "diario") {
-            programarAvanceAutomatico(estado.ultimaCorrecta ? AVANCE_DIARIO_OK_MS : AVANCE_DIARIO_FALLO_MS);
+            if (estado.ultimaCorrecta) {
+              programarAvanceAutomatico(AVANCE_DIARIO_OK_MS);
+            } else {
+              $("btn-siguiente").hidden = false;
+            }
           }
         }, REDUCIR_MOVIMIENTO ? 250 : 1500);
       }
@@ -12793,6 +13177,7 @@
           registrarMiRespuesta(-1, false, SEGUNDOS);
         }
         estado.ultimaCorrecta = false;
+        if (estado.modo !== "duelo") registrarResultadoPregunta(false);
         if (estado.modo === "infinito" || estado.modo === "duelo") estado.errores++;
         /* Infinito: el tiempo vencido cuenta como fallo (respuesta
            correcta y versículo a la vista) y corta la racha, igual
@@ -12837,10 +13222,12 @@
           estado.dueloResuelto = true;
           quizasCerrarRonda();
         }
-        /* Ronda 13 (punto 61): el tiempo agotado en el Desafío
-           también avanza solo — se ve la correcta un instante y
-           el Desafío se cierra a su pantalla final, sin toque. */
-        if (estado.modo === "diario") programarAvanceAutomatico(AVANCE_DIARIO_FALLO_MS);
+        /* Punto 74 aclarado (Alexis, 2026-10-28): el tiempo
+           agotado en el Desafío TAMPOCO avanza solo ya — la
+           respuesta correcta y el versículo se quedan hasta
+           que el jugador toque «Ver resultado» (antes: 1,4 s
+           y desaparecía sin alcanzar a leerla). */
+        if (estado.modo === "diario") $("btn-siguiente").hidden = false;
       }
 
       $("btn-siguiente").addEventListener("click", function () {
@@ -13081,13 +13468,19 @@
           if (estado.modo === "sabio") {
             $("final-titulo").textContent = t("sabioCampeonTitulo");
             $("final-resumen").textContent = t("sabioCampeonResumen");
+          } else if (estado.modo === "base" && !estado.selloCobrado) {
+            /* La cola del asalto se agotó sin sellar (al libro no
+               le quedan frescas ni falladas bastantes): final
+               honesto, sin declarar un sello que no ocurrió. */
+            $("final-titulo").textContent = t("finLibroTitulo");
+            $("final-resumen").textContent = t("finLibroResumen");
           } else {
             $("final-titulo").textContent = t("campeonTitulo");
             $("final-resumen").textContent = t("campeonResumen");
           }
         } else if (motivo === "retiro") {
           $("final-titulo").textContent = t("retiroTitulo");
-          $("final-resumen").textContent = t("retiroResumen")(fmt(estado.puntos));
+          $("final-resumen").textContent = t("retiroResumen")(fmt(estado.puntos), estado.aciertos);
         } else {
           $("final-titulo").textContent = estado.aciertos === 0
             ? t("derrotaTitulo0")
@@ -13097,7 +13490,7 @@
 
         $("final-puntos").textContent = fmt(estado.puntos);
         $("final-nivel").textContent = nivelAlcanzado;
-        $("final-aciertos").textContent = estado.aciertos + "/" + totalPreguntas();
+        $("final-aciertos").textContent = estado.modo === "base" ? String(estado.aciertos) : estado.aciertos + "/" + totalPreguntas();
         $("rot-aciertos").textContent = t("rotAciertos");
         $("final-racha").textContent = fmt(rachaDiaria);
         $("rot-racha").textContent = t("rotRacha");
@@ -13155,6 +13548,10 @@
       function terminar(motivo) {
         estado.termino = true;
         estado.ultimoMotivo = motivo;
+        /* Punto 72: al cerrar una partida de ¡A jugar!, la mesa
+           se cobra (victoria/retiro) o se pierde (derrota) ANTES
+           de pintar el final y el avance del Camino. */
+        cobrarMesa(motivo);
         /* Rediseño 1.4 (verificación final, 2026-10-26): el Nivel
            Sabio dejó de ser un modo (su banco alimenta el tramo
            final del Camino) y su botón ya no existe en el inicio.
@@ -13256,7 +13653,9 @@
           ? t("preguntaInfinito")(estado.pos + 1)
           : estado.modo === "duelo"
             ? t("preguntaDuelo")(estado.pos + 1, estado.pool.length, estado.errores)
-            : t("preguntaDesafio")(estado.indice + 1, totalPreguntas(), nombreLibroEnCurso());
+            : estado.modo === "diario"
+              ? t("preguntaDesafio")(estado.indice + 1, totalPreguntas(), nombreLibroPregunta())
+              : t("preguntaContinua")(estado.indice + 1, nombreLibroPregunta());
         $("pregunta-texto").textContent = q.pregunta;
         ajustarLetraPregunta();
         botonesRespuesta().forEach(function (b) {
@@ -14680,8 +15079,8 @@
       /* ---- Compartir mi progreso / racha (ampliación Fase 1, 2026-10-18) ----
          Tarjeta-imagen de marca con la misma maquinaria del versículo
          (dibujar -> compartirCanvas). Sin enlaces de tienda DENTRO de la
-         imagen; la línea «Muy pronto en App Store y Google Play» va solo en
-         el texto que acompaña al compartir. Nada de popups: la sugerencia
+         imagen; el texto que acompaña al compartir lleva la línea única
+         de descarga (descargaApp). Nada de popups: la sugerencia
          proactiva es que el botón del panel de resultados se resalta solo
          cuando hay hito de racha (7 o 30 días) o récord nuevo del Infinito. */
       var ICONO_LLAMA = "M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z";
@@ -14764,7 +15163,7 @@
         if (tipo === "racha") {
           textoPlano = datos.n > 0 ? t("textoCompartirRacha")(datos.n) : t("textoCompartirEmpezar");
         } else if (tipo === "nivel") {
-          textoPlano = t("textoCompartir")(fmt(estado.puntos), datos.nivel, estado.aciertos, estado.modo === "diario");
+          textoPlano = t("textoCompartir")(fmt(estado.puntos), datos.nivel, estado.aciertos, estado.modo === "diario", estado.modo);
         } else {
           textoPlano = t("textoCompartirInfinito")(fmt(estado.puntos), estado.aciertos, fmt(mejorInfinito));
         }
