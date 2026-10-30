@@ -1877,6 +1877,19 @@
       .reglas-pantalla .btn-principal { margin-top: 18px; }
       .inicio .btn-reglas { margin-top: 10px; }
 
+      /* ---------- Punto 94 (ronda 34): bloque «Síguenos» al final de las reglas ---------- */
+      .siguenos { margin-top: 22px; }
+      .siguenos-titulo { font-family: "Cinzel", serif; font-weight: 800; color: var(--dorado); font-size: 1.05rem; margin: 0 0 12px; }
+      .siguenos-botones { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+      /* :not([hidden]) obligatorio: una regla display propia gana al [hidden] del
+         navegador y forzaría visible un botón cuyo canal aún no tiene URL. */
+      .btn-siguenos:not([hidden]) {
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        font-family: "Cinzel", serif; font-weight: 800; font-size: 1rem; text-decoration: none;
+        color: #2a1802; background: linear-gradient(160deg, #f2cd77, #e8b64c 52%, #dda63c);
+        border: 1px solid #8a6414; border-radius: 10px; padding: 12px 26px; min-height: 48px;
+      }
+
       /* ---------- Fase 1 (ampliación): compartir progreso / racha ---------- */
       .btn-racha-compartir {
         flex: none; display: inline-flex; align-items: center; justify-content: center;
@@ -3287,6 +3300,13 @@
             <li id="regla-8">✨ <b>Cada respuesta te acerca al título.</b></li>
           </ul>
         </div>
+        <div class="siguenos" id="siguenos" hidden>
+          <h3 class="siguenos-titulo" id="siguenos-titulo">Síguenos</h3>
+          <div class="siguenos-botones">
+            <a class="btn-siguenos" id="btn-siguenos-youtube" href="#" target="_blank" rel="noopener noreferrer" hidden>▶️ YouTube</a>
+            <a class="btn-siguenos" id="btn-siguenos-tiktok" href="#" target="_blank" rel="noopener noreferrer" hidden>🎵 TikTok</a>
+          </div>
+        </div>
         <button class="btn-principal" id="btn-reglas-volver" type="button">Volver</button>
       </section>
 
@@ -3843,6 +3863,7 @@
           },
           reglasBtn: "¿Cómo se juega?",
           reglasTitulo: "Cómo se juega",
+          siguenosTitulo: "Síguenos",
           regla1: "🧭 <b>La meta: el Camino a Biblionario.</b> Sella cada libro de la Biblia con <b>10 aciertos</b> de ese libro. Al sellar los <b>66 libros</b> ganas el <b>Título de Biblionario</b>: una credencial única con tu nombre y tu número.",
           regla2: "Subes de nivel sellando libros: <b>Creyente → Seguidor → Discípulo → Maestro → Apóstol → Biblionario</b>. Cada nivel reúne 11 libros, y las preguntas se van haciendo más difíciles.",
           regla3: "🎮 <b>¡A jugar!</b> El asalto a tu libro en curso: acierta <b>en fila</b> las que le faltan —hasta 10— y lo sellas. Tus aciertos quedan <b>en la mesa</b>: si fallas, los de la corrida no cuentan y vuelven a la fila de tu libro; si te retiras, los cobras. <b>20 segundos</b> por pregunta y <b>3 comodines</b> por corrida: el <b>50:50</b>, <b>Pregunta a la Congregación</b> y <b>Llama a un Sabio</b>. Lo ganado en otros modos nunca se pierde.",
@@ -4273,6 +4294,7 @@
           },
           reglasBtn: "How to play?",
           reglasTitulo: "How to play",
+          siguenosTitulo: "Follow us",
           regla1: "🧭 <b>The goal: the Road to Biblionario.</b> Seal each book of the Bible with <b>10 correct answers</b> from that book. Seal all <b>66 books</b> and you earn the <b>Title of Biblionario</b>: a unique credential with your name and your number.",
           regla2: "You level up by sealing books: <b>Believer → Follower → Disciple → Teacher → Apostle → Biblionario</b>. Each level gathers 11 books, and the questions keep getting harder.",
           regla3: "🎮 <b>Let's play!</b> The assault on your current book: answer <b>in a row</b> the ones it still needs —up to 10— and you seal it. Your correct answers stay <b>on the table</b>: miss one and this run's don't count — they go back into your book's queue; walk away and you bank them. <b>20 seconds</b> per question and <b>3 lifelines</b> per run: the <b>50:50</b>, <b>Ask the Congregation</b>, and <b>Call a Wise Man</b>. What you earned in other modes is never lost.",
@@ -17101,6 +17123,30 @@
         + '<path d="M25.5 24.9 L26.83 28.35 L30.52 28.5 L27.62 30.83 L28.6 34.38 L25.5 32.4 L22.4 34.38 L23.38 30.83 L20.48 28.5 L24.17 28.35 Z" fill="url(#oroCalV8)" stroke="#8a6414" stroke-width="0.6" stroke-linejoin="round"/>'
         + '</svg>';
 
+      /* ===== Punto 94 (ronda 34): canales oficiales de Biblionario =====
+         TikTok verificado en vivo el 2026-10-30: @biblionarioapp («Biblionario»).
+         YouTube queda VACÍO a propósito: la URL exacta del canal de Biblionario
+         no consta en los registros del proyecto y NO se inventa. En cuanto Alexis
+         pase la URL, se escribe aquí y el botón aparece solo (ver aplicarCanales).
+         Los enlaces son https con target _blank: si la app nativa está instalada,
+         el sistema la abre por su enlace universal; si no, abre el navegador. */
+      var CANALES_BIBLIONARIO = {
+        youtube: "",
+        tiktok: "https://www.tiktok.com/@biblionarioapp"
+      };
+      function aplicarCanales() {
+        var visibles = 0;
+        [["btn-siguenos-youtube", CANALES_BIBLIONARIO.youtube],
+         ["btn-siguenos-tiktok", CANALES_BIBLIONARIO.tiktok]].forEach(function (par) {
+          var a = $(par[0]);
+          if (!a) return;
+          if (par[1]) { a.href = par[1]; a.hidden = false; visibles++; }
+          else { a.hidden = true; }
+        });
+        var bloque = $("siguenos");
+        if (bloque) bloque.hidden = (visibles === 0);
+      }
+
       function aplicarIdioma(lang) {
         IDIOMA = lang;
         document.documentElement.lang = lang;
@@ -17111,6 +17157,7 @@
         $("titulo-grande").textContent = t("tituloGrande");
         $("lema").textContent = t("lema");
         $("reglas-titulo").textContent = t("reglasTitulo");
+        $("siguenos-titulo").textContent = t("siguenosTitulo");
         $("regla-1").innerHTML = t("regla1");
         $("regla-2").innerHTML = t("regla2");
         $("regla-3").innerHTML = t("regla3");
@@ -18519,6 +18566,7 @@
       });
       cargarRacha();
       aplicarIdioma(detectarIdiomaDispositivo());
+      aplicarCanales();
       /* Título de Biblionario: si quedó pendiente de registro,
          se reintenta al abrir la app (en silencio); y si el
          Camino ya estaba completo sin haberse entregado, la
