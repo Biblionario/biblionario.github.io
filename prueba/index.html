@@ -8293,6 +8293,82 @@
         return lista.filter(function (it) { return !preguntasVistas[it.clave]; });
       }
 
+      /* ============ ATERRIZAJE SUAVE (punto 97, decisión de
+         Alexis 2026-10-30): los libros intrínsecamente duros
+         sirven primero sus preguntas más accesibles — ángulos
+         de historia y contexto — y el detalle legal fino entra
+         después, cuando el jugador ya consumió ese tramo
+         accesible (en la práctica, con aciertos ya bancados en
+         el libro). Un jugador nuevo sella Génesis y Éxodo
+         (historias conocidas) y el libro 3 del Camino es
+         Levítico: sin esto, el detalle de sacrificios y pureza
+         aparecía ya en su primera corrida y en su primer
+         Desafío, mezclado al azar del orden de producción.
+         LISTA DE LIBROS DUROS (criterio y resolución completos
+         en el punto 97 del registro de observaciones): contenido
+         predominantemente legal/ceremonial, genealógico o de
+         profecía densa para un lector nuevo. Por libro, los
+         capítulos ACCESIBLES de la producción (fuente 1): los
+         narrativos y de contexto (fiestas, Día de Expiación,
+         chivo expiatorio, jubileo, serpiente de bronce, Balaam,
+         Shemá, huesos secos…); el resto de capítulos es el
+         tramo de DETALLE. La base o escalera (fuente 0) es
+         siempre accesible — es la rampa graduada 0–5 — y el
+         banco Sabio (fuente 2) siempre es detalle, como hasta
+         ahora. La clasificación sale de DATOS (la fuente y el
+         capítulo de la cita de cada pregunta), no de listas
+         pregunta a pregunta.
+         ALCANCE ESTRICTO: esto SOLO reordena la fila fresca del
+         LIBRO EN CURSO dentro de ¡A jugar! (caminoColaAsalto) y
+         del Desafío (caminoCola con soloLibroActual). No toca
+         el orden de los libros, ni los 10 aciertos por sello,
+         ni la anti-repetición, ni las falladas recicladas, ni
+         el rescate, ni el relleno mixto del Desafío (las
+         frescas de OTROS libros conservan su orden de pool),
+         ni el Modo Infinito, ni el mazo del Duelo. En los
+         libros que no son duros la fila sale idéntica a la de
+         siempre (caminoTramosDuro devuelve null). ============ */
+      var CAMINO_CAPITULOS_ACCESIBLES = {
+        "Levítico": [8, 9, 10, 16, 19, 23, 25, 26],
+        "Números": [6, 9, 10, 11, 12, 13, 14, 16, 17, 20, 21, 22, 23, 24, 25, 27],
+        "Deuteronomio": [1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 18, 29, 30, 31, 32, 34],
+        "1 Crónicas": [10, 11, 13, 15, 16, 17, 21, 22, 28, 29],
+        "Ezequiel": [1, 2, 3, 4, 18, 33, 34, 36, 37, 43, 47]
+      };
+      /* Capítulo de la cita de un ítem: tras el nombre del
+         libro (en el idioma actual) va el número del capítulo;
+         sin capítulo legible devuelve null. */
+      function caminoCapituloDe(it) {
+        if (!it || !it.q || !it.q.cita) return null;
+        var s = String(it.q.cita).split("·")[0].trim();
+        var nombre = caminoNombreLibro(it.libro);
+        if (nombre && s.indexOf(nombre) === 0) s = s.slice(nombre.length);
+        var m = s.match(/(\d+)/);
+        return m ? parseInt(m[1], 10) : null;
+      }
+      function caminoEsAccesibleDuro(libroCanon, it) {
+        if (it.fuente === 0) return true;
+        if (it.fuente !== 1) return false;
+        var cap = caminoCapituloDe(it);
+        return cap !== null && CAMINO_CAPITULOS_ACCESIBLES[libroCanon].indexOf(cap) >= 0;
+      }
+      /* Los dos tramos de la fila fresca de un libro duro
+         (accesible primero, detalle después; dentro de cada
+         tramo manda el orden de pool de siempre). null si el
+         libro no es duro: la fila no se toca. */
+      function caminoTramosDuro(libroCanon) {
+        if (!libroCanon || !CAMINO_CAPITULOS_ACCESIBLES[libroCanon]) return null;
+        var a = [], b = [];
+        caminoFrescosDe(libroCanon).forEach(function (it) {
+          (caminoEsAccesibleDuro(libroCanon, it) ? a : b).push(it);
+        });
+        return { a: a, b: b };
+      }
+      function caminoFrescosAterrizaje(libroCanon) {
+        var t = caminoTramosDuro(libroCanon);
+        return t ? t.a.concat(t.b) : caminoFrescosDe(libroCanon);
+      }
+
       /* Arma la cola de preguntas de una partida del Camino:
          primero las del LIBRO EN CURSO; si se agotan por la
          anti-repetición, la PARTIDA se completa con los siguientes
@@ -8334,7 +8410,20 @@
           tomarDeLista(caminoFrescosDe(libroCanon));
         }
         var actual = caminoLibroActual();
-        tomarDeLibro(actual);
+        /* Aterrizaje suave (punto 97): SOLO en el Desafío y
+           SOLO si el libro en curso es duro, su fila fresca se
+           toma por tramos — primero el accesible, después el
+           detalle — con la elección por segmentos de siempre
+           dentro de cada tramo. Todo lo demás (el relleno con
+           falladas, las frescas de otros libros y el rescate)
+           queda exactamente como estaba. */
+        var tramosDuro = soloLibroActual ? caminoTramosDuro(actual) : null;
+        if (tramosDuro) {
+          tomarDeLista(tramosDuro.a);
+          tomarDeLista(tramosDuro.b);
+        } else {
+          tomarDeLibro(actual);
+        }
         if (soloLibroActual) {
           /* Desafío del día: preguntas NUEVAS del libro en curso
              (corrección 2026-10-26, que revirtió el relleno de la
@@ -8433,7 +8522,10 @@
         if (!libro) return cola;
         var faltan = 10 - caminoAciertosDe(libro);
         if (faltan <= 0) return cola;
-        var frescas = caminoFrescosDe(libro);
+        /* Aterrizaje suave (punto 97): si el libro en curso es
+           duro, la fila fresca sale con sus preguntas
+           accesibles primero; si no, sale idéntica a siempre. */
+        var frescas = caminoFrescosAterrizaje(libro);
         var n = Math.min(faltan, frescas.length);
         for (var j = 0; j < n; j++) {
           var it = frescas[j];
