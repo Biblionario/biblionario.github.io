@@ -13280,7 +13280,7 @@
          contra el fantasma, que es el comportamiento de siempre. */
       var SUPABASE_URL = "https://yjildweahlbrjfooijkg.supabase.co";
       var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqaWxkd2VhaGxicmpmb29pamtnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MjQwNjMsImV4cCI6MjEwODEwMDA2M30.y5ydtlImo0rmzBGDODRRrXYK-9a4G-juWQW_KB6dFJc";
-      var dueloNet = { sb: null, canal: null, codigo: null, rol: null, esperando: false, enJuego: false, poll: null, ultimaFirmaRival: "", esperandoArranque: false, pollArranque: null, arranqueNulos: 0, arranqueDesde: 0, rivalAbandono: false, mazoPropio: null, mazoClaves: null, mazoRemoto: null, revanchaEnCurso: false, revanchaEntrando: false, codigoAnterior: null, rolAnterior: null, esperaExpirada: false };
+      var dueloNet = { sb: null, canal: null, codigo: null, rol: null, esperando: false, enJuego: false, poll: null, ultimaFirmaRival: "", esperandoArranque: false, pollArranque: null, arranqueNulos: 0, arranqueDesde: 0, rivalAbandono: false, mazoPropio: null, mazoClaves: null, mazoRemoto: null, revanchaEnCurso: false, revanchaEntrando: false, codigoAnterior: null, rolAnterior: null, esperaExpirada: false, azar: false };
 
       function clienteSupabase() {
         if (dueloNet.sb) return dueloNet.sb;
@@ -14142,6 +14142,14 @@
           if (!dueloNet.esperandoArranque) { detenerPollArranque(); return; }
           if (Date.now() - dueloNet.arranqueDesde > 10000) {
             detenerEsperaArranque();
+            /* RONDA 31 (2026-10-30): vencida la espera sin NINGUNA
+               señal (ni cuenta regresiva ni una sola respuesta del
+               anfitrión en 10 s de sondeo), en la ruta AL AZAR la
+               sala se da por muerta y se rescata al jugador con la
+               app como rival local (ver rescatarSalaMuertaAzar).
+               En la ruta por código (duelo entre amigos) se conserva
+               el arranque de siempre, intacto. */
+            if (dueloNet.azar) { rescatarSalaMuertaAzar(); return; }
             arrancarPartidaEnLinea();
             return;
           }
@@ -14167,6 +14175,35 @@
             });
           } catch (e) {}
         }, 1000);
+      }
+
+      /* RONDA 31 (2026-10-30) — rescate de la sala al azar muerta.
+         La cola de partidas abiertas puede guardar el código de una
+         sala cuyo anfitrión desapareció sin cancelar (app cerrada,
+         teléfono apagado): la fila y el código NO caducan nunca, y
+         quien pulsa «al azar» se une a una sala sin nadie. Antes,
+         vencida la espera de 10 s, la partida arrancaba EN LÍNEA
+         igual y el «rival» jamás respondía: cada ronda la cerraba
+         el plazo de gracia (28 s) como tiempo agotado — 0 pts y
+         −1 vida por ronda (reporte de Alexis en la 1.5.0).
+         Ahora la sala silenciosa se cierra CON CORTESÍA — control
+         de abandono + relleno: si el anfitrión estuviera vivo pero
+         atascado, su cliente la da por ganada al instante en vez de
+         jugar contra un cadáver —, su código sale de la COLA para
+         no atrapar al siguiente jugador, la fila se retira, y la
+         app entra como rival en una partida LOCAL: el mismo
+         rescate que el lado anfitrión ya tenía (dueloAzarEntrarBot),
+         sin revelar jamás que el rival es la app. */
+      function rescatarSalaMuertaAzar() {
+        var sb = clienteSupabase();
+        var codigo = dueloNet.codigo;
+        if (sb && codigo) {
+          publicarControlDuelo({ fase: "abandonada", abandona: dueloNet.rol });
+          publicarRellenoAbandono();
+          colaQuitar(sb, codigo);
+          try { sb.from("duelos").delete().eq("codigo", codigo).then(function () {}); } catch (e) {}
+        }
+        comenzar("duelo");
       }
 
       function detenerPollArranque() {
@@ -14450,6 +14487,7 @@
       function dueloCrear(alCompartir) {
         var sb = clienteSupabase();
         if (!sb) { lobbyEstado(t("dueloErrorConexion"), true); return; }
+        dueloNet.azar = false; /* sala por código (o revancha): nunca es «al azar» */
         lobbyOcupado(true);
         lobbyEstado(t("dueloCreando"), false);
         var intentos = 0;
@@ -14697,6 +14735,7 @@
         var sb = clienteSupabase();
         if (!sb) { lobbyEstado(t("dueloErrorConexion"), true); return; }
         lobbyOcupado(true);
+        dueloNet.azar = true; /* RONDA 31: esta ruta sí admite el rescate de sala muerta */
         lobbyEstado(t("dueloBuscandoAzar"), false);
         colaLeer(sb, function (codigos) {
           var disponibles = (codigos || []).filter(function (c) { return /^\d{4}$/.test(c); });
@@ -14861,7 +14900,7 @@
         if (dueloNet.codigo && dueloNet.esperando) { compartirRetoDuelo(); return; }
         dueloCrear(true);
       });
-      $("btn-duelo-unirse").addEventListener("click", dueloUnirse);
+      $("btn-duelo-unirse").addEventListener("click", function () { dueloNet.azar = false; dueloUnirse(); });
       $("btn-duelo-azar").addEventListener("click", dueloAzar);
       /* «Seguir esperando» tras vencer la espera: la MISMA sala
          y el MISMO código (el enlace enviado sigue válido); solo
