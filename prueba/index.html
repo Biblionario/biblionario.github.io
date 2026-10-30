@@ -9142,11 +9142,83 @@
           !$("velo-minidiploma").hidden || !$("velo-tesoro-libro").hidden;
       }
 
+      /* ============ Punto 95 (Ronda 35): pedir la calificación
+         en el momento feliz ============
+         Cuando el jugador SELLA UN LIBRO, la app pide la
+         calificación con el diálogo NATIVO de la tienda —
+         Google Play In-App Review en Android y
+         SKStoreReviewController en iOS, vía el plugin
+         @capacitor-community/in-app-review — pero SOLO al
+         terminar la cadena de celebraciones de ese sello:
+         nunca encima del festejo, nunca en mitad de una
+         partida y nunca tras una derrota. Guarda propia:
+         como máximo una petición cada 90 días por aparato
+         (biblionario_review_pedida), además del límite que
+         cada tienda aplica por su cuenta. Fuera de la app
+         nativa (la previa web) no hay diálogo alguno: el
+         intento queda registrado en la guarda y nada visible
+         cambia. La bandera la marca mostrarCelebracionSello
+         y la consume procesarCelebraciones al cerrar la
+         cadena; si el jugador sigue jugando (la cadena se
+         corta porque entra una partida), la bandera se
+         descarta: la petición no se arrastra a otra pantalla
+         ni puede caer tras la partida siguiente. */
+      var CLAVE_REVIEW_PEDIDA = "biblionario_review_pedida";
+      var REVIEW_CADA_MS = 90 * 24 * 60 * 60 * 1000;
+      var reviewSelloPendiente = false;
+      var reviewIntentos = 0; /* observable para los arneses */
+
+      /* El plugin por el puente de la casa: Capacitor inyecta
+         window.Capacitor.Plugins con los plugins registrados
+         (capacitor.plugins.json) antes de cargar la página —
+         la misma vía principal de pluginAppPuente(). */
+      function pluginReviewPuente() {
+        try {
+          var c = window.Capacitor;
+          if (c && c.Plugins && c.Plugins.InAppReview) return c.Plugins.InAppReview;
+        } catch (e) {}
+        return null;
+      }
+
+      function pedirCalificacionSiToca() {
+        var ahora = Date.now(), ultima = 0;
+        try { ultima = Number(localStorage.getItem(CLAVE_REVIEW_PEDIDA)) || 0; } catch (e) {}
+        if (ultima && ahora - ultima < REVIEW_CADA_MS) return false;
+        try { localStorage.setItem(CLAVE_REVIEW_PEDIDA, String(ahora)); } catch (e) {}
+        reviewIntentos++;
+        try {
+          if (esNativoPuente()) {
+            var plugin = pluginReviewPuente();
+            if (plugin && typeof plugin.requestReview === "function") {
+              var r = plugin.requestReview();
+              if (r && typeof r.catch === "function") r.catch(function () {});
+            }
+          }
+        } catch (e) {}
+        return true;
+      }
+
       function procesarCelebraciones() {
         if (celebracionAbierta()) return;
-        if (!$("pantalla-juego").hidden) return; /* nunca en mitad de una partida */
+        if (!$("pantalla-juego").hidden) {
+          /* Nunca en mitad de una partida; si el jugador
+             siguió jugando tras el sello, su momento ya pasó
+             y la petición no se arrastra (punto 95). */
+          reviewSelloPendiente = false;
+          return;
+        }
         var pend = caminoEstado.celebPendientes[0];
-        if (!pend) return;
+        if (!pend) {
+          /* La cadena de celebraciones terminó: si venía de
+             un sello, ESTE es el momento de pedir la
+             calificación — al llegar a la pantalla
+             resultante, con el festejo ya cerrado. */
+          if (reviewSelloPendiente) {
+            reviewSelloPendiente = false;
+            pedirCalificacionSiToca();
+          }
+          return;
+        }
         caminoEstado.celebPendientes.shift();
         caminoGuardar();
         if (pend.tipo === "nivel") mostrarCelebracionNivel(pend.tramo);
@@ -9161,6 +9233,9 @@
         var tesoro = tesoroDeLibro(canon);
         if (!tesoro) return;
         celebLibroActual = canon;
+        /* Punto 95: este sello, al cerrar su cadena de
+           celebraciones, pedirá la calificación en la app. */
+        reviewSelloPendiente = true;
         var nombre = caminoNombreLibro(canon);
         $("sello-simbolo").innerHTML = selloSVG(tesoro.indice);
         $("sello-titulo").textContent = t("selloTitulo")(nombre);
