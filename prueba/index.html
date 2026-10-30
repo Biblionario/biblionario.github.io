@@ -4202,6 +4202,7 @@
           dueloRivalAbandono: "Tu rival abandonó la partida — ¡ganaste!",
           dueloRivalAbandonoResumen: "Tu rival dejó la partida antes de terminarla, así que el duelo se cierra con tu victoria.",
           dueloRivalAbandonoPrevio: "Tu rival abandonó antes de empezar la partida. Quedaste libre: crea otra o únete con otro código.",
+          dueloRivalSinRespuesta: "Tu rival no dio señales y la partida no llegó a empezar. Quedaste libre: pide otro código o crea una nueva.",
           dueloCuentaTitulo: "¡Partida lista! Comienza en",
           dueloEsperandoCuenta: "Tu rival ya aceptó. Preparando el arranque…",
           dueloCanceladaPorRival: "La partida fue cancelada antes de empezar. Crea una nueva o pide otro código.",
@@ -4623,6 +4624,7 @@
           dueloRivalAbandono: "Your rival left the match — you won!",
           dueloRivalAbandonoResumen: "Your rival left the match before it ended, so the duel closes with your victory.",
           dueloRivalAbandonoPrevio: "Your rival left before the match started. You are free: create another one or join with a different code.",
+          dueloRivalSinRespuesta: "Your rival never responded and the match never started. You are free: ask for another code or create a new one.",
           dueloCuentaTitulo: "Match ready! Starting in",
           dueloEsperandoCuenta: "Your rival accepted. Getting the start ready…",
           dueloCanceladaPorRival: "The match was canceled before it started. Create a new one or ask for another code.",
@@ -14127,11 +14129,11 @@
          y este sondeo de 1 s la respalda). La fila borrada es la
          cancelación del anfitrión (con la política de DELETE del
          SQL aplicado); la columna del rival con respuestas, un
-         anfitrión que ya arrancó. A los 10 s sin ninguna señal se
-         arranca igual que siempre: un anfitrión de una versión
-         anterior tarda eso en responder su primera pregunta, y si
-         la sala estuviera muerta, el botón «Abandonar partida» de
-         la partida es la salida — nadie queda sin acción posible. */
+         anfitrión que ya arrancó. A los 10 s sin NINGUNA señal la
+         sala se da por muerta y cada ruta rescata a su invitado:
+         al azar entra la app como rival local (ronda 31) y por
+         código el invitado queda libre en el lobby con el aviso
+         (ronda 32) — nadie arranca ya contra un rival mudo. */
       function esperarArranqueEnLinea() {
         dueloNet.esperandoArranque = true;
         dueloNet.arranqueNulos = 0;
@@ -14144,13 +14146,14 @@
             detenerEsperaArranque();
             /* RONDA 31 (2026-10-30): vencida la espera sin NINGUNA
                señal (ni cuenta regresiva ni una sola respuesta del
-               anfitrión en 10 s de sondeo), en la ruta AL AZAR la
-               sala se da por muerta y se rescata al jugador con la
-               app como rival local (ver rescatarSalaMuertaAzar).
-               En la ruta por código (duelo entre amigos) se conserva
-               el arranque de siempre, intacto. */
+               anfitrión en 10 s de sondeo), la sala se da por
+               muerta y cada ruta rescata a su invitado: al azar,
+               la app entra como rival local
+               (rescatarSalaMuertaAzar); por código, el invitado
+               queda libre en el lobby con el aviso (ronda 32,
+               rescatarSalaMuertaCodigo). */
             if (dueloNet.azar) { rescatarSalaMuertaAzar(); return; }
-            arrancarPartidaEnLinea();
+            rescatarSalaMuertaCodigo();
             return;
           }
           var sb = clienteSupabase();
@@ -14204,6 +14207,49 @@
           try { sb.from("duelos").delete().eq("codigo", codigo).then(function () {}); } catch (e) {}
         }
         comenzar("duelo");
+      }
+
+      /* RONDA 32 (2026-10-30) — la sala muerta unida POR CÓDIGO
+         (punto 96-B; Alexis aprobó extender el rescate del azar:
+         «Aplicar el rescate también al unirse por código»). El
+         invitado tecleó el código de un amigo concreto y la app
+         de ese amigo murió sin cancelar: la sala no caduca nunca
+         (y no está en la COLA: las salas por código son privadas),
+         así que antes, vencidos los 10 s sin ninguna señal, el
+         invitado arrancaba EN LÍNEA contra un cadáver — el mismo
+         rival mudo de la ronda 31, con cada ronda cerrada por el
+         plazo de gracia hasta perder o abandonar.
+         El rescate es la misma salida limpia con UN matiz de
+         diseño: quien teclea un código vino a jugar contra una
+         PERSONA CONCRETA, así que aquí la app NO entra como
+         rival en silencio (eso sería suplantar a ese amigo); en
+         su lugar la sala se cierra CON CORTESÍA — control de
+         abandono + relleno: si el anfitrión estuviera vivo pero
+         atascado, su cliente la da por ganada al instante en vez
+         de jugar contra un cadáver —, su código sale de la COLA
+         si estuviera (una sala abierta también tiene código
+         tecleable) y la fila se retira: el código deja de
+         existir y el mismo enlace ya no atrapa a nadie más. El
+         invitado queda libre en el lobby con el aviso, la misma
+         salida que ya existía para «el rival abandonó antes de
+         empezar». El duelo entre amigos VIVO no cambia en nada:
+         con cualquier señal dentro del plazo (la cuenta o una
+         respuesta), el flujo es el de siempre y este rescate
+         jamás se alcanza. */
+      function rescatarSalaMuertaCodigo() {
+        var sb = clienteSupabase();
+        var codigo = dueloNet.codigo;
+        if (sb && codigo) {
+          publicarControlDuelo({ fase: "abandonada", abandona: dueloNet.rol });
+          publicarRellenoAbandono();
+          colaQuitar(sb, codigo);
+          try { sb.from("duelos").delete().eq("codigo", codigo).then(function () {}); } catch (e) {}
+        }
+        cerrarDueloEnLinea();
+        mostrar("pantalla-inicio");
+        abrirLobbyDuelo();
+        lobbyOcupado(false);
+        lobbyEstado(t("dueloRivalSinRespuesta"), true);
       }
 
       function detenerPollArranque() {
