@@ -16344,11 +16344,14 @@
            Desafío tampoco (ronda 13, punto 61): el avance tras
            responder es automático, sin toque. */
         $("btn-siguiente").hidden = estado.modo === "duelo" || estado.modo === "diario";
-        /* Ronda 39 (punto 100): el titileo del botón de avance
-           es SOLO de ¡A jugar! (modo base) — la clase se
-           enciende o se apaga con cada pregunta según el modo,
-           y los demás modos comparten el botón sin recibirla. */
-        $("btn-siguiente").classList.toggle("titila", estado.modo === "base");
+        /* Ronda 39 (punto 100) + ronda 40 (punto 101): el
+           titileo del botón de avance es de ¡A jugar! (base),
+           del Desafío (diario) y del Infinito — la clase se
+           enciende o se apaga con cada pregunta según el modo.
+           En el Duelo NO titila jamás (partida sincronizada
+           contra rival; fuera por decisión expresa de Alexis)
+           y el Sabio queda como estaba, sin la clase. */
+        $("btn-siguiente").classList.toggle("titila", estado.modo === "base" || estado.modo === "diario" || estado.modo === "infinito");
         /* El botón de salida se llama por su nombre en cada modo:
            en el duelo es abandonar la partida; en el Infinito,
            salir y ver la marca; en los demás, retirarse con los
