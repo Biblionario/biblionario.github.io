@@ -1357,7 +1357,14 @@
          de luz hasta la corona con halo pulsante. */
       .escenario:has(#pantalla-inicio:not([hidden])) {
         padding-top: calc(max(10px, env(safe-area-inset-top)) + 44px);
-        padding-bottom: 14px;
+        /* Ronda 41 (p.102): colchón de ÁREA SEGURA al pie — en un
+           Android con navegación por gestos, el último elemento
+           (el enlace «¿Cómo se juega?») quedaba dentro de la
+           franja del sistema y el toque nunca llegaba a la app.
+           El mismo patrón se aplica en esta ronda a los
+           escenarios de Reglas, de la Final y de «Dios te habla
+           hoy», que traían el colchón fijo sin env(). */
+        padding-bottom: max(14px, env(safe-area-inset-bottom));
       }
       /* En el teléfono el inicio es columna flex de alto fijo: sin
          esta regla los botones se comprimían y su subtítulo quedaba
@@ -1491,7 +1498,7 @@
       @media (max-height: 730px) {
         .escenario:has(#pantalla-inicio:not([hidden])) {
           padding-top: calc(max(10px, env(safe-area-inset-top)) + 36px);
-          padding-bottom: 2px;
+          padding-bottom: max(2px, env(safe-area-inset-bottom));
         }
         .inicio h1 { font-size: 1.5rem; }
         .inicio .lema { font-size: 0.85rem; margin-top: 1px; }
@@ -2686,7 +2693,7 @@
         /* --- Ventana «Dios te habla hoy» (resumen de 3 tarjetas) --- */
         .escenario:has(#pantalla-verso-dia:not([hidden])) {
           padding-top: calc(max(10px, env(safe-area-inset-top)) + 44px);
-          padding-bottom: 14px;
+          padding-bottom: max(14px, env(safe-area-inset-bottom));
         }
         #pantalla-verso-dia .palabra-cabecera .vers-titulo { font-size: 1.14rem; }
         #pantalla-verso-dia .btn-volver-pildora { min-height: 34px; padding: 5px 12px; }
@@ -2785,7 +2792,7 @@
         #final-avance-lineas.tres-columnas .final-avance-linea:last-child { column-span: all; }
         .escenario:has(#pantalla-final:not([hidden])) {
           padding-top: calc(max(10px, env(safe-area-inset-top)) + 40px);
-          padding-bottom: 8px;
+          padding-bottom: max(8px, env(safe-area-inset-bottom));
         }
         #pantalla-final .btn-compartir,
         #pantalla-final .btn-compartir-progreso,
@@ -2820,7 +2827,7 @@
         /* --- Reglas: tipografía apretada (texto largo de lectura) --- */
         .escenario:has(#pantalla-reglas:not([hidden])) {
           padding-top: calc(max(10px, env(safe-area-inset-top)) + 44px);
-          padding-bottom: 14px;
+          padding-bottom: max(14px, env(safe-area-inset-bottom));
         }
         .reglas { font-size: 0.9rem; line-height: 1.42; margin-top: 12px; }
         .reglas li { margin: 7px 0; }
@@ -3007,11 +3014,19 @@
           margin-top: clamp(1px, 0.46cqh, 4px);
           font-size: clamp(10px, 1.81cqh, 13px); line-height: 1.3;
         }
-        /* --- Enlace «¿Cómo se juega?» --- */
+        /* --- Enlace «¿Cómo se juega?» ---
+           Ronda 41 (p.102): zona tocable REAL de 44px (antes
+           ~25px pegados al borde inferior, dentro de la franja
+           de gestos de Android: el toque lo capturaba el
+           sistema). El texto se centra en esa caja con flex;
+           el alto extra sale del reparto space-between de la
+           columna, sin scroll y sin mover ningún otro elemento. */
         #pantalla-inicio .btn-reglas {
           margin-top: clamp(1px, 0.46cqh, 4px);
           padding: clamp(2px, 0.61cqh, 5px) 10px;
           font-size: clamp(10.5px, 1.91cqh, 13.5px);
+          min-height: 44px;
+          display: flex; align-items: center; justify-content: center;
         }
       }
     </style>
