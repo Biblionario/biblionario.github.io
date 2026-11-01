@@ -70,9 +70,20 @@
          por doble toque en todos los elementos tocables; el
          pellizco lo bloquea el JS (gesturestart / touchstart
          múltiple). Ninguna pantalla depende del zoom para
-         leerse: el tamaño lo manda el diseño adaptable. */
-      html, body { touch-action: manipulation; }
-      button, a, input, select, textarea, [role="button"] { touch-action: manipulation; }
+         leerse: el tamaño lo manda el diseño adaptable.
+         Ronda 42 (punto 103 de Alexis): la regla de la ronda 5
+         cubría solo html/body y los tocables clásicos — las
+         zonas internas con scroll propio cortan la cadena de
+         ancestros del touch-action y los elementos no tocables
+         (divs, textos, imágenes, lienzos) quedaban en «auto»:
+         Alexis perdió una partida en la previa ?v=41 y al
+         tocar «Compartir mi progreso» en la pantalla final la
+         pantalla SE AMPLIÓ. La regla pasa a ser UNIVERSAL, en
+         todo el DOM y sus pseudo-elementos: «manipulation»
+         sigue permitiendo pan-x/pan-y (el scroll, también el
+         interno, funciona igual); solo mueren el doble toque
+         y el pellizco, en cualquier superficie. */
+      *, *::before, *::after { touch-action: manipulation; }
       body {
         margin: 0;
         font-family: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
