@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Duelo Bíblico en Vivo — Biblionario</title>
-<meta name="description" content="Te retaron a un Duelo Bíblico en Vivo en Biblionario. Entra con este enlace o usa tu código en la app.">
+<title>Biblionario</title>
+<meta name="description" content="Biblionario">
 <style>
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
@@ -20,12 +20,13 @@
     box-shadow: 0 18px 50px rgba(0, 0, 0, .5);
   }
   .espadas { font-size: 2rem; }
-  h1 { font-size: 1.55rem; margin: .35em 0 .2em; color: #e9c860; line-height: 1.2; }
-  .sub { margin: 0 0 6px; font-size: 1.02rem; color: #d9cdf5; }
+  h1 { font-size: 1.55rem; margin: .35em 0 .2em; color: #e9c860; line-height: 1.2; overflow-wrap: anywhere; }
+  .sub { margin: 0 0 6px; font-size: 1.02rem; color: #d9cdf5; line-height: 1.45; }
+  .sub b { color: #f3ead2; }
   .etiqueta { margin: 20px 0 4px; font-size: .82rem; letter-spacing: .14em; text-transform: uppercase; color: #b7a6e8; }
   .codigo {
-    font-size: 3.4rem; font-weight: bold; letter-spacing: .35em; text-indent: .35em;
-    color: #ffd94d; margin: 2px 0 10px; font-family: "Courier New", monospace;
+    font-size: 3.6rem; font-weight: bold; letter-spacing: .35em; text-indent: .35em;
+    color: #ffd94d; margin: 2px 0 10px; font-family: "Courier New", monospace; line-height: 1.15;
   }
   .btn {
     display: block; width: 100%; margin: 10px 0; padding: 14px 16px; border-radius: 12px;
@@ -48,50 +49,149 @@
 </head>
 <body>
   <main class="tarjeta">
-    <div class="espadas">⚔️📖</div>
-    <h1>¡Te retaron a un Duelo Bíblico en Vivo!</h1>
-    <p class="sub">Alguien quiere jugar contigo en <b>Biblionario</b>.</p>
+    <div class="espadas" aria-hidden="true">⚔️📖</div>
+    <h1 id="titulo"></h1>
+    <p class="sub" id="subtitulo"></p>
 
     <div class="aviso" id="aviso-inapp" hidden></div>
 
     <div id="con-codigo" hidden>
-      <p class="etiqueta">Tu código de duelo</p>
+      <p class="etiqueta" id="etiqueta-codigo"></p>
       <div class="codigo" id="codigo">····</div>
-      <a class="btn oro" id="btn-abrir" href="#">Abrir en la app y entrar al duelo</a>
-      <button class="btn" id="btn-copiar" type="button">Copiar código</button>
-      <p class="nota">El botón de arriba abre la app y te mete directo al duelo. Si no responde (por ejemplo, si tu app aún no está actualizada a la última versión), copia el código y entra desde la app en «Duelo Bíblico en Vivo».</p>
+      <a class="btn oro" id="btn-abrir" href="#"></a>
+      <button class="btn" id="btn-copiar" type="button"></button>
+      <p class="nota" id="ayuda-entrar"></p>
     </div>
 
     <div id="sin-codigo" hidden>
-      <p class="nota">Este enlace venía sin código. Pide a quien te retó que te comparta de nuevo el enlace del reto, o abre la app y escribe su código en «Duelo Bíblico en Vivo».</p>
+      <p class="nota" id="mensaje-sin-codigo"></p>
     </div>
 
-    <a class="btn" href="https://play.google.com/store/apps/details?id=com.biblionario.app">Descargar en Google Play</a>
-    <a class="btn" href="https://apps.apple.com/app/id6823809379">Descargar en App Store</a>
-    <p class="pie">Biblionario · ¿Quién quiere ser Biblionario?</p>
+    <p class="etiqueta" id="etiqueta-tiendas"></p>
+    <a class="btn" id="btn-play" href="https://play.google.com/store/apps/details?id=com.biblionario.app"></a>
+    <a class="btn" id="btn-store" href="https://apps.apple.com/app/id6823809379"></a>
+    <p class="pie" id="pie"></p>
   </main>
 <script>
   (function () {
-    var c = null;
-    try { c = new URLSearchParams(window.location.search).get("c"); } catch (e) {}
-    var valido = c && /^\d{4}$/.test(c);
+    /* Diccionario completo ES/EN: TODO el texto visible de la página
+       sale de aquí. Nada de texto visible hardcodeado fuera de este
+       objeto (salvo la marca «Biblionario» y nombres propios). */
+    var I18N = {
+      es: {
+        htmlLang: "es",
+        pageTitle: "Duelo Bíblico en Vivo — Biblionario",
+        metaDesc: "Te retaron a un duelo bíblico en Biblionario. Entra con este enlace o usa tu código en la app.",
+        headingNamed: "{n} te retó a un duelo bíblico",
+        headingGeneric: "¡Te retaron a un duelo bíblico en vivo!",
+        subtitle: "Un duelo de preguntas de la Biblia, en vivo y pregunta a pregunta, en Biblionario. Aprende, avanza y acércate al título.",
+        codeLabel: "Tu código de duelo",
+        btnEnter: "Ya la instalé, entrar al duelo",
+        btnCopy: "Copiar código",
+        copied: "¡Código copiado! ✔",
+        copyFallback: "Tu código es el {c}",
+        helpEnter: "Toca el botón dorado: abre la app y te lleva directo al duelo con este código. Si la app no se abre, copia el código y escríbelo en la app, en «Duelo Bíblico en Vivo».",
+        noCode: "Este enlace venía sin código. Pide a quien te retó que te comparta de nuevo el enlace del reto, o abre la app y escribe su código en «Duelo Bíblico en Vivo».",
+        storesLabel: "¿Todavía no tienes la app?",
+        btnPlay: "Descargar en Google Play",
+        btnStore: "Descargar en App Store",
+        footer: "Biblionario · ¿Quieres ser Biblionario?",
+        inappWarn: "⚠️ Abriste este enlace dentro de {app}, y desde ahí el salto automático a la app no funciona. Toca el menú (⋯) y elige {dest}: ahí el botón dorado sí te lleva directo al duelo. O copia el código de abajo y entra desde la app.",
+        inappDestIOS: "«Abrir en Safari»",
+        inappDestOther: "«Abrir en el navegador» o «Abrir en Chrome»"
+      },
+      en: {
+        htmlLang: "en",
+        pageTitle: "Live Bible Duel — Biblionario",
+        metaDesc: "You've been challenged to a Bible duel in Biblionario. Enter with this link or use your code in the app.",
+        headingNamed: "{n} challenged you to a Bible duel",
+        headingGeneric: "You've been challenged to a live Bible duel!",
+        subtitle: "A live Bible trivia duel, question by question, in Biblionario. Learn, move forward, and get closer to the title.",
+        codeLabel: "Your duel code",
+        btnEnter: "I've installed it — enter the duel",
+        btnCopy: "Copy code",
+        copied: "Code copied! ✔",
+        copyFallback: "Your code is {c}",
+        helpEnter: "Tap the gold button: it opens the app and takes you straight into the duel with this code. If the app doesn't open, copy the code and enter it in the app, under “Live Bible Duel”.",
+        noCode: "This link arrived without a code. Ask the person who challenged you to share the challenge link again, or open the app and enter their code under “Live Bible Duel”.",
+        storesLabel: "Don't have the app yet?",
+        btnPlay: "Get it on Google Play",
+        btnStore: "Download on the App Store",
+        footer: "Biblionario · Do you want to be a Biblionario?",
+        inappWarn: "⚠️ You opened this link inside {app}, and the automatic jump to the app doesn't work from there. Tap the menu (⋯) and choose {dest}: there, the gold button takes you straight into the duel. Or copy the code below and enter from the app.",
+        inappDestIOS: "“Open in Safari”",
+        inappDestOther: "“Open in browser” or “Open in Chrome”"
+      }
+    };
+
+    var params = null;
+    try { params = new URLSearchParams(window.location.search); } catch (e) { params = new URLSearchParams(""); }
+
+    /* Idioma: ?lang=es|en manda; si no, navigator.language
+       (en* → inglés; todo lo demás → español). */
+    var langParam = (params.get("lang") || "").toLowerCase();
+    var lang;
+    if (langParam === "es" || langParam === "en") {
+      lang = langParam;
+    } else {
+      var nav = ((navigator.language || "") + "").toLowerCase();
+      lang = nav.indexOf("en") === 0 ? "en" : "es";
+    }
+    var t = I18N[lang];
+
+    document.documentElement.lang = t.htmlLang;
+    document.title = t.pageTitle;
+    var metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute("content", t.metaDesc);
+
+    var c = params.get("c");
+    var valido = !!c && /^\d{4}$/.test(c);
+
+    /* Nombre de quien reta (?n=): se inserta SOLO como texto
+       (textContent), nunca como HTML. */
+    var n = (params.get("n") || "").trim();
+    if (n.length > 60) n = n.slice(0, 60);
+
+    var titulo = document.getElementById("titulo");
+    if (valido && n) {
+      titulo.textContent = t.headingNamed.replace("{n}", n);
+    } else if (valido) {
+      titulo.textContent = t.headingGeneric;
+    } else {
+      titulo.textContent = t.headingGeneric;
+    }
+    document.getElementById("subtitulo").textContent = t.subtitle;
+    document.getElementById("etiqueta-codigo").textContent = t.codeLabel;
+    document.getElementById("ayuda-entrar").textContent = t.helpEnter;
+    document.getElementById("mensaje-sin-codigo").textContent = t.noCode;
+    document.getElementById("etiqueta-tiendas").textContent = t.storesLabel;
+    document.getElementById("btn-play").textContent = t.btnPlay;
+    document.getElementById("btn-store").textContent = t.btnStore;
+    document.getElementById("pie").textContent = t.footer;
+
+    var btnAbrir = document.getElementById("btn-abrir");
+    btnAbrir.textContent = t.btnEnter;
+    var btnCopiar = document.getElementById("btn-copiar");
+    btnCopiar.textContent = t.btnCopy;
+
     if (valido) {
       document.getElementById("codigo").textContent = c;
       document.getElementById("con-codigo").hidden = false;
-      var abrir = document.getElementById("btn-abrir");
-      var httpsUrl = "https://biblionario.github.io/reto/?c=" + c;
-      if (/Android/i.test(navigator.userAgent)) {
-        abrir.href = "intent://biblionario.github.io/reto/?c=" + c +
-          "#Intent;scheme=https;package=com.biblionario.app;S.browser_fallback_url=" +
-          encodeURIComponent("https://play.google.com/store/apps/details?id=com.biblionario.app") + ";end";
-      } else {
-        abrir.href = "biblionario://reto?c=" + c;
-      }
-      var btnCopiar = document.getElementById("btn-copiar");
+
+      /* Botón principal: navega a la MISMA URL universal con
+         abrir=1, para disparar la apertura de la app por
+         Universal Links (iOS) / App Links (Android). */
+      var destino = new URL("https://biblionario.github.io/reto/");
+      destino.searchParams.set("c", c);
+      if (n) destino.searchParams.set("n", n);
+      if (langParam === "es" || langParam === "en") destino.searchParams.set("lang", langParam);
+      destino.searchParams.set("abrir", "1");
+      btnAbrir.href = destino.toString();
+
       btnCopiar.addEventListener("click", function () {
-        function hecho() { btnCopiar.textContent = "¡Código copiado! ✔"; }
+        function hecho() { btnCopiar.textContent = t.copied; }
         if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(c).then(hecho, function () { btnCopiar.textContent = "Tu código es el " + c; });
+          navigator.clipboard.writeText(c).then(hecho, function () { btnCopiar.textContent = t.copyFallback.replace("{c}", c); });
         } else { hecho(); }
       });
     } else {
@@ -101,7 +201,9 @@
     /* Aviso de navegador interno: cuando el enlace se abre dentro de
        Telegram/Instagram/Facebook/etc., el sistema no entrega el
        enlace a la app y el botón dorado no puede saltar. Se avisa y se
-       da la salida (abrir en el navegador real o usar el código). */
+       da la salida (abrir en el navegador real o usar el código).
+       El nombre de la app externa es un nombre propio; el resto del
+       texto sale del diccionario. */
     (function () {
       if (!valido) return;
       var ua = navigator.userAgent || "";
@@ -114,9 +216,9 @@
       else if (/Twitter/i.test(ua)) app = "X (Twitter)";
       if (!app) return;
       var esIOS = /iPhone|iPad|iPod/i.test(ua);
-      var destino = esIOS ? "«Abrir en Safari»" : "«Abrir en el navegador» o «Abrir en Chrome»";
+      var dest = esIOS ? t.inappDestIOS : t.inappDestOther;
       var aviso = document.getElementById("aviso-inapp");
-      aviso.innerHTML = "⚠️ Abriste este enlace dentro de <b>" + app + "</b>, y desde ahí el salto automático a la app no funciona. Toca el menú <b>(⋯)</b> y elige <b>" + destino + "</b>: ahí el botón dorado sí te lleva directo al duelo. O copia el código de abajo y entra desde la app.";
+      aviso.textContent = t.inappWarn.replace("{app}", app).replace("{dest}", dest);
       aviso.hidden = false;
     })();
   })();
