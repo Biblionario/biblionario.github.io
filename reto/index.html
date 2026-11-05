@@ -192,15 +192,28 @@
       document.getElementById("codigo").textContent = c;
       document.getElementById("con-codigo").hidden = false;
 
-      /* Botón principal: navega a la MISMA URL universal con
-         abrir=1, para disparar la apertura de la app por
-         Universal Links (iOS) / App Links (Android). */
+      /* Botón principal: abre la app por su esquema propio
+         (biblionario://reto?c=…). La vía anterior — navegar a la
+         MISMA URL https con abrir=1 — no puede funcionar en iOS:
+         estando ya dentro de la página, iOS nunca entrega un toque
+         a la misma dirección a la app (verificado en el teléfono de
+         Alexis el 2026-11-05: el botón no abría nada). El esquema
+         sí salta a la app instalada (tienda o TestFlight, es la
+         misma app) y el lector de códigos de la app acepta el «c»
+         de cualquier URL que le llegue. El href https queda como
+         respaldo sin JS. */
       var destino = new URL("https://biblionario.github.io/reto/");
       destino.searchParams.set("c", c);
       if (n) destino.searchParams.set("n", n);
       if (langParam === "es" || langParam === "en") destino.searchParams.set("lang", langParam);
       destino.searchParams.set("abrir", "1");
       btnAbrir.href = destino.toString();
+      btnAbrir.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        var esquema = "biblionario://reto?c=" + encodeURIComponent(c);
+        if (n) esquema += "&n=" + encodeURIComponent(n);
+        window.location.href = esquema;
+      });
 
       btnCopiar.addEventListener("click", function () {
         function hecho() { btnCopiar.textContent = t.copied; }
